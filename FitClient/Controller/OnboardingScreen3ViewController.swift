@@ -51,7 +51,13 @@ class OnboardingScreen3ViewController: UIViewController {
     }
     
     @IBAction func getStartedButtonTapped(_ sender: UIButton) {
-        // Dismiss onboarding and go to main app
-        print("Get started")
+        // Mark onboarding as completed
+        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+        
+        // Load and present Sign In screen
+        let signInVC = SignInViewController(nibName: "SignInViewController", bundle: nil)
+        signInVC.modalPresentationStyle = .fullScreen
+        signInVC.modalTransitionStyle = .crossDissolve
+        present(signInVC, animated: true, completion: nil)
     }
 }
