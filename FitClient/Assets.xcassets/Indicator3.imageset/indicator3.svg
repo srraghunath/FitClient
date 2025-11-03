@@ -1,0 +1,7 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 229 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Indicator3">
+<rect id="3" x="154" width="8" height="8" rx="4" fill="var(--fill-0, #AEFE14)"/>
+<rect id="2" x="141" width="8" height="8" rx="4" fill="var(--fill-0, #D9D9D9)"/>
+<path id="1" d="M128 4C128 1.79086 129.791 0 132 0C134.209 0 136 1.79086 136 4C136 6.20914 134.209 8 132 8C129.791 8 128 6.20914 128 4Z" fill="var(--fill-0, #D9D9D9)"/>
+</g>
+</svg>

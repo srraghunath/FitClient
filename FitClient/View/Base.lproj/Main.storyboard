@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="page-vc">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Onboarding Page View Controller-->
+        <scene sceneID="page-scene">
+            <objects>
+                <pageViewController storyboardIdentifier="OnboardingPageViewController" autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="page-vc" customClass="OnboardingPageViewController" customModule="FitClient" customModuleProvider="target" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="page-first-responder" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-798" y="138"/>
+        </scene>
+        <!--Onboarding Screen1 View Controller-->
+        <scene sceneID="onboard1-scene">
+            <objects>
+                <viewController storyboardIdentifier="OnboardingScreen1" id="onboard1-vc" customClass="OnboardingScreen1ViewController" customModule="FitClient" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="onboard1-view">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="image-container1">
+                                <rect key="frame" x="16" y="120" width="382" height="463"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Onboarding1" translatesAutoresizingMaskIntoConstraints="NO" id="image1">
+                                        <rect key="frame" x="0.0" y="0.0" width="382" height="463"/>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="463" id="image-container1-height"/>
+                                    <constraint firstAttribute="bottom" secondItem="image1" secondAttribute="bottom" id="image1-bottom"/>
+                                    <constraint firstItem="image1" firstAttribute="leading" secondItem="image-container1" secondAttribute="leading" id="image1-leading"/>
+                                    <constraint firstItem="image1" firstAttribute="top" secondItem="image-container1" secondAttribute="top" id="image1-top"/>
+                                    <constraint firstAttribute="trailing" secondItem="image1" secondAttribute="trailing" id="image1-trailing"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="12"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Track progress and create plans" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="title1">
+                                <rect key="frame" x="16" y="599" width="382" height="67"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
+                                <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Easily track your client's progress and create personalized workout and diet plans." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="description1">
+                                <rect key="frame" x="16" y="678" width="382" height="38.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="next-button1">
+                                <rect key="frame" x="16" y="749" width="382" height="48"/>
+                                <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="next-button1-height"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                <state key="normal" title="Next">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="24"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="nextButtonTapped:" destination="onboard1-vc" eventType="touchUpInside" id="next-action1"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="onboard1-safe-area"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="description1" firstAttribute="leading" secondItem="onboard1-safe-area" secondAttribute="leading" constant="16" id="description1-leading"/>
+                            <constraint firstItem="description1" firstAttribute="top" secondItem="title1" secondAttribute="bottom" constant="12" id="description1-top"/>
+                            <constraint firstItem="onboard1-safe-area" firstAttribute="trailing" secondItem="description1" secondAttribute="trailing" constant="16" id="description1-trailing"/>
+                            <constraint firstItem="image-container1" firstAttribute="leading" secondItem="onboard1-safe-area" secondAttribute="leading" constant="16" id="image-container1-leading"/>
+                            <constraint firstItem="image-container1" firstAttribute="top" secondItem="onboard1-safe-area" secondAttribute="top" constant="24" id="image-container1-top"/>
+                            <constraint firstItem="onboard1-safe-area" firstAttribute="trailing" secondItem="image-container1" secondAttribute="trailing" constant="16" id="image-container1-trailing"/>
+                            <constraint firstItem="onboard1-safe-area" firstAttribute="bottom" secondItem="next-button1" secondAttribute="bottom" constant="31" id="next-button1-bottom"/>
+                            <constraint firstItem="next-button1" firstAttribute="leading" secondItem="onboard1-safe-area" secondAttribute="leading" constant="16" id="next-button1-leading"/>
+                            <constraint firstItem="onboard1-safe-area" firstAttribute="trailing" secondItem="next-button1" secondAttribute="trailing" constant="16" id="next-button1-trailing"/>
+                            <constraint firstItem="title1" firstAttribute="leading" secondItem="onboard1-safe-area" secondAttribute="leading" constant="16" id="title1-leading"/>
+                            <constraint firstItem="title1" firstAttribute="top" secondItem="image-container1" secondAttribute="bottom" constant="16" id="title1-top"/>
+                            <constraint firstItem="onboard1-safe-area" firstAttribute="trailing" secondItem="title1" secondAttribute="trailing" constant="16" id="title1-trailing"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="descriptionLabel" destination="description1" id="outlet-description1"/>
+                        <outlet property="imageView" destination="image1" id="outlet-image1"/>
+                        <outlet property="nextButton" destination="next-button1" id="outlet-next-button1"/>
+                        <outlet property="titleLabel" destination="title1" id="outlet-title1"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="onboard1-first-responder" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="132" y="-516"/>
+        </scene>
+        <!--Onboarding Screen2 View Controller-->
+        <scene sceneID="onboard2-scene">
+            <objects>
+                <viewController storyboardIdentifier="OnboardingScreen2" id="onboard2-vc" customClass="OnboardingScreen2ViewController" customModule="FitClient" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="onboard2-view">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="image-container2">
+                                <rect key="frame" x="16" y="120" width="382" height="463"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Onboarding2" translatesAutoresizingMaskIntoConstraints="NO" id="image2">
+                                        <rect key="frame" x="0.0" y="0.0" width="382" height="463"/>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="463" id="image-container2-height"/>
+                                    <constraint firstAttribute="bottom" secondItem="image2" secondAttribute="bottom" id="image2-bottom"/>
+                                    <constraint firstItem="image2" firstAttribute="leading" secondItem="image-container2" secondAttribute="leading" id="image2-leading"/>
+                                    <constraint firstItem="image2" firstAttribute="top" secondItem="image-container2" secondAttribute="top" id="image2-top"/>
+                                    <constraint firstAttribute="trailing" secondItem="image2" secondAttribute="trailing" id="image2-trailing"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="12"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Classify client levels" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="title2">
+                                <rect key="frame" x="16" y="599" width="382" height="33.5"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
+                                <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Whether they are beginner, intermediate or Pro!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="description2">
+                                <rect key="frame" x="16" y="644.5" width="382" height="19.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="next-button2">
+                                <rect key="frame" x="16" y="749" width="382" height="48"/>
+                                <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="next-button2-height"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                <state key="normal" title="Next">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="24"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="nextButtonTapped:" destination="onboard2-vc" eventType="touchUpInside" id="next-action2"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="onboard2-safe-area"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="description2" firstAttribute="leading" secondItem="onboard2-safe-area" secondAttribute="leading" constant="16" id="description2-leading"/>
+                            <constraint firstItem="description2" firstAttribute="top" secondItem="title2" secondAttribute="bottom" constant="12" id="description2-top"/>
+                            <constraint firstItem="onboard2-safe-area" firstAttribute="trailing" secondItem="description2" secondAttribute="trailing" constant="16" id="description2-trailing"/>
+                            <constraint firstItem="image-container2" firstAttribute="leading" secondItem="onboard2-safe-area" secondAttribute="leading" constant="16" id="image-container2-leading"/>
+                            <constraint firstItem="image-container2" firstAttribute="top" secondItem="onboard2-safe-area" secondAttribute="top" constant="24" id="image-container2-top"/>
+                            <constraint firstItem="onboard2-safe-area" firstAttribute="trailing" secondItem="image-container2" secondAttribute="trailing" constant="16" id="image-container2-trailing"/>
+                            <constraint firstItem="onboard2-safe-area" firstAttribute="bottom" secondItem="next-button2" secondAttribute="bottom" constant="31" id="next-button2-bottom"/>
+                            <constraint firstItem="next-button2" firstAttribute="leading" secondItem="onboard2-safe-area" secondAttribute="leading" constant="16" id="next-button2-leading"/>
+                            <constraint firstItem="onboard2-safe-area" firstAttribute="trailing" secondItem="next-button2" secondAttribute="trailing" constant="16" id="next-button2-trailing"/>
+                            <constraint firstItem="title2" firstAttribute="leading" secondItem="onboard2-safe-area" secondAttribute="leading" constant="16" id="title2-leading"/>
+                            <constraint firstItem="title2" firstAttribute="top" secondItem="image-container2" secondAttribute="bottom" constant="16" id="title2-top"/>
+                            <constraint firstItem="onboard2-safe-area" firstAttribute="trailing" secondItem="title2" secondAttribute="trailing" constant="16" id="title2-trailing"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="descriptionLabel" destination="description2" id="outlet-description2"/>
+                        <outlet property="imageView" destination="image2" id="outlet-image2"/>
+                        <outlet property="nextButton" destination="next-button2" id="outlet-next-button2"/>
+                        <outlet property="titleLabel" destination="title2" id="outlet-title2"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="onboard2-first-responder" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="132" y="138"/>
+        </scene>
+        <!--Onboarding Screen3 View Controller-->
+        <scene sceneID="onboard3-scene">
+            <objects>
+                <viewController storyboardIdentifier="OnboardingScreen3" id="onboard3-vc" customClass="OnboardingScreen3ViewController" customModule="FitClient" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="onboard3-view">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="image-container3">
+                                <rect key="frame" x="16" y="120" width="382" height="463"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Onboarding3" translatesAutoresizingMaskIntoConstraints="NO" id="image3">
+                                        <rect key="frame" x="0.0" y="0.0" width="382" height="463"/>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="463" id="image-container3-height"/>
+                                    <constraint firstAttribute="bottom" secondItem="image3" secondAttribute="bottom" id="image3-bottom"/>
+                                    <constraint firstItem="image3" firstAttribute="leading" secondItem="image-container3" secondAttribute="leading" id="image3-leading"/>
+                                    <constraint firstItem="image3" firstAttribute="top" secondItem="image-container3" secondAttribute="top" id="image3-top"/>
+                                    <constraint firstAttribute="trailing" secondItem="image3" secondAttribute="trailing" id="image3-trailing"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="12"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Update schedule easily" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="title3">
+                                <rect key="frame" x="16" y="599" width="382" height="33.5"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
+                                <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Easily update workout, cardio, diet and sleep goals." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="description3">
+                                <rect key="frame" x="16" y="644.5" width="382" height="19.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="get-started-button3">
+                                <rect key="frame" x="16" y="749" width="382" height="48"/>
+                                <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="get-started-button3-height"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                <state key="normal" title="Get Started">
+                                    <color key="titleColor" red="0.12941176470588237" green="0.12941176470588237" blue="0.12941176470588237" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="24"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="getStartedButtonTapped:" destination="onboard3-vc" eventType="touchUpInside" id="get-started-action3"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="onboard3-safe-area"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="description3" firstAttribute="leading" secondItem="onboard3-safe-area" secondAttribute="leading" constant="16" id="description3-leading"/>
+                            <constraint firstItem="description3" firstAttribute="top" secondItem="title3" secondAttribute="bottom" constant="12" id="description3-top"/>
+                            <constraint firstItem="onboard3-safe-area" firstAttribute="trailing" secondItem="description3" secondAttribute="trailing" constant="16" id="description3-trailing"/>
+                            <constraint firstItem="onboard3-safe-area" firstAttribute="bottom" secondItem="get-started-button3" secondAttribute="bottom" constant="31" id="get-started-button3-bottom"/>
+                            <constraint firstItem="get-started-button3" firstAttribute="leading" secondItem="onboard3-safe-area" secondAttribute="leading" constant="16" id="get-started-button3-leading"/>
+                            <constraint firstItem="onboard3-safe-area" firstAttribute="trailing" secondItem="get-started-button3" secondAttribute="trailing" constant="16" id="get-started-button3-trailing"/>
+                            <constraint firstItem="image-container3" firstAttribute="leading" secondItem="onboard3-safe-area" secondAttribute="leading" constant="16" id="image-container3-leading"/>
+                            <constraint firstItem="image-container3" firstAttribute="top" secondItem="onboard3-safe-area" secondAttribute="top" constant="24" id="image-container3-top"/>
+                            <constraint firstItem="onboard3-safe-area" firstAttribute="trailing" secondItem="image-container3" secondAttribute="trailing" constant="16" id="image-container3-trailing"/>
+                            <constraint firstItem="title3" firstAttribute="leading" secondItem="onboard3-safe-area" secondAttribute="leading" constant="16" id="title3-leading"/>
+                            <constraint firstItem="title3" firstAttribute="top" secondItem="image-container3" secondAttribute="bottom" constant="16" id="title3-top"/>
+                            <constraint firstItem="onboard3-safe-area" firstAttribute="trailing" secondItem="title3" secondAttribute="trailing" constant="16" id="title3-trailing"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="descriptionLabel" destination="description3" id="outlet-description3"/>
+                        <outlet property="getStartedButton" destination="get-started-button3" id="outlet-get-started-button3"/>
+                        <outlet property="imageView" destination="image3" id="outlet-image3"/>
+                        <outlet property="titleLabel" destination="title3" id="outlet-title3"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="onboard3-first-responder" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="132" y="792"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="Onboarding1" width="512" height="512"/>
+        <image name="Onboarding2" width="512" height="512"/>
+        <image name="Onboarding3" width="512" height="512"/>
+    </resources>
+</document>
