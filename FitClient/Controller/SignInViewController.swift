@@ -68,7 +68,11 @@ class SignInViewController: UIViewController {
     
     @IBAction func signUpButtonTapped(_ sender: UIButton) {
         // Navigate to Sign Up screen
-        print("Sign Up tapped")
+        print("signup tapped")
+        let signUpVC = SignUpViewController(nibName: "SignUpViewController", bundle: nil)
+        signUpVC.modalPresentationStyle = .fullScreen
+        signUpVC.modalTransitionStyle = .crossDissolve
+        present(signUpVC, animated: true, completion: nil)
     }
     
     @IBAction func forgotPasswordTapped(_ sender: UIButton) {
