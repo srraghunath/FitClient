@@ -78,5 +78,9 @@ class SignInViewController: UIViewController {
     @IBAction func forgotPasswordTapped(_ sender: UIButton) {
         // Navigate to Forgot Password screen
         print("Forgot Password tapped")
+        let forgotVC = ForgotPassword(nibName: "ForgotPassword", bundle: nil)
+        forgotVC.modalPresentationStyle = .fullScreen
+        forgotVC.modalTransitionStyle = .crossDissolve
+        present(forgotVC, animated: true)
     }
 }
