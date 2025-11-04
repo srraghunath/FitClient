@@ -19,9 +19,7 @@ class OnboardingScreen1ViewController: UIViewController {
         setupUI()
     }
     
-    func setupUI() {
-        view.backgroundColor = .black
-        
+    fileprivate func extractedFunc() {
         // Setup title
         titleLabel.text = "Track progress and create plans"
         titleLabel.font = UIFont.systemFont(ofSize: 28, weight: .bold)
@@ -50,8 +48,13 @@ class OnboardingScreen1ViewController: UIViewController {
         imageView.clipsToBounds = true
     }
     
+    func setupUI() {
+        view.backgroundColor = .black
+        
+        extractedFunc()
+    }
+    
     @IBAction func nextButtonTapped(_ sender: UIButton) {
-        // Page view controller will handle navigation
         if let pageVC = parent as? OnboardingPageViewController {
             if pageVC.pages.count > 1 {
                 pageVC.setViewControllers([pageVC.pages[1]], direction: .forward, animated: true, completion: nil)

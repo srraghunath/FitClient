@@ -51,7 +51,6 @@ class OnboardingScreen3ViewController: UIViewController {
     }
     
     @IBAction func getStartedButtonTapped(_ sender: UIButton) {
-        // Dismiss onboarding and go to main app
         print("Get started")
     }
 }
