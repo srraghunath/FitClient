@@ -21,29 +21,22 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="content-stack">
-                    <rect key="frame" x="16" y="218.5" width="382" height="459.5"/>
+                    <rect key="frame" x="10" y="252.5" width="394" height="391.5"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sign In" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="title-label">
-                            <rect key="frame" x="0.0" y="0.0" width="382" height="38.5"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Sign In" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="title-label">
+                            <rect key="frame" x="0.0" y="0.0" width="394" height="38.5"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="32"/>
                             <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome Back!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="welcome-label">
-                            <rect key="frame" x="0.0" y="54.5" width="382" height="29"/>
+                            <rect key="frame" x="0.0" y="54.5" width="394" height="29"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                             <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="spacer-view">
-                            <rect key="frame" x="0.0" y="99.5" width="382" height="16"/>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="16" id="spacer-height"/>
-                            </constraints>
-                        </view>
                         <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="email-field">
-                            <rect key="frame" x="0.0" y="131.5" width="382" height="56"/>
+                            <rect key="frame" x="0.0" y="99.5" width="394" height="56"/>
                             <color key="backgroundColor" red="0.18823529411764706" green="0.19215686274509805" blue="0.19215686274509805" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="56" id="email-height"/>
@@ -53,7 +46,7 @@
                             <textInputTraits key="textInputTraits" keyboardType="emailAddress" textContentType="email"/>
                         </textField>
                         <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="password-field">
-                            <rect key="frame" x="0.0" y="203.5" width="382" height="56"/>
+                            <rect key="frame" x="0.0" y="171.5" width="394" height="56"/>
                             <color key="backgroundColor" red="0.18823529411764706" green="0.19215686274509805" blue="0.19215686274509805" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="56" id="password-height"/>
@@ -63,7 +56,7 @@
                             <textInputTraits key="textInputTraits" autocorrectionType="no" secureTextEntry="YES" textContentType="password"/>
                         </textField>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="forgot-btn">
-                            <rect key="frame" x="0.0" y="275.5" width="382" height="20"/>
+                            <rect key="frame" x="0.0" y="243.5" width="394" height="20"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="20" id="forgot-height"/>
                             </constraints>
@@ -75,15 +68,8 @@
                                 <action selector="forgotPasswordTapped:" destination="-1" eventType="touchUpInside" id="wLZ-bw-Avx"/>
                             </connections>
                         </button>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="button-spacer-view">
-                            <rect key="frame" x="0.0" y="311.5" width="382" height="20"/>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="20" id="button-spacer-height"/>
-                            </constraints>
-                        </view>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="signin-btn">
-                            <rect key="frame" x="0.0" y="347.5" width="382" height="48"/>
+                            <rect key="frame" x="0.0" y="279.5" width="394" height="48"/>
                             <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="48" id="signin-height"/>
@@ -97,7 +83,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="signup-btn">
-                            <rect key="frame" x="0.0" y="411.5" width="382" height="48"/>
+                            <rect key="frame" x="0.0" y="343.5" width="394" height="48"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="48" id="signup-height"/>
                             </constraints>
@@ -115,9 +101,9 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
+                <constraint firstItem="content-stack" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="1QI-td-YfE"/>
                 <constraint firstItem="content-stack" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="stack-centerY"/>
-                <constraint firstItem="content-stack" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="stack-leading"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="content-stack" secondAttribute="trailing" constant="16" id="stack-trailing"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="content-stack" secondAttribute="trailing" constant="10" id="stack-trailing"/>
             </constraints>
             <point key="canvasLocation" x="138" y="21"/>
         </view>

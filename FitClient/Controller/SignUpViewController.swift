@@ -9,7 +9,6 @@ import UIKit
 
 class SignUpViewController: UIViewController {
     
-    // IBOutlets
     @IBOutlet weak var fullNameTextField: UITextField!
     @IBOutlet weak var ageTextField: UITextField!
     @IBOutlet weak var genderTextField: UITextField!
@@ -19,7 +18,6 @@ class SignUpViewController: UIViewController {
     @IBOutlet weak var confirmPasswordTextField: UITextField!
     @IBOutlet weak var createAccountButton: UIButton!
     
-    // Gender picker
     let genderPicker = UIPickerView()
     let genderOptions = ["Male", "Female", "Other", "Prefer not to say"]
     
@@ -34,17 +32,7 @@ class SignUpViewController: UIViewController {
         view.backgroundColor = .black
         
         // Full Name text field
-        fullNameTextField.placeholder = "Full Name"
-        fullNameTextField.font = UIFont(name: "Lexend-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
-        fullNameTextField.textColor = UIColor(red: 245/255, green: 245/255, blue: 245/255, alpha: 1.0)
-        fullNameTextField.backgroundColor = UIColor(red: 48/255, green: 49/255, blue: 49/255, alpha: 1.0)
-        fullNameTextField.layer.cornerRadius = 12
-        fullNameTextField.attributedPlaceholder = NSAttributedString(
-            string: "Full Name",
-            attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 215/255, green: 204/255, blue: 200/255, alpha: 1.0)]
-        )
-        fullNameTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 56))
-        fullNameTextField.leftViewMode = .always
+        setTextField(fullNameTextField, "Full Name")
         
         // Age text field
         ageTextField.placeholder = "Age"
@@ -58,6 +46,7 @@ class SignUpViewController: UIViewController {
         )
         ageTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 56))
         ageTextField.leftViewMode = .always
+        
         ageTextField.keyboardType = .numberPad
         
         // Gender text field (with picker)
@@ -165,6 +154,20 @@ class SignUpViewController: UIViewController {
     @IBAction func backButtonTapped(_ sender: UIButton) {
         dismiss(animated: true, completion: nil)
     }
+}
+
+func setTextField(_ textField: UITextField, _ placeholder: String) {
+    textField.placeholder = "Full Name"
+    textField.font = UIFont(name: "Lexend-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
+    textField.textColor = UIColor(red: 245/255, green: 245/255, blue: 245/255, alpha: 1.0)
+    textField.backgroundColor = UIColor(red: 48/255, green: 49/255, blue: 49/255, alpha: 1.0)
+    textField.layer.cornerRadius = 12
+    textField.attributedPlaceholder = NSAttributedString(
+        string: "Full Name",
+        attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 215/255, green: 204/255, blue: 200/255, alpha: 1.0)]
+    )
+    textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 56))
+    textField.leftViewMode = .always
 }
 
 // MARK: - UIPickerViewDelegate, UIPickerViewDataSource

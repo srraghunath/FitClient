@@ -67,7 +67,6 @@ class SignInViewController: UIViewController {
     }
     
     @IBAction func signUpButtonTapped(_ sender: UIButton) {
-        // Navigate to Sign Up screen
         print("signup tapped")
         let signUpVC = SignUpViewController(nibName: "SignUpViewController", bundle: nil)
         signUpVC.modalPresentationStyle = .fullScreen
@@ -76,7 +75,6 @@ class SignInViewController: UIViewController {
     }
     
     @IBAction func forgotPasswordTapped(_ sender: UIButton) {
-        // Navigate to Forgot Password screen
         print("Forgot Password tapped")
         let forgotVC = ForgotPassword(nibName: "ForgotPassword", bundle: nil)
         forgotVC.modalPresentationStyle = .fullScreen

@@ -174,8 +174,8 @@
                     </subviews>
                     <constraints>
                         <constraint firstItem="content-view" firstAttribute="centerY" secondItem="scroll-view" secondAttribute="centerY" id="Fbt-kM-cas"/>
+                        <constraint firstItem="content-view" firstAttribute="centerX" secondItem="scroll-view" secondAttribute="centerX" id="JJD-BC-dLB"/>
                         <constraint firstItem="content-view" firstAttribute="bottom" secondItem="scroll-view" secondAttribute="bottom" id="content-bottom"/>
-                        <constraint firstItem="content-view" firstAttribute="leading" secondItem="scroll-view" secondAttribute="leading" id="content-leading"/>
                         <constraint firstItem="content-view" firstAttribute="height" relation="greaterThanOrEqual" secondItem="scroll-view" secondAttribute="height" id="content-min-height"/>
                         <constraint firstItem="content-view" firstAttribute="top" secondItem="scroll-view" secondAttribute="top" id="content-top"/>
                         <constraint firstItem="content-view" firstAttribute="trailing" secondItem="scroll-view" secondAttribute="trailing" id="content-trailing"/>

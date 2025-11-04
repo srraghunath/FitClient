@@ -6,14 +6,7 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		B22B87432EB97145007E7C9D /* ForgotPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22B87412EB97145007E7C9D /* ForgotPassword.swift */; };
-		B22B87442EB97145007E7C9D /* ForgotPassword.xib in Resources */ = {isa = PBXBuildFile; fileRef = B22B87422EB97145007E7C9D /* ForgotPassword.xib */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
-		B22B87412EB97145007E7C9D /* ForgotPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPassword.swift; sourceTree = "<group>"; };
-		B22B87422EB97145007E7C9D /* ForgotPassword.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ForgotPassword.xib; sourceTree = "<group>"; };
 		BECA34F22EB8F99B0052F628 /* FitClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -52,8 +45,6 @@
 		BECA34E92EB8F99B0052F628 = {
 			isa = PBXGroup;
 			children = (
-				B22B87412EB97145007E7C9D /* ForgotPassword.swift */,
-				B22B87422EB97145007E7C9D /* ForgotPassword.xib */,
 				BECA34F42EB8F99B0052F628 /* FitClient */,
 				BECA34F32EB8F99B0052F628 /* Products */,
 			);
@@ -131,7 +122,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B22B87442EB97145007E7C9D /* ForgotPassword.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,7 +132,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B22B87432EB97145007E7C9D /* ForgotPassword.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
