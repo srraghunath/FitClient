@@ -42,8 +42,16 @@ class SignInViewController: UIViewController {
     }
     
     @IBAction func signInButtonTapped(_ sender: UIButton) {
-        // Implement sign in logic
-        print("Sign In tapped")
+        // Basic validation
+        guard let email = emailTextField.text, !email.isEmpty,
+              let password = passwordTextField.text, !password.isEmpty else {
+            showAlert(message: "Please enter email and password")
+            return
+        }
+        
+        // TODO: Add proper authentication logic here
+        // For now, navigate to dashboard
+        navigateToDashboard()
     }
     
     @IBAction func signUpButtonTapped(_ sender: UIButton) {
@@ -61,4 +69,27 @@ class SignInViewController: UIViewController {
         forgotVC.modalTransitionStyle = .crossDissolve
         present(forgotVC, animated: true)
     }
+    
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "Sign In", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
+    private func navigateToDashboard() {
+        let dashboardVC = TrainerSessionsViewController(nibName: "TrainerSessionsViewController", bundle: nil)
+        
+        // Create navigation controller if not already in one
+        if let navigationController = self.navigationController {
+            navigationController.pushViewController(dashboardVC, animated: true)
+        } else {
+            // If not in navigation controller, create one and present it
+            let navController = UINavigationController(rootViewController: dashboardVC)
+            navController.modalPresentationStyle = .fullScreen
+            navController.modalTransitionStyle = .crossDissolve
+            navController.isNavigationBarHidden = true // Hide default nav bar since we have custom one
+            present(navController, animated: true, completion: nil)
+        }
+    }
+
 }

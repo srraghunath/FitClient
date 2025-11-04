@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23504"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="SessionTableViewCell" rowHeight="88" id="Qze-hJ-fDd" customClass="SessionTableViewCell" customModule="FitClient" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="88"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Qze-hJ-fDd" id="C85-qF-g7L">
+                <rect key="frame" x="0.0" y="0.0" width="393" height="88"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dTW-zC-keP" userLabel="Container View">
+                        <rect key="frame" x="16" y="8" width="361" height="72"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="QbZ-Kl-6ff" userLabel="Profile Image">
+                                <rect key="frame" x="10.333333333333329" y="8.6666666666666643" width="54.666666666666671" height="54.666666666666671"/>
+                                <color key="backgroundColor" red="0.81568627449999997" green="0.80000000000000004" blue="0.78431372550000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="QbZ-Kl-6ff" secondAttribute="height" multiplier="1:1" id="5xR-2j-NrG"/>
+                                    <constraint firstAttribute="width" constant="54.666666666666671" id="kJH-mN-KZl"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Client Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BeU-cv-ZqT" userLabel="Client Name Label">
+                                <rect key="frame" x="75" y="16" width="98.333333333333329" height="19.333333333333332"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10:00 AM - 11:00 AM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QcD-Af-VUW" userLabel="Time Label">
+                                <rect key="frame" x="75" y="39.333333333333336" width="135.66666666666666" height="16"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <color key="textColor" white="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chevron.right" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="9iB-Pg-Vvg" userLabel="Chevron">
+                                <rect key="frame" x="325" y="29.666666666666664" width="16" height="13.666666666666664"/>
+                                <color key="tintColor" white="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="16" id="IYW-ab-5gI"/>
+                                    <constraint firstAttribute="height" constant="16" id="o3i-fP-1AK"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.18823529410000001" green="0.19215686269999999" blue="0.19215686269999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="BeU-cv-ZqT" firstAttribute="leading" secondItem="QbZ-Kl-6ff" secondAttribute="trailing" constant="10" id="2Kg-nj-VNT"/>
+                            <constraint firstItem="QbZ-Kl-6ff" firstAttribute="centerY" secondItem="dTW-zC-keP" secondAttribute="centerY" id="4rY-nU-fch"/>
+                            <constraint firstAttribute="trailing" secondItem="9iB-Pg-Vvg" secondAttribute="trailing" constant="20" id="5fX-dC-gME"/>
+                            <constraint firstItem="QcD-Af-VUW" firstAttribute="top" secondItem="BeU-cv-ZqT" secondAttribute="bottom" constant="4" id="8ZS-dq-ViM"/>
+                            <constraint firstItem="9iB-Pg-Vvg" firstAttribute="centerY" secondItem="dTW-zC-keP" secondAttribute="centerY" id="Gge-jK-r2B"/>
+                            <constraint firstItem="BeU-cv-ZqT" firstAttribute="top" secondItem="dTW-zC-keP" secondAttribute="top" constant="16" id="HCY-DX-F6g"/>
+                            <constraint firstItem="QbZ-Kl-6ff" firstAttribute="leading" secondItem="dTW-zC-keP" secondAttribute="leading" constant="10.333333333333329" id="Qca-3g-hA0"/>
+                            <constraint firstAttribute="height" constant="72" id="RWC-Wr-fdY"/>
+                            <constraint firstItem="QcD-Af-VUW" firstAttribute="leading" secondItem="QbZ-Kl-6ff" secondAttribute="trailing" constant="10" id="kXk-Bi-GhF"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstItem="dTW-zC-keP" firstAttribute="leading" secondItem="C85-qF-g7L" secondAttribute="leading" constant="16" id="1RQ-EB-m6d"/>
+                    <constraint firstAttribute="bottom" secondItem="dTW-zC-keP" secondAttribute="bottom" constant="8" id="JQ0-nU-khA"/>
+                    <constraint firstAttribute="trailing" secondItem="dTW-zC-keP" secondAttribute="trailing" constant="16" id="Lth-6L-qDy"/>
+                    <constraint firstItem="dTW-zC-keP" firstAttribute="top" secondItem="C85-qF-g7L" secondAttribute="top" constant="8" id="Sgd-hg-ym7"/>
+                </constraints>
+            </tableViewCellContentView>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <connections>
+                <outlet property="chevronImageView" destination="9iB-Pg-Vvg" id="9g2-Lf-X5f"/>
+                <outlet property="clientNameLabel" destination="BeU-cv-ZqT" id="baK-xJ-bac"/>
+                <outlet property="containerView" destination="dTW-zC-keP" id="uj3-bD-0oS"/>
+                <outlet property="profileImageView" destination="QbZ-Kl-6ff" id="9z5-N3-bda"/>
+                <outlet property="timeLabel" destination="QcD-Af-VUW" id="2wU-4Y-VSI"/>
+            </connections>
+            <point key="canvasLocation" x="-74.045801526717552" y="-37.323943661971832"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="chevron.right" catalog="system" width="96" height="128"/>
+    </resources>
+</document>

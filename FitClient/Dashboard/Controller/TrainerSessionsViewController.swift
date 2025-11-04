@@ -8,22 +8,212 @@
 import UIKit
 
 class TrainerSessionsViewController: UIViewController {
-
+    
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var sessionsTableView: UITableView!
+    
+    private var allSessions: [Session] = []
+    private var todaySessions: [Session] = []
+    private var upcomingSessions: [Session] = []
+    private var selectedDate = Date()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        setupUI()
+        setupTableView()
+        loadSessionsData()
+        updateDateLabel()
     }
-
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    private func setupUI() {
+        view.backgroundColor = UIColor.black
     }
-    */
-
+    
+    private func setupTableView() {
+        sessionsTableView.delegate = self
+        sessionsTableView.dataSource = self
+        sessionsTableView.backgroundColor = .clear
+        sessionsTableView.separatorStyle = .none
+        sessionsTableView.showsVerticalScrollIndicator = false
+        
+        // Register custom cell
+        let nib = UINib(nibName: "SessionTableViewCell", bundle: nil)
+        sessionsTableView.register(nib, forCellReuseIdentifier: "SessionTableViewCell")
+    }
+    
+    // MARK: BACKEND OPERATIONS
+    
+    private func loadSessionsData() {
+        guard let url = Bundle.main.url(forResource: "sessionsData", withExtension: "json") else {
+            print("Error: sessionsData.json not found")
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let sessionsData = try decoder.decode(SessionsData.self, from: data)
+            
+            // Store all sessions
+            allSessions = sessionsData.todaySessions + sessionsData.upcomingSessions
+            
+            // Filter for selected date
+            filterSessionsForDate(selectedDate)
+            
+        } catch {
+            print("Error loading sessions data: \(error)")
+        }
+    }
+    
+    private func filterSessionsForDate(_ date: Date) {
+        let calendar = Calendar.current
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let selectedDateString = dateFormatter.string(from: date)
+        
+        // Check if selected date is today
+        let isToday = calendar.isDateInToday(date)
+        
+        // Filter sessions for selected date
+        let sessionsForDate = allSessions.filter { session in
+            return session.date == selectedDateString
+        }
+        
+        if isToday {
+            // If today, show in "Today" section
+            todaySessions = sessionsForDate
+            
+            // Upcoming shows future dates
+            upcomingSessions = allSessions.filter { session in
+                if let sessionDate = dateFormatter.date(from: session.date) {
+                    return sessionDate > date
+                }
+                return false
+            }
+        } else {
+            // If not today, show selected date sessions in "Today" section
+            todaySessions = sessionsForDate
+            
+            // Upcoming shows sessions after selected date
+            upcomingSessions = allSessions.filter { session in
+                if let sessionDate = dateFormatter.date(from: session.date) {
+                    return sessionDate > date
+                }
+                return false
+            }
+        }
+        
+        sessionsTableView.reloadData()
+    }
+    
+    private func updateDateLabel() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EEE, dd MMM yyyy"
+        dateLabel.text = dateFormatter.string(from: selectedDate)
+    }
+    
+    @IBAction func calendarButtonTapped(_ sender: UIButton) {
+        showDatePicker()
+    }
+    
+    private func showDatePicker() {
+        let alert = UIAlertController(title: "Select Date", message: "\n\n\n\n\n\n\n\n\n", preferredStyle: .actionSheet)
+        
+        let datePicker = UIDatePicker()
+        datePicker.datePickerMode = .date
+        datePicker.preferredDatePickerStyle = .wheels
+        datePicker.date = selectedDate
+        datePicker.translatesAutoresizingMaskIntoConstraints = false
+        
+        alert.view.addSubview(datePicker)
+        
+        NSLayoutConstraint.activate([
+            datePicker.centerXAnchor.constraint(equalTo: alert.view.centerXAnchor),
+            datePicker.topAnchor.constraint(equalTo: alert.view.topAnchor, constant: 50),
+            datePicker.widthAnchor.constraint(equalToConstant: 270),
+            datePicker.heightAnchor.constraint(equalToConstant: 200)
+        ])
+        
+        let selectAction = UIAlertAction(title: "Select", style: .default) { [weak self] _ in
+            guard let self = self else { return }
+            self.selectedDate = datePicker.date
+            self.updateDateLabel()
+            self.filterSessionsForDate(self.selectedDate)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alert.addAction(selectAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
 }
+
+// MARK: - UITableViewDataSource
+extension TrainerSessionsViewController: UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return todaySessions.count
+        } else {
+            return upcomingSessions.count
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "SessionTableViewCell", for: indexPath) as? SessionTableViewCell else {
+            return UITableViewCell()
+        }
+        
+        let session = indexPath.section == 0 ? todaySessions[indexPath.row] : upcomingSessions[indexPath.row]
+        cell.configure(with: session)
+        
+        return cell
+    }
+}
+
+// MARK: - UITableViewDelegate
+extension TrainerSessionsViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView()
+        headerView.backgroundColor = .black
+        
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = section == 0 ? "Today" : "Upcoming"
+        label.font = UIFont(name: "SFPro-Bold", size: 16) ?? UIFont.boldSystemFont(ofSize: 16)
+        label.textColor = UIColor(red: 245/255, green: 245/255, blue: 245/255, alpha: 1.0)
+        
+        headerView.addSubview(label)
+        
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            label.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            label.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 20),
+            label.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -12)
+        ])
+        
+        return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 60
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 88
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let session = indexPath.section == 0 ? todaySessions[indexPath.row] : upcomingSessions[indexPath.row]
+        print("Selected session: \(session.clientName) at \(session.startTime)")
+        // TODO: Navigate to session details
+    }
+}
+
