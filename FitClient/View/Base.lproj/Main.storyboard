@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="page-vc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="page-vc">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -24,7 +24,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="image-container1">
-                                <rect key="frame" x="16" y="120" width="382" height="463"/>
+                                <rect key="frame" x="16" y="72" width="382" height="463"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Onboarding1" translatesAutoresizingMaskIntoConstraints="NO" id="image1">
                                         <rect key="frame" x="0.0" y="0.0" width="382" height="463"/>
@@ -45,19 +45,19 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Track progress and create plans" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="title1">
-                                <rect key="frame" x="16" y="599" width="382" height="67"/>
+                                <rect key="frame" x="16" y="595" width="382" height="67"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
                                 <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Easily track your client's progress and create personalized workout and diet plans." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="description1">
-                                <rect key="frame" x="16" y="678" width="382" height="38.5"/>
+                                <rect key="frame" x="16" y="674" width="382" height="38.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="next-button1">
-                                <rect key="frame" x="16" y="749" width="382" height="48"/>
+                                <rect key="frame" x="16" y="783" width="382" height="48"/>
                                 <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="next-button1-height"/>
@@ -89,7 +89,7 @@
                             <constraint firstItem="next-button1" firstAttribute="leading" secondItem="onboard1-safe-area" secondAttribute="leading" constant="16" id="next-button1-leading"/>
                             <constraint firstItem="onboard1-safe-area" firstAttribute="trailing" secondItem="next-button1" secondAttribute="trailing" constant="16" id="next-button1-trailing"/>
                             <constraint firstItem="title1" firstAttribute="leading" secondItem="onboard1-safe-area" secondAttribute="leading" constant="16" id="title1-leading"/>
-                            <constraint firstItem="title1" firstAttribute="top" secondItem="image-container1" secondAttribute="bottom" constant="16" id="title1-top"/>
+                            <constraint firstItem="title1" firstAttribute="top" secondItem="image-container1" secondAttribute="bottom" constant="60" id="title1-top"/>
                             <constraint firstItem="onboard1-safe-area" firstAttribute="trailing" secondItem="title1" secondAttribute="trailing" constant="16" id="title1-trailing"/>
                         </constraints>
                     </view>
@@ -113,7 +113,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="image-container2">
-                                <rect key="frame" x="16" y="120" width="382" height="463"/>
+                                <rect key="frame" x="16" y="72" width="382" height="463"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Onboarding2" translatesAutoresizingMaskIntoConstraints="NO" id="image2">
                                         <rect key="frame" x="0.0" y="0.0" width="382" height="463"/>
@@ -134,19 +134,19 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Classify client levels" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="title2">
-                                <rect key="frame" x="16" y="599" width="382" height="33.5"/>
+                                <rect key="frame" x="16" y="620" width="382" height="33.5"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
                                 <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Whether they are beginner, intermediate or Pro!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="description2">
-                                <rect key="frame" x="16" y="644.5" width="382" height="19.5"/>
+                                <rect key="frame" x="16" y="665.5" width="382" height="19.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="next-button2">
-                                <rect key="frame" x="16" y="749" width="382" height="48"/>
+                                <rect key="frame" x="16" y="783" width="382" height="48"/>
                                 <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="next-button2-height"/>
@@ -178,7 +178,7 @@
                             <constraint firstItem="next-button2" firstAttribute="leading" secondItem="onboard2-safe-area" secondAttribute="leading" constant="16" id="next-button2-leading"/>
                             <constraint firstItem="onboard2-safe-area" firstAttribute="trailing" secondItem="next-button2" secondAttribute="trailing" constant="16" id="next-button2-trailing"/>
                             <constraint firstItem="title2" firstAttribute="leading" secondItem="onboard2-safe-area" secondAttribute="leading" constant="16" id="title2-leading"/>
-                            <constraint firstItem="title2" firstAttribute="top" secondItem="image-container2" secondAttribute="bottom" constant="16" id="title2-top"/>
+                            <constraint firstItem="title2" firstAttribute="top" secondItem="image-container2" secondAttribute="bottom" constant="85" id="title2-top"/>
                             <constraint firstItem="onboard2-safe-area" firstAttribute="trailing" secondItem="title2" secondAttribute="trailing" constant="16" id="title2-trailing"/>
                         </constraints>
                     </view>
@@ -202,7 +202,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="image-container3">
-                                <rect key="frame" x="16" y="120" width="382" height="463"/>
+                                <rect key="frame" x="16" y="72" width="382" height="463"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Onboarding3" translatesAutoresizingMaskIntoConstraints="NO" id="image3">
                                         <rect key="frame" x="0.0" y="0.0" width="382" height="463"/>
@@ -223,19 +223,19 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Update schedule easily" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="title3">
-                                <rect key="frame" x="16" y="599" width="382" height="33.5"/>
+                                <rect key="frame" x="16" y="610" width="382" height="33.5"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
                                 <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Easily update workout, cardio, diet and sleep goals." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="description3">
-                                <rect key="frame" x="16" y="644.5" width="382" height="19.5"/>
+                                <rect key="frame" x="16" y="655.5" width="382" height="19.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="get-started-button3">
-                                <rect key="frame" x="16" y="749" width="382" height="48"/>
+                                <rect key="frame" x="16" y="783" width="382" height="48"/>
                                 <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="get-started-button3-height"/>
@@ -267,7 +267,7 @@
                             <constraint firstItem="image-container3" firstAttribute="top" secondItem="onboard3-safe-area" secondAttribute="top" constant="24" id="image-container3-top"/>
                             <constraint firstItem="onboard3-safe-area" firstAttribute="trailing" secondItem="image-container3" secondAttribute="trailing" constant="16" id="image-container3-trailing"/>
                             <constraint firstItem="title3" firstAttribute="leading" secondItem="onboard3-safe-area" secondAttribute="leading" constant="16" id="title3-leading"/>
-                            <constraint firstItem="title3" firstAttribute="top" secondItem="image-container3" secondAttribute="bottom" constant="16" id="title3-top"/>
+                            <constraint firstItem="title3" firstAttribute="top" secondItem="image-container3" secondAttribute="bottom" constant="75" id="title3-top"/>
                             <constraint firstItem="onboard3-safe-area" firstAttribute="trailing" secondItem="title3" secondAttribute="trailing" constant="16" id="title3-trailing"/>
                         </constraints>
                     </view>
