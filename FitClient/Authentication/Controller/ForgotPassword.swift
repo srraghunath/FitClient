@@ -22,17 +22,7 @@ class ForgotPassword: UIViewController {
 
     private func setupUI() {
         // Email text field
-        forgotPasswordTextfeild.placeholder = "Email"
-        forgotPasswordTextfeild.font = UIFont(name: "Lexend-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
-        forgotPasswordTextfeild.textColor = UIColor(red: 245/255, green: 245/255, blue: 245/255, alpha: 1.0)
-        forgotPasswordTextfeild.backgroundColor = UIColor(red: 48/255, green: 49/255, blue: 49/255, alpha: 1.0)
-        forgotPasswordTextfeild.layer.cornerRadius = 12
-        forgotPasswordTextfeild.attributedPlaceholder = NSAttributedString(
-            string: "Email",
-            attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 215/255, green: 204/255, blue: 200/255, alpha: 1.0)]
-        )
-        forgotPasswordTextfeild.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 56))
-        forgotPasswordTextfeild.leftViewMode = .always
+        setTextField(forgotPasswordTextfeild, "Email")
         forgotPasswordTextfeild.autocapitalizationType = .none
         forgotPasswordTextfeild.keyboardType = .emailAddress
         forgotPasswordTextfeild.autocorrectionType = .no
