@@ -34,6 +34,9 @@ class MainTabBarController: UITabBarController {
         // Sessions Tab
         let sessionsVC = TrainerSessionsViewController(nibName: "TrainerSessionsViewController", bundle: nil)
         let sessionsNav = UINavigationController(rootViewController: sessionsVC)
+        sessionsNav.view.backgroundColor = .black
+        sessionsNav.navigationBar.barTintColor = .black
+        sessionsNav.navigationBar.backgroundColor = .black
         sessionsNav.tabBarItem = UITabBarItem(
             title: "Sessions",
             image: UIImage(systemName: "calendar.badge.clock"),
@@ -41,9 +44,12 @@ class MainTabBarController: UITabBarController {
         )
         
         // Clients Tab
-        let clientsVC = UIViewController() // TODO: replace with ClientsViewController when implemented
+        let clientsVC = UIViewController() // TODO: Replace with ClientsViewController when implemented
         clientsVC.view.backgroundColor = .black
         let clientsNav = UINavigationController(rootViewController: clientsVC)
+        clientsNav.view.backgroundColor = .black
+        clientsNav.navigationBar.barTintColor = .black
+        clientsNav.navigationBar.backgroundColor = .black
         clientsNav.tabBarItem = UITabBarItem(
             title: "Clients",
             image: UIImage(systemName: "person.2"),
@@ -53,6 +59,9 @@ class MainTabBarController: UITabBarController {
         // Settings Tab
         let settingsVC = TrainerSettingsViewController(nibName: "TrainerSettingsViewController", bundle: nil)
         let settingsNav = UINavigationController(rootViewController: settingsVC)
+        settingsNav.view.backgroundColor = .black
+        settingsNav.navigationBar.barTintColor = .black
+        settingsNav.navigationBar.backgroundColor = .black
         settingsNav.tabBarItem = UITabBarItem(
             title: "Settings",
             image: UIImage(systemName: "gearshape"),
