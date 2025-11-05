@@ -77,19 +77,10 @@ class SignInViewController: UIViewController {
     }
     
     private func navigateToDashboard() {
-        let dashboardVC = TrainerSessionsViewController(nibName: "TrainerSessionsViewController", bundle: nil)
-        
-        // Create navigation controller if not already in one
-        if let navigationController = self.navigationController {
-            navigationController.pushViewController(dashboardVC, animated: true)
-        } else {
-            // If not in navigation controller, create one and present it
-            let navController = UINavigationController(rootViewController: dashboardVC)
-            navController.modalPresentationStyle = .fullScreen
-            navController.modalTransitionStyle = .crossDissolve
-            navController.isNavigationBarHidden = true // Hide default nav bar since we have custom one
-            present(navController, animated: true, completion: nil)
-        }
+        let tabBarController = MainTabBarController()
+        tabBarController.modalPresentationStyle = .fullScreen
+        tabBarController.modalTransitionStyle = .crossDissolve
+        present(tabBarController, animated: true, completion: nil)
     }
 
 }
