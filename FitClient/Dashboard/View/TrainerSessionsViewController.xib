@@ -93,20 +93,60 @@
                                         <constraint firstItem="Dyw-o3-gwj" firstAttribute="centerX" secondItem="0qr-Ni-lLy" secondAttribute="centerX" id="oGq-pE-aLx"/>
                                     </constraints>
                                 </view>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t92-lL-4bV" userLabel="Clients Tab">
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bK3-wL-9hD" userLabel="Clients Tab">
                                     <rect key="frame" x="123" y="0.0" width="115" height="64"/>
-                                    <color key="tintColor" red="0.84313725490000002" green="0.80000000000000004" blue="0.7843137254901961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <state key="normal" image="person.2" catalog="system">
-                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large"/>
-                                    </state>
-                                </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w8q-VX-dWr" userLabel="Settings Tab">
+                                    <subviews>
+                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person.2" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="gH9-Dy-zK8" userLabel="Clients Icon">
+                                            <rect key="frame" x="45.666666666666664" y="9.6666666666666679" width="24" height="23"/>
+                                            <color key="tintColor" red="0.84313725490000002" green="0.80000000000000004" blue="0.7843137254901961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="24" id="Dh7-eW-rhr"/>
+                                                <constraint firstAttribute="height" constant="24" id="zrA-Vd-gau"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Clients" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u1T-vF-RmT" userLabel="Clients Label">
+                                            <rect key="frame" x="36.666666666666671" y="37.666666666666657" width="41.666666666666671" height="18"/>
+                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
+                                            <color key="textColor" red="0.84313725490000002" green="0.80000000000000004" blue="0.7843137254901961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <constraints>
+                                        <constraint firstItem="gH9-Dy-zK8" firstAttribute="top" secondItem="bK3-wL-9hD" secondAttribute="top" constant="10" id="0KE-ZU-a83"/>
+                                        <constraint firstAttribute="bottom" secondItem="u1T-vF-RmT" secondAttribute="bottom" constant="8" id="5Bb-9O-cyy"/>
+                                        <constraint firstItem="u1T-vF-RmT" firstAttribute="centerX" secondItem="bK3-wL-9hD" secondAttribute="centerX" id="D2g-uR-uWG"/>
+                                        <constraint firstItem="u1T-vF-RmT" firstAttribute="top" secondItem="gH9-Dy-zK8" secondAttribute="bottom" constant="4" id="YTg-0E-tQD"/>
+                                        <constraint firstItem="gH9-Dy-zK8" firstAttribute="centerX" secondItem="bK3-wL-9hD" secondAttribute="centerX" id="hfH-V5-2Zw"/>
+                                    </constraints>
+                                </view>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fT8-gR-Qaa" userLabel="Settings Tab">
                                     <rect key="frame" x="246" y="0.0" width="115" height="64"/>
-                                    <color key="tintColor" red="0.84313725490000002" green="0.80000000000000004" blue="0.7843137254901961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <state key="normal" image="gearshape" catalog="system">
-                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large"/>
-                                    </state>
-                                </button>
+                                    <subviews>
+                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gearshape" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="aPK-c8-6cO" userLabel="Settings Icon">
+                                            <rect key="frame" x="45.666666666666671" y="9.6666666666666643" width="24" height="22.333333333333329"/>
+                                            <color key="tintColor" red="0.84313725490000002" green="0.80000000000000004" blue="0.7843137254901961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="24" id="Lax-gU-jIX"/>
+                                                <constraint firstAttribute="width" constant="24" id="dbL-7W-LDW"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Settings" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qxr-gp-UaK" userLabel="Settings Label">
+                                            <rect key="frame" x="32.666666666666671" y="37.666666666666657" width="50" height="18"/>
+                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
+                                            <color key="textColor" red="0.84313725490000002" green="0.80000000000000004" blue="0.7843137254901961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <constraints>
+                                        <constraint firstItem="qxr-gp-UaK" firstAttribute="top" secondItem="aPK-c8-6cO" secondAttribute="bottom" constant="4" id="C4V-cN-3v5"/>
+                                        <constraint firstItem="aPK-c8-6cO" firstAttribute="centerX" secondItem="fT8-gR-Qaa" secondAttribute="centerX" id="PUs-k3-zoc"/>
+                                        <constraint firstAttribute="bottom" secondItem="qxr-gp-UaK" secondAttribute="bottom" constant="8" id="VrT-P5-LBe"/>
+                                        <constraint firstItem="qxr-gp-UaK" firstAttribute="centerX" secondItem="fT8-gR-Qaa" secondAttribute="centerX" id="iPR-Hf-n46"/>
+                                        <constraint firstItem="aPK-c8-6cO" firstAttribute="top" secondItem="fT8-gR-Qaa" secondAttribute="top" constant="10" id="yib-Hs-mHI"/>
+                                    </constraints>
+                                </view>
                             </subviews>
                         </stackView>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jz9-0A-MxR" userLabel="Border Line">
