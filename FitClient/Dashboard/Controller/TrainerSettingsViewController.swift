@@ -16,11 +16,7 @@ class TrainerSettingsViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        // Configure navigation bar appearance
-        navigationController?.navigationBar.barTintColor = .black
-        navigationController?.navigationBar.backgroundColor = .black
-        navigationController?.navigationBar.isTranslucent = false
-        
+  
         // Set title
         title = "Settings"
         navigationController?.navigationBar.titleTextAttributes = [

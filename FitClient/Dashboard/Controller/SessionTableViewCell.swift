@@ -28,7 +28,6 @@ class SessionTableViewCell: UITableViewCell {
     
     private func setupUI() {
         // Container styling
-        containerView.backgroundColor = UIColor(hex: "#303131")
         containerView.layer.cornerRadius = 36
         containerView.layer.shadowColor = UIColor.black.cgColor
         containerView.layer.shadowOffset = CGSize(width: 0, height: 6.857)
@@ -37,15 +36,13 @@ class SessionTableViewCell: UITableViewCell {
         
         // Profile image styling
         profileImageView.clipsToBounds = true
-        profileImageView.contentMode = .scaleAspectFill
-        profileImageView.backgroundColor = UIColor(hex: "#D7CCC8")
         
         // Client name label styling
-        clientNameLabel.font = UIFont(name: "Arimo-Bold", size: 15.429) ?? UIFont.boldSystemFont(ofSize: 15.429)
+        clientNameLabel.font = UIFont(name: "Lexend-Regular", size: 15.429) ?? UIFont.boldSystemFont(ofSize: 15.429)
         clientNameLabel.textColor = .white
         
         // Time label styling
-        timeLabel.font = UIFont(name: "Arimo-Regular", size: 12) ?? UIFont.systemFont(ofSize: 12)
+        timeLabel.font = UIFont(name: "Lexend-Regular", size: 12) ?? UIFont.systemFont(ofSize: 12)
         timeLabel.textColor = UIColor.white.withAlphaComponent(0.6)
         
         // Chevron icon styling

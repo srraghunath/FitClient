@@ -27,12 +27,6 @@ class TrainerSessionsViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        // Configure navigation bar appearance
-        navigationController?.navigationBar.barTintColor = .black
-        navigationController?.navigationBar.backgroundColor = .black
-        navigationController?.navigationBar.isTranslucent = false
-        navigationController?.navigationBar.tintColor = UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
-        
         // Create date label as title view
         dateLabel = UILabel()
         dateLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)

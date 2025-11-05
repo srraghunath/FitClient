@@ -41,7 +41,7 @@ class MainTabBarController: UITabBarController {
         )
         
         // Clients Tab
-        let clientsVC = UIViewController() // TODO: Replace with ClientsViewController when implemented
+        let clientsVC = UIViewController() // TODO: replace with ClientsViewController when implemented
         clientsVC.view.backgroundColor = .black
         let clientsNav = UINavigationController(rootViewController: clientsVC)
         clientsNav.tabBarItem = UITabBarItem(
