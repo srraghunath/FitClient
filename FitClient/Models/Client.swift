@@ -14,6 +14,7 @@ struct Client: Codable {
     let profileImage: String
     let age: Int?
     let specialization: String?
+    let level: String
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -22,6 +23,10 @@ struct Client: Codable {
         case profileImage = "profile_image"
         case age
         case specialization
+        case level
     }
 }
 
+struct ClientsData: Codable {
+    let clients: [Client]
+}

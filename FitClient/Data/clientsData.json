@@ -1,0 +1,40 @@
+{
+  "clients": [
+    {
+      "id": "1",
+      "name": "VICKASH NARAYAN",
+      "email": "vickash@example.com",
+      "profile_image": "profile1",
+      "age": 25,
+      "specialization": "Weight Loss",
+      "level": "Beginner"
+    },
+    {
+      "id": "2",
+      "name": "S R RAGHUNATH",
+      "email": "raghunath@example.com",
+      "profile_image": "profile2",
+      "age": 30,
+      "specialization": "Muscle Building",
+      "level": "Intermediate"
+    },
+    {
+      "id": "3",
+      "name": "VISHOK M",
+      "email": "vishok@example.com",
+      "profile_image": "profile3",
+      "age": 28,
+      "specialization": "Strength Training",
+      "level": "Pro"
+    },
+    {
+      "id": "4",
+      "name": "HARIBALAN",
+      "email": "haribalan@example.com",
+      "profile_image": "profile4",
+      "age": 22,
+      "specialization": "Cardio",
+      "level": "Beginner"
+    }
+  ]
+}

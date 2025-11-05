@@ -44,8 +44,7 @@ class MainTabBarController: UITabBarController {
         )
         
         // Clients Tab
-        let clientsVC = UIViewController() // TODO: Replace with ClientsViewController when implemented
-        clientsVC.view.backgroundColor = .black
+        let clientsVC = TrainerClientsViewController(nibName: "TrainerClientsViewController", bundle: nil)
         let clientsNav = UINavigationController(rootViewController: clientsVC)
         clientsNav.view.backgroundColor = .black
         clientsNav.navigationBar.barTintColor = .black
