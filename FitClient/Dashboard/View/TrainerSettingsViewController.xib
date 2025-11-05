@@ -93,6 +93,12 @@
                                             <color key="textColor" red="0.84313725490000002" green="0.80000000000000004" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="subscription-button">
+                                            <rect key="frame" x="0.0" y="0.0" width="393" height="72"/>
+                                            <connections>
+                                                <action selector="subscriptionTapped:" destination="-1" eventType="touchUpInside" id="subscription-action"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
@@ -103,6 +109,10 @@
                                         <constraint firstItem="jsd-lO-7o0" firstAttribute="top" secondItem="r4f-Ch-Eie" secondAttribute="bottom" constant="2" id="WDh-gB-d0V"/>
                                         <constraint firstItem="r4f-Ch-Eie" firstAttribute="top" secondItem="zf2-hY-Vzo" secondAttribute="top" constant="18" id="gVG-hU-n1q"/>
                                         <constraint firstItem="n1k-nE-bgf" firstAttribute="leading" secondItem="zf2-hY-Vzo" secondAttribute="leading" constant="16" id="lsC-cl-gZa"/>
+                                        <constraint firstItem="subscription-button" firstAttribute="leading" secondItem="zf2-hY-Vzo" secondAttribute="leading" id="subscription-button-leading"/>
+                                        <constraint firstItem="subscription-button" firstAttribute="top" secondItem="zf2-hY-Vzo" secondAttribute="top" id="subscription-button-top"/>
+                                        <constraint firstAttribute="trailing" secondItem="subscription-button" secondAttribute="trailing" id="subscription-button-trailing"/>
+                                        <constraint firstAttribute="bottom" secondItem="subscription-button" secondAttribute="bottom" id="subscription-button-bottom"/>
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="B8n-2D-Mzn" userLabel="Notifications Item">

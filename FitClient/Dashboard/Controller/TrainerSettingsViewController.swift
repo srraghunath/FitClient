@@ -16,8 +16,10 @@ class TrainerSettingsViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-  
-        // Set title
+        navigationController?.navigationBar.barTintColor = .black
+        navigationController?.navigationBar.backgroundColor = .black
+        navigationController?.navigationBar.isTranslucent = false
+        
         title = "Settings"
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0),
@@ -27,5 +29,10 @@ class TrainerSettingsViewController: UIViewController {
     
     private func setupUI() {
         view.backgroundColor = UIColor.black
+    }
+    
+    @IBAction func subscriptionTapped(_ sender: Any) {
+        let subscriptionVC = SubscriptionViewController(nibName: "SubscriptionViewController", bundle: nil)
+        navigationController?.pushViewController(subscriptionVC, animated: true)
     }
 }
