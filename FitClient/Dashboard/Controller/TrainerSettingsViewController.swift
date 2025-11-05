@@ -11,7 +11,22 @@ class TrainerSettingsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavigationBar()
         setupUI()
+    }
+    
+    private func setupNavigationBar() {
+        // Configure navigation bar appearance
+        navigationController?.navigationBar.barTintColor = .black
+        navigationController?.navigationBar.backgroundColor = .black
+        navigationController?.navigationBar.isTranslucent = false
+        
+        // Set title
+        title = "Settings"
+        navigationController?.navigationBar.titleTextAttributes = [
+            .foregroundColor: UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0),
+            .font: UIFont.systemFont(ofSize: 16, weight: .medium)
+        ]
     }
     
     private func setupUI() {

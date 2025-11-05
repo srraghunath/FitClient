@@ -10,7 +10,6 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TrainerSessionsViewController" customModule="FitClient" customModuleProvider="target">
             <connections>
-                <outlet property="dateLabel" destination="SWn-fF-9mZ" id="w4e-Jf-Yx9"/>
                 <outlet property="sessionsTableView" destination="5eT-8x-Cbo" id="6Gg-GR-a7E"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -20,43 +19,8 @@
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vYO-bG-cjw" userLabel="Navbar">
-                    <rect key="frame" x="0.0" y="118" width="393" height="46"/>
-                    <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wed, 04 Nov 2025" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SWn-fF-9mZ" userLabel="Date Label">
-                            <rect key="frame" x="86.666666666666686" y="13.333333333333341" width="220" height="19.333333333333329"/>
-                            <constraints>
-                                <constraint firstAttribute="width" constant="220" id="bBK-KN-Lgt"/>
-                            </constraints>
-                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                            <color key="textColor" red="0.96078431369999995" green="0.96078431369999995" blue="0.96078431369999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eI4-Mb-Igy" userLabel="Calendar Button">
-                            <rect key="frame" x="337" y="11" width="24" height="24"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="24" id="0aL-q5-OXx"/>
-                                <constraint firstAttribute="width" constant="24" id="mAA-dY-Gf2"/>
-                            </constraints>
-                            <color key="tintColor" red="0.96078431369999995" green="0.96078431369999995" blue="0.96078431369999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" image="calendar.badge.clock" catalog="system"/>
-                            <connections>
-                                <action selector="calendarButtonTapped:" destination="-1" eventType="touchUpInside" id="9Lc-Hm-Skf"/>
-                            </connections>
-                        </button>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstItem="eI4-Mb-Igy" firstAttribute="centerY" secondItem="vYO-bG-cjw" secondAttribute="centerY" id="1zE-hm-V2M"/>
-                        <constraint firstAttribute="trailing" secondItem="eI4-Mb-Igy" secondAttribute="trailing" constant="32" id="87b-Nn-1g8"/>
-                        <constraint firstItem="SWn-fF-9mZ" firstAttribute="centerX" secondItem="vYO-bG-cjw" secondAttribute="centerX" id="8n5-zR-v9L"/>
-                        <constraint firstAttribute="height" constant="46" id="KY4-db-WAa"/>
-                        <constraint firstItem="SWn-fF-9mZ" firstAttribute="centerY" secondItem="vYO-bG-cjw" secondAttribute="centerY" id="whE-yW-QPV"/>
-                    </constraints>
-                </view>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="5eT-8x-Cbo" userLabel="Sessions TableView">
-                    <rect key="frame" x="0.0" y="164" width="393" height="620"/>
+                    <rect key="frame" x="0.0" y="118" width="393" height="666"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </tableView>
             </subviews>
@@ -64,18 +28,14 @@
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="5eT-8x-Cbo" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="0WJ-X1-0jR"/>
-                <constraint firstItem="vYO-bG-cjw" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="2S9-vl-3jG"/>
-                <constraint firstItem="5eT-8x-Cbo" firstAttribute="top" secondItem="vYO-bG-cjw" secondAttribute="bottom" id="Hs4-zn-Yfu"/>
-                <constraint firstItem="vYO-bG-cjw" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="RjY-f6-fxZ"/>
+                <constraint firstItem="5eT-8x-Cbo" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="Hs4-zn-Yfu"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="5eT-8x-Cbo" secondAttribute="bottom" id="TbX-9k-Fhg"/>
                 <constraint firstItem="5eT-8x-Cbo" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="W95-fq-bxP"/>
-                <constraint firstItem="vYO-bG-cjw" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="fGN-di-hHc"/>
             </constraints>
             <point key="canvasLocation" x="-74.045801526717554" y="-11.267605633802818"/>
         </view>
     </objects>
     <resources>
-        <image name="calendar.badge.clock" catalog="system" width="128" height="109"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

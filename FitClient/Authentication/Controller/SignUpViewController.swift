@@ -31,6 +31,14 @@ class SignUpViewController: UIViewController {
         // Background color
         view.backgroundColor = .black
         
+        // Configure navigation bar
+        navigationController?.navigationBar.tintColor = UIColor(red: 174/255, green: 254/255, blue: 20/255, alpha: 1.0)
+        navigationController?.navigationBar.barTintColor = .black
+        navigationController?.navigationBar.titleTextAttributes = [
+            .foregroundColor: UIColor.white,
+            .font: UIFont.systemFont(ofSize: 16, weight: .medium)
+        ]
+        
         // Full Name text field
         setTextField(fullNameTextField, "Full Name")
         
@@ -88,10 +96,6 @@ class SignUpViewController: UIViewController {
     @IBAction func createAccountButtonTapped(_ sender: UIButton) {
         // Implement sign up logic
         print("Create Account tapped")
-    }
-    
-    @IBAction func backButtonTapped(_ sender: UIButton) {
-        dismiss(animated: true, completion: nil)
     }
 }
 

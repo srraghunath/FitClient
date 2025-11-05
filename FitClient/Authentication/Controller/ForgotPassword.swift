@@ -10,9 +10,6 @@ import UIKit
 class ForgotPassword: UIViewController {
 
     @IBOutlet weak var forgotPasswordTextfeild: UITextField!
-
-    
-    @IBOutlet weak var Backbutton: UIButton!
     
     
     override func viewDidLoad() {
@@ -21,6 +18,10 @@ class ForgotPassword: UIViewController {
     }
 
     private func setupUI() {
+        // Configure navigation bar
+        title = "Forgot Password"
+        navigationController?.navigationBar.tintColor = UIColor(red: 174/255, green: 254/255, blue: 20/255, alpha: 1.0)
+        
         // Email text field
         setTextField(forgotPasswordTextfeild, "Email")
         forgotPasswordTextfeild.autocapitalizationType = .none
@@ -55,9 +56,5 @@ class ForgotPassword: UIViewController {
         let alert = UIAlertController(title: "Alert", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
-    }
-    
-    @IBAction func backButtonTapped(_ sender: Any) {
-        dismiss(animated: true, completion: nil)
     }
 }

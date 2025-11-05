@@ -57,17 +57,15 @@ class SignInViewController: UIViewController {
     @IBAction func signUpButtonTapped(_ sender: UIButton) {
         print("signup tapped")
         let signUpVC = SignUpViewController(nibName: "SignUpViewController", bundle: nil)
-        signUpVC.modalPresentationStyle = .fullScreen
-        signUpVC.modalTransitionStyle = .crossDissolve
-        present(signUpVC, animated: true, completion: nil)
+        signUpVC.title = "Sign Up"
+        navigationController?.pushViewController(signUpVC, animated: true)
     }
     
     @IBAction func forgotPasswordTapped(_ sender: UIButton) {
         print("Forgot Password tapped")
         let forgotVC = ForgotPassword(nibName: "ForgotPassword", bundle: nil)
-        forgotVC.modalPresentationStyle = .fullScreen
-        forgotVC.modalTransitionStyle = .crossDissolve
-        present(forgotVC, animated: true)
+        forgotVC.title = "Forgot Password"
+        navigationController?.pushViewController(forgotVC, animated: true)
     }
     
     private func showAlert(message: String) {

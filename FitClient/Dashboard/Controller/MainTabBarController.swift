@@ -33,7 +33,8 @@ class MainTabBarController: UITabBarController {
     private func setupViewControllers() {
         // Sessions Tab
         let sessionsVC = TrainerSessionsViewController(nibName: "TrainerSessionsViewController", bundle: nil)
-        sessionsVC.tabBarItem = UITabBarItem(
+        let sessionsNav = UINavigationController(rootViewController: sessionsVC)
+        sessionsNav.tabBarItem = UITabBarItem(
             title: "Sessions",
             image: UIImage(systemName: "calendar.badge.clock"),
             selectedImage: UIImage(systemName: "calendar.badge.clock")
@@ -42,7 +43,8 @@ class MainTabBarController: UITabBarController {
         // Clients Tab
         let clientsVC = UIViewController() // TODO: Replace with ClientsViewController when implemented
         clientsVC.view.backgroundColor = .black
-        clientsVC.tabBarItem = UITabBarItem(
+        let clientsNav = UINavigationController(rootViewController: clientsVC)
+        clientsNav.tabBarItem = UITabBarItem(
             title: "Clients",
             image: UIImage(systemName: "person.2"),
             selectedImage: UIImage(systemName: "person.2")
@@ -50,13 +52,14 @@ class MainTabBarController: UITabBarController {
         
         // Settings Tab
         let settingsVC = TrainerSettingsViewController(nibName: "TrainerSettingsViewController", bundle: nil)
-        settingsVC.tabBarItem = UITabBarItem(
+        let settingsNav = UINavigationController(rootViewController: settingsVC)
+        settingsNav.tabBarItem = UITabBarItem(
             title: "Settings",
             image: UIImage(systemName: "gearshape"),
             selectedImage: UIImage(systemName: "gearshape")
         )
         
         // Set view controllers
-        viewControllers = [sessionsVC, clientsVC, settingsVC]
+        viewControllers = [sessionsNav, clientsNav, settingsNav]
     }
 }

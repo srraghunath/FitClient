@@ -54,10 +54,19 @@ class OnboardingScreen3ViewController: UIViewController {
         // Mark onboarding as completed
         UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
         
-        // Load and present Sign In screen
+        // Load Sign In screen with Navigation Controller
         let signInVC = SignInViewController(nibName: "SignInViewController", bundle: nil)
-        signInVC.modalPresentationStyle = .fullScreen
-        signInVC.modalTransitionStyle = .crossDissolve
-        present(signInVC, animated: true, completion: nil)
+        let navigationController = UINavigationController(rootViewController: signInVC)
+        navigationController.navigationBar.barStyle = .black
+        navigationController.navigationBar.isTranslucent = false
+        navigationController.navigationBar.barTintColor = .black
+        navigationController.navigationBar.tintColor = UIColor(red: 174/255, green: 254/255, blue: 20/255, alpha: 1.0)
+        navigationController.navigationBar.titleTextAttributes = [
+            .foregroundColor: UIColor.white,
+            .font: UIFont.systemFont(ofSize: 16, weight: .medium)
+        ]
+        navigationController.modalPresentationStyle = .fullScreen
+        navigationController.modalTransitionStyle = .crossDissolve
+        present(navigationController, animated: true, completion: nil)
     }
 }

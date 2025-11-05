@@ -9,20 +9,46 @@ import UIKit
 
 class TrainerSessionsViewController: UIViewController {
     
-    @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var sessionsTableView: UITableView!
     
     private var allSessions: [Session] = []
     private var todaySessions: [Session] = []
     private var upcomingSessions: [Session] = []
     private var selectedDate = Date()
+    private var dateLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavigationBar()
         setupUI()
         setupTableView()
         loadSessionsData()
         updateDateLabel()
+    }
+    
+    private func setupNavigationBar() {
+        // Configure navigation bar appearance
+        navigationController?.navigationBar.barTintColor = .black
+        navigationController?.navigationBar.backgroundColor = .black
+        navigationController?.navigationBar.isTranslucent = false
+        navigationController?.navigationBar.tintColor = UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
+        
+        // Create date label as title view
+        dateLabel = UILabel()
+        dateLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        dateLabel.textColor = UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
+        dateLabel.textAlignment = .center
+        navigationItem.titleView = dateLabel
+        
+        // Create calendar button
+        let calendarButton = UIBarButtonItem(
+            image: UIImage(systemName: "calendar.badge.clock"),
+            style: .plain,
+            target: self,
+            action: #selector(calendarButtonTapped)
+        )
+        calendarButton.tintColor = UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
+        navigationItem.rightBarButtonItem = calendarButton
     }
     
     private func setupUI() {
@@ -112,7 +138,7 @@ class TrainerSessionsViewController: UIViewController {
         dateLabel.text = dateFormatter.string(from: selectedDate)
     }
     
-    @IBAction func calendarButtonTapped(_ sender: UIButton) {
+    @objc private func calendarButtonTapped() {
         showDatePicker()
     }
     
