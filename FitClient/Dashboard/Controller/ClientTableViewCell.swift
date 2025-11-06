@@ -36,7 +36,7 @@ class ClientTableViewCell: UITableViewCell {
             profileImageView.image = image
         } else {
             profileImageView.image = UIImage(systemName: "person.circle.fill")
-            profileImageView.tintColor = UIColor(red: 0.682, green: 0.996, blue: 0.078, alpha: 1.0)
+            profileImageView.tintColor = .primaryGreen
         }
     }
 }

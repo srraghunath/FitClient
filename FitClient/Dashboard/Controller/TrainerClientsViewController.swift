@@ -28,7 +28,7 @@ class TrainerClientsViewController: UIViewController {
         
         title = "Clients"
         navigationController?.navigationBar.titleTextAttributes = [
-            .foregroundColor: UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0),
+            .foregroundColor: UIColor.textPrimary,
             .font: UIFont.systemFont(ofSize: 16, weight: .medium)
         ]
         
@@ -38,7 +38,7 @@ class TrainerClientsViewController: UIViewController {
             target: self,
             action: #selector(addClientTapped)
         )
-        addButton.tintColor = UIColor(red: 0.682, green: 0.996, blue: 0.078, alpha: 1.0)
+        addButton.tintColor = .primaryGreen
         navigationItem.rightBarButtonItem = addButton
     }
     
@@ -49,9 +49,7 @@ class TrainerClientsViewController: UIViewController {
     private func setupTableView() {
         clientsTableView.delegate = self
         clientsTableView.dataSource = self
-        clientsTableView.backgroundColor = .black
-        clientsTableView.separatorStyle = .none
-        clientsTableView.showsVerticalScrollIndicator = false
+        clientsTableView.applyAppStyle()
         
         let nib = UINib(nibName: "ClientTableViewCell", bundle: nil)
         clientsTableView.register(nib, forCellReuseIdentifier: "ClientTableViewCell")
@@ -60,20 +58,7 @@ class TrainerClientsViewController: UIViewController {
     private func setupSearchBar() {
         searchBar.delegate = self
         searchBar.placeholder = "Search"
-        searchBar.searchBarStyle = .minimal
-        searchBar.barTintColor = .black
-        searchBar.backgroundColor = .black
-        searchBar.backgroundImage = UIImage()
-        
-        if let textField = searchBar.value(forKey: "searchField") as? UITextField {
-            textField.backgroundColor = UIColor(red: 0.188, green: 0.192, blue: 0.192, alpha: 1.0)
-            textField.textColor = UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
-            textField.attributedPlaceholder = NSAttributedString(
-                string: "Search",
-                attributes: [.foregroundColor: UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 0.6)]
-            )
-            textField.leftView?.tintColor = UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
-        }
+        searchBar.applyAppStyle()
     }
     
     private func loadClientsData() {

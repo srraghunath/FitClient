@@ -22,7 +22,7 @@ class TrainerSettingsViewController: UIViewController {
         
         title = "Settings"
         navigationController?.navigationBar.titleTextAttributes = [
-            .foregroundColor: UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0),
+            .foregroundColor: UIColor.textPrimary,
             .font: UIFont.systemFont(ofSize: 16, weight: .medium)
         ]
     }

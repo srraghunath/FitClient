@@ -23,37 +23,29 @@ class SignUpViewController: UIViewController {
     func setupUI() {
         view.backgroundColor = .black
         
-        navigationController?.navigationBar.tintColor = UIColor(red: 174/255, green: 254/255, blue: 20/255, alpha: 1.0)
-        navigationController?.navigationBar.titleTextAttributes = [
-            .foregroundColor: UIColor.white,
-            .font: UIFont.systemFont(ofSize: 16, weight: .medium)
-        ]
+        setupStandardNavigationBar()
         
-        fullNameTextField.applyStyle("Full Name")
+        fullNameTextField.applyAppStyle(placeholder: "Full Name")
         
-        ageTextField.applyStyle("Age")
+        ageTextField.applyAppStyle(placeholder: "Age")
         ageTextField.keyboardType = .numberPad
         
-        genderTextField.applyStyle("Gender")
+        genderTextField.applyAppStyle(placeholder: "Gender")
         genderTextField.inputView = genderPicker
         
-        specializationTextField.applyStyle("Specialization")
+        specializationTextField.applyAppStyle(placeholder: "Specialization")
         
-        emailTextField.applyStyle("Email")
+        emailTextField.applyAppStyle(placeholder: "Email")
         emailTextField.autocapitalizationType = .none
         emailTextField.keyboardType = .emailAddress
         
-        passwordTextField.applyStyle("Password")
+        passwordTextField.applyAppStyle(placeholder: "Password")
         passwordTextField.isSecureTextEntry = true
         
-        confirmPasswordTextField.applyStyle("Confirm Password")
+        confirmPasswordTextField.applyAppStyle(placeholder: "Confirm Password")
         confirmPasswordTextField.isSecureTextEntry = true
         
-        createAccountButton.setTitle("Create Account", for: .normal)
-        createAccountButton.setTitleColor(.black, for: .normal)
-        createAccountButton.backgroundColor = UIColor(red: 174/255, green: 254/255, blue: 20/255, alpha: 1.0)
-        createAccountButton.titleLabel?.font = UIFont(name: "Lexend-Bold", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .bold)
-        createAccountButton.layer.cornerRadius = 24
+        createAccountButton.applyPrimaryStyle(title: "Create Account")
     }
     
     func setupGenderPicker() {

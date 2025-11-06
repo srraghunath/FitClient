@@ -10,10 +10,10 @@ class ForgotPassword: UIViewController {
     }
 
     private func setupUI() {
-        title = "Forgot Password"
-        navigationController?.navigationBar.tintColor = UIColor(red: 174/255, green: 254/255, blue: 20/255, alpha: 1.0)
+        setupStandardNavigationBar(title: "Forgot Password")
         
-        forgotPasswordTextfeild.applyStyle("Email")
+        // Email text field
+        forgotPasswordTextfeild.applyAppStyle(placeholder: "Email")
         forgotPasswordTextfeild.autocapitalizationType = .none
         forgotPasswordTextfeild.keyboardType = .emailAddress
         forgotPasswordTextfeild.autocorrectionType = .no
@@ -26,22 +26,11 @@ class ForgotPassword: UIViewController {
             return
         }
 
-        if isValidEmail(email) {
+        if email.isValidEmail {
             print("Entered Email: \(email)")
             showAlert(message: "Verification Link Sent")
         } else {
             showAlert(message: "Please enter a valid email address.")
         }
-    }
-
-    func isValidEmail(_ email: String) -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
-        return NSPredicate(format: "SELF MATCHES %@", emailRegEx).evaluate(with: email)
-    }
-
-    func showAlert(message: String) {
-        let alert = UIAlertController(title: "Alert", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
     }
 }

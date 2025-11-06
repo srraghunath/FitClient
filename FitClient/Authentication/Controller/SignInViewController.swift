@@ -12,20 +12,21 @@ class SignInViewController: UIViewController {
     }
     
     func setupUI() {
+        // Background color
         view.backgroundColor = .black
         
-        emailTextField.applyStyle("Email")
+        // Email text field
+        emailTextField.applyAppStyle(placeholder: "Email")
         emailTextField.autocapitalizationType = .none
         emailTextField.keyboardType = .emailAddress
+
         
-        passwordTextField.applyStyle("Password")
+        // Password text field
+        passwordTextField.applyAppStyle(placeholder: "Password")
         passwordTextField.isSecureTextEntry = true
         
-        signInButton.setTitle("Sign In", for: .normal)
-        signInButton.setTitleColor(.black, for: .normal)
-        signInButton.backgroundColor = UIColor(red: 174/255, green: 254/255, blue: 20/255, alpha: 1.0)
-        signInButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        signInButton.layer.cornerRadius = 24
+        // Sign In button
+        signInButton.applyPrimaryStyle(title: "Sign In")
     }
     
     @IBAction func signInButtonTapped(_ sender: UIButton) {
@@ -46,12 +47,6 @@ class SignInViewController: UIViewController {
     @IBAction func forgotPasswordTapped(_ sender: UIButton) {
         let forgotVC = ForgotPassword(nibName: "ForgotPassword", bundle: nil)
         navigationController?.pushViewController(forgotVC, animated: true)
-    }
-    
-    private func showAlert(message: String) {
-        let alert = UIAlertController(title: "Sign In", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
     }
     
     private func navigateToDashboard() {
