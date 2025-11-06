@@ -1,15 +1,7 @@
-//
-//  SignInViewController.swift
-//  FitClient
-//
-//  Created by admin8 on 03/11/25.
-//
-
 import UIKit
 
 class SignInViewController: UIViewController {
     
-    // IBOutlets
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var signInButton: UIButton!
@@ -20,20 +12,15 @@ class SignInViewController: UIViewController {
     }
     
     func setupUI() {
-        // Background color
         view.backgroundColor = .black
         
-        // Email text field
-        setTextField(emailTextField, "Email")
+        emailTextField.applyStyle("Email")
         emailTextField.autocapitalizationType = .none
         emailTextField.keyboardType = .emailAddress
-
         
-        // Password text field
-        setTextField(passwordTextField, "Password")
+        passwordTextField.applyStyle("Password")
         passwordTextField.isSecureTextEntry = true
         
-        // Sign In button
         signInButton.setTitle("Sign In", for: .normal)
         signInButton.setTitleColor(.black, for: .normal)
         signInButton.backgroundColor = UIColor(red: 174/255, green: 254/255, blue: 20/255, alpha: 1.0)
@@ -42,29 +29,22 @@ class SignInViewController: UIViewController {
     }
     
     @IBAction func signInButtonTapped(_ sender: UIButton) {
-        // Basic validation
         guard let email = emailTextField.text, !email.isEmpty,
               let password = passwordTextField.text, !password.isEmpty else {
             showAlert(message: "Please enter email and password")
             return
         }
         
-        // TODO: Add proper authentication logic here
-        // For now, navigate to dashboard
         navigateToDashboard()
     }
     
     @IBAction func signUpButtonTapped(_ sender: UIButton) {
-        print("signup tapped")
         let signUpVC = SignUpViewController(nibName: "SignUpViewController", bundle: nil)
-        signUpVC.title = "Sign Up"
         navigationController?.pushViewController(signUpVC, animated: true)
     }
     
     @IBAction func forgotPasswordTapped(_ sender: UIButton) {
-        print("Forgot Password tapped")
         let forgotVC = ForgotPassword(nibName: "ForgotPassword", bundle: nil)
-        forgotVC.title = "Forgot Password"
         navigationController?.pushViewController(forgotVC, animated: true)
     }
     
@@ -78,7 +58,6 @@ class SignInViewController: UIViewController {
         let tabBarController = MainTabBarController()
         tabBarController.modalPresentationStyle = .fullScreen
         tabBarController.modalTransitionStyle = .crossDissolve
-        present(tabBarController, animated: true, completion: nil)
+        present(tabBarController, animated: true)
     }
-
 }

@@ -1,16 +1,8 @@
-//
-//  ForgotPassword.swift
-//  FitClient
-//
-//  Created by admin6 on 04/11/25.
-//
-
 import UIKit
 
 class ForgotPassword: UIViewController {
 
     @IBOutlet weak var forgotPasswordTextfeild: UITextField!
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,18 +10,15 @@ class ForgotPassword: UIViewController {
     }
 
     private func setupUI() {
-        // Configure navigation bar
         title = "Forgot Password"
         navigationController?.navigationBar.tintColor = UIColor(red: 174/255, green: 254/255, blue: 20/255, alpha: 1.0)
         
-        // Email text field
-        setTextField(forgotPasswordTextfeild, "Email")
+        forgotPasswordTextfeild.applyStyle("Email")
         forgotPasswordTextfeild.autocapitalizationType = .none
         forgotPasswordTextfeild.keyboardType = .emailAddress
         forgotPasswordTextfeild.autocorrectionType = .no
     }
 
-    // Reset Password Button
     @IBAction func resetPasswordPressed(_ sender: Any) {
         guard let email = forgotPasswordTextfeild.text?.trimmingCharacters(in: .whitespacesAndNewlines),
               !email.isEmpty else {
@@ -45,13 +34,11 @@ class ForgotPassword: UIViewController {
         }
     }
 
-    // Email validation
     func isValidEmail(_ email: String) -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
         return NSPredicate(format: "SELF MATCHES %@", emailRegEx).evaluate(with: email)
     }
 
-    // Reusable Alert
     func showAlert(message: String) {
         let alert = UIAlertController(title: "Alert", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
