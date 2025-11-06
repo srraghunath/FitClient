@@ -15,7 +15,7 @@ class SubscriptionViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        navigationController?.navigationBar.tintColor = UIColor(red: 0.68, green: 0.996, blue: 0.078, alpha: 1.0)
+        navigationController?.navigationBar.tintColor = .primaryGreen
     }
 
 

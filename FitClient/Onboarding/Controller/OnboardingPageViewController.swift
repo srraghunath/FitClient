@@ -39,7 +39,7 @@ class OnboardingPageViewController: UIPageViewController {
         pageControl.numberOfPages = pages.count
         pageControl.currentPage = initialPage
         pageControl.pageIndicatorTintColor = UIColor(white: 1.0, alpha: 0.3)
-        pageControl.currentPageIndicatorTintColor = UIColor(red: 174/255, green: 254/255, blue: 20/255, alpha: 1.0)
+        pageControl.currentPageIndicatorTintColor = .primaryGreen
         pageControl.translatesAutoresizingMaskIntoConstraints = false
 
         // respond to dot taps

@@ -30,7 +30,7 @@ class TrainerSessionsViewController: UIViewController {
         // Create date label as title view
         dateLabel = UILabel()
         dateLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        dateLabel.textColor = UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
+        dateLabel.textColor = .textPrimary
         dateLabel.textAlignment = .center
         navigationItem.titleView = dateLabel
         
@@ -41,7 +41,7 @@ class TrainerSessionsViewController: UIViewController {
             target: self,
             action: #selector(calendarButtonTapped)
         )
-        calendarButton.tintColor = UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
+        calendarButton.tintColor = .textPrimary
         navigationItem.rightBarButtonItem = calendarButton
     }
     
@@ -53,8 +53,7 @@ class TrainerSessionsViewController: UIViewController {
         sessionsTableView.delegate = self
         sessionsTableView.dataSource = self
         sessionsTableView.backgroundColor = .clear
-        sessionsTableView.separatorStyle = .none
-        sessionsTableView.showsVerticalScrollIndicator = false
+        sessionsTableView.applyAppStyle()
         
         // Register custom cell
         let nib = UINib(nibName: "SessionTableViewCell", bundle: nil)
@@ -208,7 +207,7 @@ extension TrainerSessionsViewController: UITableViewDelegate {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = section == 0 ? "Today" : "Upcoming"
         label.font = UIFont(name: "SFPro-Bold", size: 16) ?? UIFont.boldSystemFont(ofSize: 16)
-        label.textColor = UIColor(red: 245/255, green: 245/255, blue: 245/255, alpha: 1.0)
+        label.textColor = .textPrimary
         
         headerView.addSubview(label)
         
