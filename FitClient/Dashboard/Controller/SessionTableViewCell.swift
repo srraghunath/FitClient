@@ -58,11 +58,13 @@ class SessionTableViewCell: UITableViewCell {
         clientNameLabel.text = session.clientName
         timeLabel.text = "\(session.startTime) - \(session.endTime)"
         
-        // Load profile image from assets
-        if let image = UIImage(named: session.clientProfileImage) {
-            profileImageView.image = image
+        if let url = URL(string: session.clientProfileImage) {
+            URLSession.shared.dataTask(with: url) { data, _, _ in
+                if let data = data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async { self.profileImageView.image = image }
+                }
+            }.resume()
         } else {
-            // Fallback to SF Symbol
             profileImageView.image = UIImage(systemName: "person.circle.fill")
             profileImageView.tintColor = UIColor(hex: "#D7CCC8")
         }

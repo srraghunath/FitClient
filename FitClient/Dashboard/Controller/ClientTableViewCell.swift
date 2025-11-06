@@ -32,8 +32,12 @@ class ClientTableViewCell: UITableViewCell {
         nameLabel.text = client.name
         levelLabel.text = client.level
         
-        if let image = UIImage(named: client.profileImage) {
-            profileImageView.image = image
+        if let url = URL(string: client.profileImage) {
+            URLSession.shared.dataTask(with: url) { data, _, _ in
+                if let data = data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async { self.profileImageView.image = image }
+                }
+            }.resume()
         } else {
             profileImageView.image = UIImage(systemName: "person.circle.fill")
             profileImageView.tintColor = .primaryGreen
