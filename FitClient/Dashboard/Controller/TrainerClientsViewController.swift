@@ -62,20 +62,18 @@ class TrainerClientsViewController: UIViewController {
     }
     
     private func loadClientsData() {
-        guard let url = Bundle.main.url(forResource: "clientsData", withExtension: "json") else {
-            print("Error: clientsData.json not found")
-            return
-        }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let clientsData = try decoder.decode(ClientsData.self, from: data)
-            allClients = clientsData.clients
-            filteredClients = allClients
-            clientsTableView.reloadData()
-        } catch {
-            print("Error loading clients data: \(error)")
+        DataService.shared.loadClients { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let clients):
+                self.allClients = clients
+                self.filteredClients = clients
+                self.clientsTableView.reloadData()
+                
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
         }
     }
     

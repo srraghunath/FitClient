@@ -63,24 +63,20 @@ class TrainerSessionsViewController: UIViewController {
     // MARK: BACKEND OPERATIONS
     
     private func loadSessionsData() {
-        guard let url = Bundle.main.url(forResource: "sessionsData", withExtension: "json") else {
-            print("Error: sessionsData.json not found")
-            return
-        }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let sessionsData = try decoder.decode(SessionsData.self, from: data)
+        DataService.shared.loadSessions { [weak self] result in
+            guard let self = self else { return }
             
-            // Store all sessions
-            allSessions = sessionsData.todaySessions + sessionsData.upcomingSessions
-            
-            // Filter for selected date
-            filterSessionsForDate(selectedDate)
-            
-        } catch {
-            print("Error loading sessions data: \(error)")
+            switch result {
+            case .success(let sessionsData):
+                // Store all sessions
+                self.allSessions = sessionsData.todaySessions + sessionsData.upcomingSessions
+                
+                // Filter for selected date
+                self.filterSessionsForDate(self.selectedDate)
+                
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
         }
     }
     
