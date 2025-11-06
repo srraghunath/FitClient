@@ -17,15 +17,15 @@ class MainTabBarController: UITabBarController {
     
     private func setupTabBar() {
         // Tab bar appearance
-        tabBar.backgroundColor = UIColor(red: 0.129, green: 0.129, blue: 0.129, alpha: 1.0)
-        tabBar.barTintColor = UIColor(red: 0.129, green: 0.129, blue: 0.129, alpha: 1.0)
+        tabBar.backgroundColor = .tabBarBackground
+        tabBar.barTintColor = .tabBarBackground
         tabBar.isTranslucent = false
-        tabBar.tintColor = UIColor(red: 0.682, green: 0.996, blue: 0.078, alpha: 1.0) // Lime green
-        tabBar.unselectedItemTintColor = UIColor(red: 0.843, green: 0.800, blue: 0.784, alpha: 1.0) // Light brown
+        tabBar.tintColor = .primaryGreen
+        tabBar.unselectedItemTintColor = .textTertiary
         
         // Border line at top
         let borderLayer = CALayer()
-        borderLayer.backgroundColor = UIColor(red: 0.129, green: 0.129, blue: 0.129, alpha: 1.0).cgColor
+        borderLayer.backgroundColor = UIColor.tabBarBackground.cgColor
         borderLayer.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 1)
         tabBar.layer.addSublayer(borderLayer)
     }

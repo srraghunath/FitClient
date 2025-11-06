@@ -25,23 +25,19 @@ class OnboardingScreen2ViewController: UIViewController {
         // Setup title
         titleLabel.text = "Classify client levels"
         titleLabel.font = UIFont.systemFont(ofSize: 28, weight: .bold)
-        titleLabel.textColor = UIColor(red: 245/255, green: 245/255, blue: 245/255, alpha: 1.0)
+        titleLabel.textColor = .textPrimary
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
         
         // Setup description
         descriptionLabel.text = "Whether they are beginner, intermediate or Pro!"
         descriptionLabel.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        descriptionLabel.textColor = UIColor(red: 245/255, green: 245/255, blue: 245/255, alpha: 1.0)
+        descriptionLabel.textColor = .textPrimary
         descriptionLabel.textAlignment = .center
         descriptionLabel.numberOfLines = 0
         
         // Setup button
-        nextButton.backgroundColor = UIColor(red: 174/255, green: 254/255, blue: 20/255, alpha: 1.0)
-        nextButton.setTitle("Next", for: .normal)
-        nextButton.setTitleColor(.black, for: .normal)
-        nextButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        nextButton.layer.cornerRadius = 24
+        nextButton.applyPrimaryStyle(title: "Next")
         
         // Setup image
         imageView.image = UIImage(named: "Onboarding2")

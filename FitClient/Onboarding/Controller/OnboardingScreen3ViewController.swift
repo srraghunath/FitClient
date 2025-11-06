@@ -25,23 +25,19 @@ class OnboardingScreen3ViewController: UIViewController {
         // Setup title
         titleLabel.text = "Update schedule easily"
         titleLabel.font = UIFont.systemFont(ofSize: 28, weight: .bold)
-        titleLabel.textColor = UIColor(red: 245/255, green: 245/255, blue: 245/255, alpha: 1.0)
+        titleLabel.textColor = .textPrimary
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
         
         // Setup description
         descriptionLabel.text = "Easily update workout, cardio, diet and sleep goals."
         descriptionLabel.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        descriptionLabel.textColor = UIColor(red: 245/255, green: 245/255, blue: 245/255, alpha: 1.0)
+        descriptionLabel.textColor = .textPrimary
         descriptionLabel.textAlignment = .center
         descriptionLabel.numberOfLines = 0
         
         // Setup button
-        getStartedButton.backgroundColor = UIColor(red: 174/255, green: 254/255, blue: 20/255, alpha: 1.0)
-        getStartedButton.setTitle("Get Started", for: .normal)
-        getStartedButton.setTitleColor(UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0), for: .normal)
-        getStartedButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        getStartedButton.layer.cornerRadius = 24
+        getStartedButton.applyPrimaryStyle(title: "Get Started")
         
         // Setup image
         imageView.image = UIImage(named: "Onboarding3")
@@ -60,7 +56,7 @@ class OnboardingScreen3ViewController: UIViewController {
         navigationController.navigationBar.barStyle = .black
         navigationController.navigationBar.isTranslucent = false
         navigationController.navigationBar.barTintColor = .black
-        navigationController.navigationBar.tintColor = UIColor(red: 174/255, green: 254/255, blue: 20/255, alpha: 1.0)
+        navigationController.navigationBar.tintColor = .primaryGreen
         navigationController.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor.white,
             .font: UIFont.systemFont(ofSize: 16, weight: .medium)
