@@ -14,6 +14,7 @@
 		BECA35042EB8F99C0052F628 /* Exceptions for "FitClient" folder in "FitClient" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"Extension/UISearchBar+Styling 2.swift",
 				Info.plist,
 			);
 			target = BECA34F12EB8F99B0052F628 /* FitClient */;

@@ -25,21 +25,31 @@ class TrainerClientsViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        
         title = "Clients"
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor.textPrimary,
             .font: UIFont.systemFont(ofSize: 16, weight: .medium)
         ]
         
-        let addButton = UIBarButtonItem(
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "plus"),
-            style: .plain,
-            target: self,
-            action: #selector(addClientTapped)
+            primaryAction: UIAction { [unowned self] _ in
+                self.showAddClientModal()
+            }
         )
-        addButton.tintColor = .primaryGreen
-        navigationItem.rightBarButtonItem = addButton
+        navigationItem.rightBarButtonItem?.tintColor = .primaryGreen
+    }
+    
+    private func showAddClientModal() {
+        let vc = AddClientModalViewController(nibName: "AddClientModalViewController", bundle: nil)
+        let nav = UINavigationController(rootViewController: vc)
+        nav.modalPresentationStyle = .pageSheet
+        if let sheet = nav.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 20
+        }
+        present(nav, animated: true)
     }
     
     private func setupUI() {
@@ -62,25 +72,16 @@ class TrainerClientsViewController: UIViewController {
     }
     
     private func loadClientsData() {
-        guard let url = Bundle.main.url(forResource: "clientsData", withExtension: "json") else {
-            print("Error: clientsData.json not found")
-            return
+        DataService.shared.loadClients { result in
+            switch result {
+            case .success(let clients):
+                self.allClients = clients
+                self.filteredClients = clients
+                self.clientsTableView.reloadData()
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
         }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let clientsData = try decoder.decode(ClientsData.self, from: data)
-            allClients = clientsData.clients
-            filteredClients = allClients
-            clientsTableView.reloadData()
-        } catch {
-            print("Error loading clients data: \(error)")
-        }
-    }
-    
-    @objc private func addClientTapped() {
-        print("Add client tapped")
     }
 }
 
