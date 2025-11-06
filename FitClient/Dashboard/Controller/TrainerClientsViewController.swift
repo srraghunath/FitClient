@@ -25,21 +25,31 @@ class TrainerClientsViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        
         title = "Clients"
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor.textPrimary,
             .font: UIFont.systemFont(ofSize: 16, weight: .medium)
         ]
         
-        let addButton = UIBarButtonItem(
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "plus"),
-            style: .plain,
-            target: self,
-            action: #selector(addClientTapped)
+            primaryAction: UIAction { [unowned self] _ in
+                self.showAddClientModal()
+            }
         )
-        addButton.tintColor = .primaryGreen
-        navigationItem.rightBarButtonItem = addButton
+        navigationItem.rightBarButtonItem?.tintColor = .primaryGreen
+    }
+    
+    private func showAddClientModal() {
+        let vc = AddClientModalViewController(nibName: "AddClientModalViewController", bundle: nil)
+        let nav = UINavigationController(rootViewController: vc)
+        nav.modalPresentationStyle = .pageSheet
+        if let sheet = nav.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 20
+        }
+        present(nav, animated: true)
     }
     
     private func setupUI() {
@@ -62,23 +72,16 @@ class TrainerClientsViewController: UIViewController {
     }
     
     private func loadClientsData() {
-        DataService.shared.loadClients { [weak self] result in
-            guard let self = self else { return }
-            
+        DataService.shared.loadClients { result in
             switch result {
             case .success(let clients):
                 self.allClients = clients
                 self.filteredClients = clients
                 self.clientsTableView.reloadData()
-                
             case .failure(let error):
                 print(error.localizedDescription)
             }
         }
-    }
-    
-    @objc private func addClientTapped() {
-        print("Add client tapped")
     }
 }
 
