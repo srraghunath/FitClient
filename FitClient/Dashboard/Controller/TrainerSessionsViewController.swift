@@ -11,11 +11,10 @@ class TrainerSessionsViewController: UIViewController {
     
     @IBOutlet weak var sessionsTableView: UITableView!
     
+    private var datePicker: UIDatePicker!
     private var allSessions: [Session] = []
     private var todaySessions: [Session] = []
     private var upcomingSessions: [Session] = []
-    private var selectedDate = Date()
-    private var dateLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,26 +22,21 @@ class TrainerSessionsViewController: UIViewController {
         setupUI()
         setupTableView()
         loadSessionsData()
-        updateDateLabel()
     }
     
     private func setupNavigationBar() {
-        // Create date label as title view
-        dateLabel = UILabel()
-        dateLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        dateLabel.textColor = .textPrimary
-        dateLabel.textAlignment = .center
-        navigationItem.titleView = dateLabel
+        datePicker = UIDatePicker()
+        datePicker.datePickerMode = .date
+        datePicker.preferredDatePickerStyle = .compact
+        datePicker.tintColor = .primaryGreen
+        datePicker.overrideUserInterfaceStyle = .dark
+        datePicker.addTarget(self, action: #selector(dateChanged), for: .valueChanged)
         
-        // Create calendar button
-        let calendarButton = UIBarButtonItem(
-            image: UIImage(systemName: "calendar.badge.clock"),
-            style: .plain,
-            target: self,
-            action: #selector(calendarButtonTapped)
-        )
-        calendarButton.tintColor = .textPrimary
-        navigationItem.rightBarButtonItem = calendarButton
+        navigationItem.titleView = datePicker
+    }
+    
+    @objc private func dateChanged() {
+        filterSessionsForDate(datePicker.date)
     }
     
     private func setupUI() {
@@ -63,17 +57,11 @@ class TrainerSessionsViewController: UIViewController {
     // MARK: BACKEND OPERATIONS
     
     private func loadSessionsData() {
-        DataService.shared.loadSessions { [weak self] result in
-            guard let self = self else { return }
-            
+        DataService.shared.loadSessions { result in
             switch result {
             case .success(let sessionsData):
-                // Store all sessions
                 self.allSessions = sessionsData.todaySessions + sessionsData.upcomingSessions
-                
-                // Filter for selected date
-                self.filterSessionsForDate(self.selectedDate)
-                
+                self.filterSessionsForDate(self.datePicker.date)
             case .failure(let error):
                 print(error.localizedDescription)
             }
@@ -119,49 +107,6 @@ class TrainerSessionsViewController: UIViewController {
         }
         
         sessionsTableView.reloadData()
-    }
-    
-    private func updateDateLabel() {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "EEE, dd MMM yyyy"
-        dateLabel.text = dateFormatter.string(from: selectedDate)
-    }
-    
-    @objc private func calendarButtonTapped() {
-        showDatePicker()
-    }
-    
-    private func showDatePicker() {
-        let alert = UIAlertController(title: "Select Date", message: "\n\n\n\n\n\n\n\n\n", preferredStyle: .actionSheet)
-        
-        let datePicker = UIDatePicker()
-        datePicker.datePickerMode = .date
-        datePicker.preferredDatePickerStyle = .wheels
-        datePicker.date = selectedDate
-        datePicker.translatesAutoresizingMaskIntoConstraints = false
-        
-        alert.view.addSubview(datePicker)
-        
-        NSLayoutConstraint.activate([
-            datePicker.centerXAnchor.constraint(equalTo: alert.view.centerXAnchor),
-            datePicker.topAnchor.constraint(equalTo: alert.view.topAnchor, constant: 50),
-            datePicker.widthAnchor.constraint(equalToConstant: 270),
-            datePicker.heightAnchor.constraint(equalToConstant: 200)
-        ])
-        
-        let selectAction = UIAlertAction(title: "Select", style: .default) { [weak self] _ in
-            guard let self = self else { return }
-            self.selectedDate = datePicker.date
-            self.updateDateLabel()
-            self.filterSessionsForDate(self.selectedDate)
-        }
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        alert.addAction(selectAction)
-        alert.addAction(cancelAction)
-        
-        present(alert, animated: true, completion: nil)
     }
 }
 
