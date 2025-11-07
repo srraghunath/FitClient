@@ -98,6 +98,7 @@ extension TrainerClientsViewController: UITableViewDataSource {
         
         let client = filteredClients[indexPath.row]
         cell.configure(with: client)
+        cell.delegate = self
         
         return cell
     }
@@ -130,5 +131,16 @@ extension TrainerClientsViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
+    }
+}
+
+extension TrainerClientsViewController: ClientTableViewCellDelegate {
+    
+    func didTapChatButton(for client: Client) {
+        let chatVC = TrainerClientsChatViewController(nibName: "TrainerClientsChatViewController", bundle: nil)
+        chatVC.clientId = client.id
+        chatVC.clientName = client.name
+        chatVC.clientImage = client.profileImage
+        navigationController?.pushViewController(chatVC, animated: true)
     }
 }

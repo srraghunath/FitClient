@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TrainerClientsChatViewController" customModule="FitClient" customModuleProvider="target">
+            <connections>
+                <outlet property="inputContainerBottom" destination="input-container-bottom" id="input-container-bottom-outlet"/>
+                <outlet property="messageInputField" destination="message-input-field" id="message-input-field-outlet"/>
+                <outlet property="sendButton" destination="send-button" id="send-button-outlet"/>
+                <outlet property="tableView" destination="table-view" id="table-view-outlet"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="table-view">
+                    <rect key="frame" x="0.0" y="59" width="393" height="683"/>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                </tableView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="input-container">
+                    <rect key="frame" x="0.0" y="742" width="393" height="76"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="separator-line">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="0.5"/>
+                            <color key="backgroundColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="0.5" id="separator-line-height"/>
+                            </constraints>
+                        </view>
+                        <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Type a message..." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="message-input-field">
+                            <rect key="frame" x="16" y="16" width="273" height="44"/>
+                            <color key="backgroundColor" red="0.12941176470588237" green="0.12941176470588237" blue="0.12941176470588237" alpha="1" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="44" id="message-input-field-height"/>
+                            </constraints>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            <textInputTraits key="textInputTraits"/>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                    <integer key="value" value="22"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </textField>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="send-button">
+                            <rect key="frame" x="305" y="16" width="72" height="44"/>
+                            <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="44" id="send-button-height"/>
+                                <constraint firstAttribute="width" constant="72" id="send-button-width"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                            <state key="normal" title="Send">
+                                <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                    <integer key="value" value="22"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="76" id="input-container-height"/>
+                        <constraint firstItem="separator-line" firstAttribute="leading" secondItem="input-container" secondAttribute="leading" id="separator-line-leading"/>
+                        <constraint firstItem="separator-line" firstAttribute="top" secondItem="input-container" secondAttribute="top" id="separator-line-top"/>
+                        <constraint firstAttribute="trailing" secondItem="separator-line" secondAttribute="trailing" id="separator-line-trailing"/>
+                        <constraint firstItem="message-input-field" firstAttribute="leading" secondItem="input-container" secondAttribute="leading" constant="16" id="message-input-field-leading"/>
+                        <constraint firstItem="message-input-field" firstAttribute="top" secondItem="input-container" secondAttribute="top" constant="16" id="message-input-field-top"/>
+                        <constraint firstItem="send-button" firstAttribute="leading" secondItem="message-input-field" secondAttribute="trailing" constant="16" id="send-button-leading"/>
+                        <constraint firstAttribute="trailing" secondItem="send-button" secondAttribute="trailing" constant="16" id="send-button-trailing"/>
+                        <constraint firstItem="send-button" firstAttribute="top" secondItem="input-container" secondAttribute="top" constant="16" id="send-button-top"/>
+                        <constraint firstAttribute="bottom" secondItem="send-button" secondAttribute="bottom" constant="16" id="send-button-bottom"/>
+                        <constraint firstItem="message-input-field" firstAttribute="centerY" secondItem="send-button" secondAttribute="centerY" id="message-input-field-centerY"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="table-view" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="table-view-leading"/>
+                <constraint firstItem="table-view" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="table-view-top"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="table-view" secondAttribute="trailing" id="table-view-trailing"/>
+                <constraint firstItem="input-container" firstAttribute="top" secondItem="table-view" secondAttribute="bottom" id="input-container-top"/>
+                <constraint firstItem="input-container" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="input-container-leading"/>
+                <constraint firstItem="input-container" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="input-container-trailing"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="input-container" secondAttribute="bottom" id="input-container-bottom"/>
+            </constraints>
+            <point key="canvasLocation" x="136.64122137404578" y="19.718309859154932"/>
+        </view>
+    </objects>
+</document>
