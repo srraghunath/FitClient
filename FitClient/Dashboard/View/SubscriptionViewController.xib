@@ -209,7 +209,7 @@
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="card-info-stack">
+                                                <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="card-info-stack">
                                                     <rect key="frame" x="0.0" y="48" width="321" height="32"/>
                                                     <subviews>
                                                         <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="card-left-stack">
@@ -260,7 +260,7 @@
                                                             </subviews>
                                                         </stackView>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="update-btn">
-                                                            <rect key="frame" x="147.33333333333337" y="0.0" width="173.66666666666663" height="32"/>
+                                                            <rect key="frame" x="272" y="0.0" width="49" height="32"/>
                                                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                                             <state key="normal" title="Update">
                                                                 <color key="titleColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="calibratedRGB"/>
