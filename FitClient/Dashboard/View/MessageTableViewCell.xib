@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="MessageTableViewCell" rowHeight="80" id="KGk-i7-Jjw" customClass="MessageTableViewCell" customModule="FitClient" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="80"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="393" height="80"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="message-container">
+                        <rect key="frame" x="16" y="8" width="297" height="64"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="message-stack">
+                                <rect key="frame" x="12" y="8" width="273" height="48"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Message text goes here" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="message-label">
+                                        <rect key="frame" x="0.0" y="0.0" width="273" height="30"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10:30 AM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="timestamp-label">
+                                        <rect key="frame" x="0.0" y="34" width="273" height="14"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                        <color key="textColor" white="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.12941176470588237" green="0.12941176470588237" blue="0.12941176470588237" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="message-stack" secondAttribute="bottom" constant="8" id="message-stack-bottom"/>
+                            <constraint firstItem="message-stack" firstAttribute="leading" secondItem="message-container" secondAttribute="leading" constant="12" id="message-stack-leading"/>
+                            <constraint firstItem="message-stack" firstAttribute="top" secondItem="message-container" secondAttribute="top" constant="8" id="message-stack-top"/>
+                            <constraint firstAttribute="trailing" secondItem="message-stack" secondAttribute="trailing" constant="12" id="message-stack-trailing"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                <integer key="value" value="16"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstItem="message-container" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="message-container-leading"/>
+                    <constraint firstAttribute="trailing" secondItem="message-container" secondAttribute="trailing" constant="80" id="message-container-trailing"/>
+                    <constraint firstItem="message-container" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="message-container-top"/>
+                    <constraint firstAttribute="bottom" secondItem="message-container" secondAttribute="bottom" constant="8" id="message-container-bottom"/>
+                </constraints>
+            </tableViewCellContentView>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <connections>
+                <outlet property="leadingConstraint" destination="message-container-leading" id="leading-constraint-outlet"/>
+                <outlet property="messageContainerView" destination="message-container" id="message-container-outlet"/>
+                <outlet property="messageLabel" destination="message-label" id="message-label-outlet"/>
+                <outlet property="timestampLabel" destination="timestamp-label" id="timestamp-label-outlet"/>
+                <outlet property="trailingConstraint" destination="message-container-trailing" id="trailing-constraint-outlet"/>
+            </connections>
+            <point key="canvasLocation" x="136.64122137404578" y="-11.267605633802818"/>
+        </tableViewCell>
+    </objects>
+</document>
