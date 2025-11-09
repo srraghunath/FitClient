@@ -16,31 +16,9 @@ class AddClientModalViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavigationBar()
         setupTextField()
         setupButton()
         setupKeyboardDismissal()
-    }
-    
-    private func setupNavigationBar() {
-        title = "Add Client"
-        
-        navigationController?.navigationBar.titleTextAttributes = [
-            .foregroundColor: UIColor.textPrimary,
-            .font: UIFont.systemFont(ofSize: 17, weight: .semibold)
-        ]
-        
-        let cancelButton = UIBarButtonItem(
-            title: "Cancel",
-            style: .plain,
-            target: nil,
-            action: nil
-        )
-        cancelButton.tintColor = .textPrimary
-        cancelButton.primaryAction = UIAction { [weak self] _ in
-            self?.dismiss(animated: true)
-        }
-        navigationItem.leftBarButtonItem = cancelButton
     }
     
     private func setupTextField() {
