@@ -1,9 +1,4 @@
-//
-//  TrainerClientsViewController.swift
-//  FitClient
-//
-//  Created by admin8 on 05/11/25.
-//
+
 
 import UIKit
 
@@ -42,14 +37,13 @@ class TrainerClientsViewController: UIViewController {
     
     private func showAddClientModal() {
         let vc = AddClientModalViewController(nibName: "AddClientModalViewController", bundle: nil)
-        let nav = UINavigationController(rootViewController: vc)
-        nav.modalPresentationStyle = .pageSheet
-        if let sheet = nav.sheetPresentationController {
-            sheet.detents = [.medium()]
+        vc.modalPresentationStyle = .pageSheet
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.custom { _ in 196 }] // i have set 196 becoz 40 (top) + 56 (textfield) + 20 (space) + 56 (button) + 24 (bottom)
             sheet.prefersGrabberVisible = true
             sheet.preferredCornerRadius = 20
         }
-        present(nav, animated: true)
+        present(vc, animated: true)
     }
     
     private func setupUI() {

@@ -1,9 +1,4 @@
-//
-//  SceneDelegate.swift
-//  FitClient
-//
-//  Created by admin8 on 03/11/25.
-//
+
 
 import UIKit
 

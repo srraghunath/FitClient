@@ -1,9 +1,3 @@
-//
-//  SubscriptionViewController.swift
-//  FitClient
-//
-//  Created by admin8 on 05/11/25.
-//
 
 import UIKit
 

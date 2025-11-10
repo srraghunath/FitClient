@@ -1,9 +1,4 @@
-//
-//  TrainerSessionsViewController.swift
-//  FitClient
-//
-//  Created by admin8 on 04/11/25.
-//
+
 
 import UIKit
 
@@ -12,6 +7,9 @@ class TrainerSessionsViewController: UIViewController {
     @IBOutlet weak var sessionsTableView: UITableView!
     
     private var datePicker: UIDatePicker!
+    private var dateLabel: UILabel!
+    private var calendarButton: UIButton!
+    private var selectedDate: Date = Date()
     private var allSessions: [Session] = []
     private var todaySessions: [Session] = []
     private var upcomingSessions: [Session] = []
@@ -25,18 +23,113 @@ class TrainerSessionsViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
+        // Initialize date picker
         datePicker = UIDatePicker()
+        datePicker.preferredDatePickerStyle = .inline
         datePicker.datePickerMode = .date
-        datePicker.preferredDatePickerStyle = .compact
         datePicker.tintColor = .primaryGreen
+        datePicker.backgroundColor = UIColor(red: 0.11, green: 0.11, blue: 0.11, alpha: 1.0)
         datePicker.overrideUserInterfaceStyle = .dark
-        datePicker.addTarget(self, action: #selector(dateChanged), for: .valueChanged)
         
-        navigationItem.titleView = datePicker
+        // Create date label for navigation title
+        let dateLabel = UILabel()
+        dateLabel.textAlignment = .center
+        dateLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        dateLabel.textColor = UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0) // #F5F5F5
+        
+        // Format date as "Wed,29 Oct 2025" (no space after comma like Figma)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EEE, dd MMM yyyy"
+        dateLabel.text = dateFormatter.string(from: selectedDate)
+        
+        // Set label as title view
+        navigationItem.titleView = dateLabel
+        
+        // Store date label reference for updates
+        self.dateLabel = dateLabel
+        
+        // Create calendar button as right bar button item
+        let calendarButton = UIButton(type: .system)
+        calendarButton.setImage(UIImage(systemName: "calendar"), for: .normal)
+        calendarButton.tintColor = .white
+        calendarButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+        calendarButton.addTarget(self, action: #selector(calendarButtonTapped), for: .touchUpInside)
+        
+        let calendarBarButton = UIBarButtonItem(customView: calendarButton)
+        navigationItem.rightBarButtonItem = calendarBarButton
+    }
+    
+    @objc private func calendarButtonTapped() {
+        showDatePickerModal()
+    }
+    
+    private func showDatePickerModal() {
+        // Create a custom view controller for the date picker
+        let containerVC = UIViewController()
+        containerVC.modalPresentationStyle = .pageSheet
+        
+        if let sheet = containerVC.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+        }
+        
+        // Setup the view
+        let containerView = UIView()
+        containerView.backgroundColor = UIColor(red: 0.11, green: 0.11, blue: 0.11, alpha: 1.0)
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        containerVC.view.addSubview(containerView)
+        
+        // Configure date picker
+        datePicker.date = selectedDate
+        datePicker.translatesAutoresizingMaskIntoConstraints = false
+        datePicker.backgroundColor = .clear
+        containerView.addSubview(datePicker)
+        
+        // Create Select button
+        let selectButton = UIButton(type: .system)
+        selectButton.setTitle("Select Date", for: .normal)
+        selectButton.backgroundColor = .primaryGreen
+        selectButton.setTitleColor(.black, for: .normal)
+        selectButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        selectButton.layer.cornerRadius = 28
+        selectButton.translatesAutoresizingMaskIntoConstraints = false
+        selectButton.addTarget(self, action: #selector(selectDateTapped), for: .touchUpInside)
+        containerView.addSubview(selectButton)
+        
+        // Layout constraints
+        NSLayoutConstraint.activate([
+            containerView.leadingAnchor.constraint(equalTo: containerVC.view.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: containerVC.view.trailingAnchor),
+            containerView.topAnchor.constraint(equalTo: containerVC.view.topAnchor),
+            containerView.bottomAnchor.constraint(equalTo: containerVC.view.bottomAnchor),
+            
+            datePicker.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40),
+            datePicker.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            
+            selectButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            selectButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+            selectButton.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            selectButton.heightAnchor.constraint(equalToConstant: 56)
+        ])
+        
+        present(containerVC, animated: true)
+    }
+    
+    @objc private func selectDateTapped() {
+        dateChanged()
+        dismiss(animated: true)
+    }
+    
+    private func updateDateLabel() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EEE,dd MMM yyyy" // No space after comma like Figma
+        dateLabel.text = dateFormatter.string(from: selectedDate)
     }
     
     @objc private func dateChanged() {
-        filterSessionsForDate(datePicker.date)
+        selectedDate = datePicker.date
+        updateDateLabel()
+        filterSessionsForDate(selectedDate)
     }
     
     private func setupUI() {
@@ -61,7 +154,7 @@ class TrainerSessionsViewController: UIViewController {
             switch result {
             case .success(let sessionsData):
                 self.allSessions = sessionsData.todaySessions + sessionsData.upcomingSessions
-                self.filterSessionsForDate(self.datePicker.date)
+                self.filterSessionsForDate(self.selectedDate)
             case .failure(let error):
                 print(error.localizedDescription)
             }
@@ -146,7 +239,35 @@ extension TrainerSessionsViewController: UITableViewDelegate {
         
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = section == 0 ? "Today" : "Upcoming"
+        
+        // Get day names for headers
+        let calendar = Calendar.current
+        let isToday = calendar.isDateInToday(selectedDate)
+        
+        if section == 0 {
+            // First section shows selected date
+            if isToday {
+                label.text = "Today"
+            } else {
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "EEEE" // Full day name (e.g., "Monday")
+                label.text = dateFormatter.string(from: selectedDate)
+            }
+        } else {
+            // Second section shows next day
+            if let nextDay = calendar.date(byAdding: .day, value: 1, to: selectedDate) {
+                if calendar.isDateInTomorrow(nextDay) {
+                    label.text = "Tomorrow"
+                } else {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "EEEE" // Full day name (e.g., "Tuesday")
+                    label.text = dateFormatter.string(from: nextDay)
+                }
+            } else {
+                label.text = "Upcoming"
+            }
+        }
+        
         label.font = UIFont(name: "SFPro-Bold", size: 16) ?? UIFont.boldSystemFont(ofSize: 16)
         label.textColor = .textPrimary
         

@@ -1,9 +1,4 @@
-//
-//  Message.swift
-//  FitClient
-//
-//  Created by admin8 on 07/11/25.
-//
+
 
 import Foundation
 

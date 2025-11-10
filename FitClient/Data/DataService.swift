@@ -1,9 +1,4 @@
-//
-//  DataService.swift
-//  FitClient
-//
-//  Created on 06/11/25.
-//
+
 
 import Foundation
 
