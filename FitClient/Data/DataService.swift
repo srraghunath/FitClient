@@ -100,6 +100,24 @@ class DataService {
             completion(.failure(DataServiceError.decodingFailed(error)))
         }
     }
+    
+    // MARK: - Trainer Profile
+    
+    func loadTrainer(completion: @escaping (Result<Trainer, Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "trainerData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("trainerData.json")))
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let trainerData = try decoder.decode(TrainerData.self, from: data)
+            completion(.success(trainerData.trainer))
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
 }
 
 // MARK: - Custom Errors

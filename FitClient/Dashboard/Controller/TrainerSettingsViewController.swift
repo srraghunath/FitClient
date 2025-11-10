@@ -13,10 +13,16 @@ class TrainerSettingsViewController: UIViewController {
         loadProfileImage()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+    }
+    
     private func setupNavigationBar() {
         navigationController?.navigationBar.barTintColor = .black
         navigationController?.navigationBar.backgroundColor = .black
         navigationController?.navigationBar.isTranslucent = false
+        navigationController?.navigationBar.tintColor = .primaryGreen
         
         title = "Settings"
         navigationController?.navigationBar.titleTextAttributes = [
@@ -53,5 +59,10 @@ class TrainerSettingsViewController: UIViewController {
     @IBAction func helpTapped(_ sender: Any) {
         let helpVC = HelpViewController(nibName: "HelpViewController", bundle: nil)
         navigationController?.pushViewController(helpVC, animated: true)
+    }
+    
+    @IBAction func editProfileTapped(_ sender: Any) {
+        let editProfileVC = TrainerSettingsEditProfileViewController(nibName: "TrainerSettingsEditProfileViewController", bundle: nil)
+        navigationController?.pushViewController(editProfileVC, animated: true)
     }
 }

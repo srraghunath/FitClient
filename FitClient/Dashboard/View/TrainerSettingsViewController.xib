@@ -46,6 +46,12 @@
                                             <color key="textColor" red="0.84313725490000002" green="0.80000000000000004" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="profile-button">
+                                            <rect key="frame" x="0.0" y="0.0" width="393" height="72"/>
+                                            <connections>
+                                                <action selector="editProfileTapped:" destination="-1" eventType="touchUpInside" id="profile-action"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
@@ -56,6 +62,10 @@
                                         <constraint firstItem="QbZ-Kl-6ff" firstAttribute="leading" secondItem="Fhq-bM-eiC" secondAttribute="leading" constant="16" id="Qca-3g-hA0"/>
                                         <constraint firstAttribute="height" constant="72" id="RWC-Wr-fdY"/>
                                         <constraint firstItem="QcD-Af-VUW" firstAttribute="leading" secondItem="QbZ-Kl-6ff" secondAttribute="trailing" constant="16" id="kXk-Bi-GhF"/>
+                                        <constraint firstItem="profile-button" firstAttribute="top" secondItem="Fhq-bM-eiC" secondAttribute="top" id="profile-btn-top"/>
+                                        <constraint firstItem="profile-button" firstAttribute="leading" secondItem="Fhq-bM-eiC" secondAttribute="leading" id="profile-btn-leading"/>
+                                        <constraint firstItem="profile-button" firstAttribute="trailing" secondItem="Fhq-bM-eiC" secondAttribute="trailing" id="profile-btn-trailing"/>
+                                        <constraint firstItem="profile-button" firstAttribute="bottom" secondItem="Fhq-bM-eiC" secondAttribute="bottom" id="profile-btn-bottom"/>
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zf2-hY-Vzo" userLabel="Subscription Item">

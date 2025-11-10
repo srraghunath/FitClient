@@ -1,0 +1,17 @@
+{
+  "trainer": {
+    "id": "trainer001",
+    "name": "John Anderson",
+    "email": "john.anderson@fitclient.com",
+    "phone": "+1 (555) 123-4567",
+    "specialization": "Strength & Conditioning",
+    "bio": "Certified personal trainer with 8+ years of experience helping clients achieve their fitness goals through customized workout and nutrition plans.",
+    "profile_image": "https://i.pravatar.cc/300?img=12",
+    "experience_years": 8,
+    "certifications": [
+      "NASM Certified Personal Trainer",
+      "ACE Fitness Nutrition Specialist",
+      "ISSA Strength & Conditioning Coach"
+    ]
+  }
+}

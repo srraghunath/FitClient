@@ -16,11 +16,11 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
-            <rect key="frame" x="0.0" y="0.0" width="393" height="280"/>
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter email address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="email-textfield">
-                    <rect key="frame" x="24" y="40" width="345" height="56"/>
+                    <rect key="frame" x="24" y="158" width="345" height="56"/>
                     <color key="backgroundColor" red="0.18823529411764706" green="0.19215686274509805" blue="0.19215686274509805" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="56" id="textfield-height"/>
@@ -30,11 +30,8 @@
                     <textInputTraits key="textInputTraits" keyboardType="emailAddress" textContentType="email"/>
                 </textField>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="add-button">
-                    <rect key="frame" x="24" y="116" width="345" height="56"/>
+                    <rect key="frame" x="24" y="234" width="345" height="526"/>
                     <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="56" id="button-height"/>
-                    </constraints>
                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                     <state key="normal" title="Add Client">
@@ -48,13 +45,13 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="email-textfield" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="40" id="textfield-top"/>
-                <constraint firstItem="email-textfield" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="24" id="textfield-leading"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="email-textfield" secondAttribute="trailing" constant="24" id="textfield-trailing"/>
-                <constraint firstItem="add-button" firstAttribute="top" secondItem="email-textfield" secondAttribute="bottom" constant="20" id="button-top"/>
-                <constraint firstItem="add-button" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="24" id="button-leading"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="add-button" secondAttribute="trailing" constant="24" id="button-trailing"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="add-button" secondAttribute="bottom" constant="24" id="button-bottom"/>
+                <constraint firstItem="add-button" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="24" id="button-leading"/>
+                <constraint firstItem="add-button" firstAttribute="top" secondItem="email-textfield" secondAttribute="bottom" constant="20" id="button-top"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="add-button" secondAttribute="trailing" constant="24" id="button-trailing"/>
+                <constraint firstItem="email-textfield" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="24" id="textfield-leading"/>
+                <constraint firstItem="email-textfield" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="40" id="textfield-top"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="email-textfield" secondAttribute="trailing" constant="24" id="textfield-trailing"/>
             </constraints>
             <point key="canvasLocation" x="139" y="-11"/>
         </view>
