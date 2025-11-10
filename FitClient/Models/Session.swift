@@ -12,6 +12,18 @@ struct Session: Codable {
     let date: String
     let isToday: Bool
     
+    var client: Client {
+        return Client(
+            id: clientId,
+            name: clientName,
+            email: "",  // This will be updated when actual data is loaded
+            profileImage: clientProfileImage,
+            age: nil,
+            specialization: nil,
+            level: "Fitness Goals"  // This will be updated when actual data is loaded
+        )
+    }
+    
     enum CodingKeys: String, CodingKey {
         case id
         case clientId = "client_id"

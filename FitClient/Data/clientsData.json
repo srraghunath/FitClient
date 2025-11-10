@@ -1,31 +1,40 @@
 {
   "clients": [
     {
-      "id": "1",
-      "name": "VICKASH NARAYAN",
-      "email": "vickash@example.com",
-      "profile_image": "https://i.pravatar.cc/150?img=11",
-      "age": 25,
-      "specialization": "Weight Loss",
-      "level": "Beginner"
-    },
-    {
-      "id": "2",
-      "name": "S R RAGHUNATH",
-      "email": "raghunath@example.com",
-      "profile_image": "https://i.pravatar.cc/150?img=12",
-      "age": 30,
-      "specialization": "Muscle Building",
-      "level": "Intermediate"
-    },
-    {
-      "id": "3",
-      "name": "VISHOK M",
-      "email": "vishok@example.com",
-      "profile_image": "https://i.pravatar.cc/150?img=13",
+      "id": "client_001",
+      "name": "John Smith",
+      "email": "john@example.com",
+      "profile_image": "https://i.pravatar.cc/150?img=15",
       "age": 28,
       "specialization": "Strength Training",
-      "level": "Pro"
+      "level": "Weight Loss, Running Distance"
+    },
+    {
+      "id": "client_002",
+      "name": "Sarah Williams",
+      "email": "sarah@example.com",
+      "profile_image": "https://i.pravatar.cc/150?img=16",
+      "age": 32,
+      "specialization": "Yoga & Pilates",
+      "level": "Flexibility, Core Strength"
+    },
+    {
+      "id": "client_003",
+      "name": "Mike Johnson",
+      "email": "mike@example.com",
+      "profile_image": "https://i.pravatar.cc/150?img=17",
+      "age": 35,
+      "specialization": "Boxing & HIIT",
+      "level": "Endurance, Power"
+    },
+    {
+      "id": "client_004",
+      "name": "Emma Davis",
+      "email": "emma@example.com",
+      "profile_image": "https://i.pravatar.cc/150?img=18",
+      "age": 27,
+      "specialization": "Functional Training",
+      "level": "Overall Fitness, Muscle Tone"
     },
     {
       "id": "4",

@@ -1,0 +1,100 @@
+{
+    "profiles": {
+        "client_001": {
+            "totalActiveDays": 45,
+            "consecutiveActiveDays": 12,
+            "recentActivities": [
+                {
+                    "id": "1",
+                    "type": "Upper Body Workout",
+                    "category": "Strength Training",
+                    "timestamp": "2025-11-09T10:00:00Z"
+                },
+                {
+                    "id": "2",
+                    "type": "Long Run",
+                    "category": "Cardio",
+                    "timestamp": "2025-11-08T15:30:00Z"
+                },
+                {
+                    "id": "3",
+                    "type": "HIIT Session",
+                    "category": "Cardio",
+                    "timestamp": "2025-11-07T08:00:00Z"
+                }
+            ]
+        },
+        "client_002": {
+            "totalActiveDays": 32,
+            "consecutiveActiveDays": 8,
+            "recentActivities": [
+                {
+                    "id": "1",
+                    "type": "Yoga Flow",
+                    "category": "Flexibility",
+                    "timestamp": "2025-11-09T09:00:00Z"
+                },
+                {
+                    "id": "2",
+                    "type": "Core Workout",
+                    "category": "Strength Training",
+                    "timestamp": "2025-11-07T16:00:00Z"
+                },
+                {
+                    "id": "3",
+                    "type": "Swimming",
+                    "category": "Cardio",
+                    "timestamp": "2025-11-05T07:30:00Z"
+                }
+            ]
+        },
+        "client_003": {
+            "totalActiveDays": 28,
+            "consecutiveActiveDays": 5,
+            "recentActivities": [
+                {
+                    "id": "1",
+                    "type": "Lower Body",
+                    "category": "Strength Training",
+                    "timestamp": "2025-11-09T14:00:00Z"
+                },
+                {
+                    "id": "2",
+                    "type": "Boxing",
+                    "category": "Cardio",
+                    "timestamp": "2025-11-08T17:00:00Z"
+                },
+                {
+                    "id": "3",
+                    "type": "Stretching",
+                    "category": "Flexibility",
+                    "timestamp": "2025-11-06T08:00:00Z"
+                }
+            ]
+        },
+        "client_004": {
+            "totalActiveDays": 15,
+            "consecutiveActiveDays": 3,
+            "recentActivities": [
+                {
+                    "id": "1",
+                    "type": "Full Body",
+                    "category": "Strength Training",
+                    "timestamp": "2025-11-09T11:00:00Z"
+                },
+                {
+                    "id": "2",
+                    "type": "Cycling",
+                    "category": "Cardio",
+                    "timestamp": "2025-11-08T07:00:00Z"
+                },
+                {
+                    "id": "3",
+                    "type": "Pilates",
+                    "category": "Flexibility",
+                    "timestamp": "2025-11-07T15:00:00Z"
+                }
+            ]
+        }
+    }
+}

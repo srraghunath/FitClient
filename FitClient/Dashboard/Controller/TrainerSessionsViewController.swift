@@ -292,9 +292,14 @@ extension TrainerSessionsViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
         let session = indexPath.section == 0 ? todaySessions[indexPath.row] : upcomingSessions[indexPath.row]
-        print("Selected session: \(session.clientName) at \(session.startTime)")
-        // TODO: Navigate to session details
+        
+        // Create and configure TrainerClientProfileViewController
+        let profileVC = TrainerClientProfileViewController()
+        profileVC.client = session.client
+        navigationController?.pushViewController(profileVC, animated: true)
     }
 }
 

@@ -76,6 +76,30 @@ class DataService {
             }
         }
     }
+    
+    // MARK: - Client Profile
+    
+    func loadClientProfile(forClientId clientId: String, completion: @escaping (Result<ClientProfile, Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "clientProfileData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("clientProfileData.json")))
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            let profileData = try decoder.decode(ClientProfileData.self, from: data)
+            
+            if let profile = profileData.profiles[clientId] {
+                completion(.success(profile))
+            } else {
+                completion(.failure(DataServiceError.clientProfileNotFound(clientId)))
+            }
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
 }
 
 // MARK: - Custom Errors
@@ -84,6 +108,7 @@ enum DataServiceError: LocalizedError {
     case fileNotFound(String)
     case decodingFailed(Error)
     case chatNotFound(String)
+    case clientProfileNotFound(String)
     
     var errorDescription: String? {
         switch self {
@@ -93,6 +118,8 @@ enum DataServiceError: LocalizedError {
             return "Error loading data: \(error.localizedDescription)"
         case .chatNotFound(let clientId):
             return "Chat not found for client: \(clientId)"
+        case .clientProfileNotFound(let clientId):
+            return "Profile not found for client: \(clientId)"
         }
     }
 }

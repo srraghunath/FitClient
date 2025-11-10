@@ -8,22 +8,160 @@
 import UIKit
 
 class TrainerClientProfileViewController: UIViewController {
-
+    
+    // MARK: - Outlets
+    @IBOutlet private weak var profileImageView: UIImageView!
+    @IBOutlet private weak var nameLabel: UILabel!
+    @IBOutlet private weak var specialtyLabel: UILabel!
+    @IBOutlet private weak var goalsLabel: UILabel!
+    @IBOutlet private weak var segmentedControl: UISegmentedControl!
+    @IBOutlet private weak var totalActiveDaysLabel: UILabel!
+    @IBOutlet private weak var consecutiveActiveDaysLabel: UILabel!
+    @IBOutlet private weak var recentActivitiesTableView: UITableView!
+    
+    // MARK: - Properties
+    var client: Client?
+    private var clientProfile: ClientProfile?
+    
+    // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        setupUI()
+        setupNavigationBar()
+        setupTableView()
+        loadClientProfile()
     }
-
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.tabBarController?.tabBar.isHidden = true
     }
-    */
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.tabBarController?.tabBar.isHidden = false
+    }
+    
+    // MARK: - Private Methods
+    private func setupUI() {
+        setupProfileUI()
+        setupSegmentedControl()
+    }
+    
+    private func setupProfileUI() {
+        profileImageView.layer.cornerRadius = profileImageView.frame.width / 2
+        profileImageView.clipsToBounds = true
+        
+        guard let client = client else { return }
+        nameLabel.text = client.name
+        specialtyLabel.text = client.specialization ?? "Fitness Enthusiast"
+        goalsLabel.text = "Goals: \(client.level)"
+        
+        // Center align activity summary labels
+        totalActiveDaysLabel.textAlignment = .center
+        consecutiveActiveDaysLabel.textAlignment = .center
+        
+        if let imageURL = URL(string: client.profileImage) {
+            // Load image asynchronously (you may want to use SDWebImage or similar)
+            URLSession.shared.dataTask(with: imageURL) { [weak self] data, _, _ in
+                if let data = data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        self?.profileImageView.image = image
+                    }
+                }
+            }.resume()
+        }
+    }
+    
+    private func setupSegmentedControl() {
+        // Set text color for normal state (unselected)
+        let normalTextAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.white
+        ]
+        segmentedControl.setTitleTextAttributes(normalTextAttributes, for: .normal)
+        
+        // Set text color for selected state
+        let selectedTextAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.black
+        ]
+        segmentedControl.setTitleTextAttributes(selectedTextAttributes, for: .selected)
+    }
+    
+    private func setupNavigationBar() {
+        setupStandardNavigationBar(title: "Profile")
+        let backButton = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.left"),
+            style: .plain,
+            target: self,
+            action: #selector(backButtonTapped)
+        )
+        navigationItem.leftBarButtonItem = backButton
+    }
+    
+    private func setupTableView() {
+        recentActivitiesTableView.register(UINib(nibName: "ActivityTableViewCell", bundle: nil), forCellReuseIdentifier: "ActivityCell")
+        recentActivitiesTableView.delegate = self
+        recentActivitiesTableView.dataSource = self
+        recentActivitiesTableView.backgroundColor = .black
+        recentActivitiesTableView.separatorStyle = .none
+    }
+    
+    private func loadClientProfile() {
+        guard let clientId = client?.id else {
+            showAlert(title: "Error", message: "Client information not available")
+            return
+        }
+        
+        print("Loading profile for client ID: \(clientId)")  // Debug log
+        
+        DataService.shared.loadClientProfile(forClientId: clientId) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let profile):
+                    self?.clientProfile = profile
+                    self?.updateProfileUI()
+                    self?.recentActivitiesTableView.reloadData()
+                case .failure(let error):
+                    print("Error loading profile: \(error)")  // Debug log
+                    self?.showAlert(title: "Error", 
+                                  message: "Unable to load client profile. Please try again later.")
+                }
+            }
+        }
+    }
+    
+    private func updateProfileUI() {
+        guard let profile = clientProfile else { return }
+        totalActiveDaysLabel.text = "\(profile.totalActiveDays) Days"
+        consecutiveActiveDaysLabel.text = "\(profile.consecutiveActiveDays) Days"
+    }
+    
+    @objc private func backButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @IBAction private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
+        // Handle segment changes here (Overview, Schedule, Progress)
+    }
+}
 
+// MARK: - UITableViewDelegate & UITableViewDataSource
+extension TrainerClientProfileViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return clientProfile?.recentActivities.count ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ActivityCell", for: indexPath) as? ActivityTableViewCell,
+              let activity = clientProfile?.recentActivities[indexPath.row] else {
+            return UITableViewCell()
+        }
+        
+        cell.configure(with: activity)
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 72
+    }
 }
