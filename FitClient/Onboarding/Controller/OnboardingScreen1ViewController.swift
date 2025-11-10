@@ -1,9 +1,4 @@
-//
-//  OnboardingScreen1ViewController.swift
-//  FitClient
-//
-//  Created by admin41 on 03/11/25.
-//
+
 
 import UIKit
 

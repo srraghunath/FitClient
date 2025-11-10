@@ -1,7 +1,3 @@
-//
-//  OnboardingPageViewController.swift
-//  FitClient
-//
 
 import UIKit
 
