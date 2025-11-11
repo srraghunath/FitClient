@@ -36,11 +36,8 @@ class TrainerSettingsViewController: UIViewController {
     }
     
     private func loadProfileImage() {
-        profileImageView.layer.cornerRadius = 30
         profileImageView.clipsToBounds = true
-        profileImageView.contentMode = .scaleAspectFill
         
-        // Set a fallback image immediately
         profileImageView.image = UIImage(systemName: "person.circle.fill")
         profileImageView.tintColor = .systemGray
 

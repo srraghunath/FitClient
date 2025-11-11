@@ -1,12 +1,170 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="page-vc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="welcome-nav">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="welcome-nav-scene">
+            <objects>
+                <navigationController storyboardIdentifier="WelcomeNavigationController" id="welcome-nav" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" hidden="YES" contentMode="scaleToFill" id="welcome-navbar">
+                        <rect key="frame" x="0.0" y="96" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="welcome-vc" kind="relationship" relationship="rootViewController" id="welcome-root-segue"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="welcome-nav-first-responder" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2400" y="138"/>
+        </scene>
+        <!--Welcome View Controller-->
+        <scene sceneID="welcome-scene">
+            <objects>
+                <viewController storyboardIdentifier="WelcomeViewController" id="welcome-vc" customClass="WelcomeViewController" customModule="FitClient" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="welcome-view">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="WelcomeBackground" translatesAutoresizingMaskIntoConstraints="NO" id="welcome-bg-image">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                            </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="welcome-content-container">
+                                <rect key="frame" x="24" y="531" width="366" height="348.5"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="welcome-logo-placeholder">
+                                        <rect key="frame" x="143" y="0.0" width="80" height="80"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="80" id="logo-height"/>
+                                            <constraint firstAttribute="width" constant="80" id="logo-width"/>
+                                        </constraints>
+                                    </view>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome To FitBond" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="welcome-title">
+                                        <rect key="frame" x="0.0" y="96" width="366" height="43"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="36"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select the role that describes your fitness journey" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="welcome-description">
+                                        <rect key="frame" x="0.0" y="151" width="366" height="19.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="welcome-trainer-button">
+                                        <rect key="frame" x="0.0" y="210.5" width="366" height="64"/>
+                                        <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="64" id="trainer-button-height"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                        <inset key="contentEdgeInsets" minX="32" minY="24" maxX="32" maxY="24"/>
+                                        <state key="normal" title="Trainer">
+                                            <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="21"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <segue destination="page-vc" kind="push" identifier="trainer-segue" id="welcome-to-onboarding-segue"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="welcome-client-button">
+                                        <rect key="frame" x="0.0" y="284.5" width="366" height="64"/>
+                                        <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="64" id="client-button-height"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                        <inset key="contentEdgeInsets" minX="32" minY="24" maxX="32" maxY="24"/>
+                                        <state key="normal" title="Client">
+                                            <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="21"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <segue destination="page-vc" kind="push" identifier="client-segue" id="welcome-to-onboarding-segue-2"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="welcome-client-button" firstAttribute="leading" secondItem="welcome-content-container" secondAttribute="leading" id="client-leading"/>
+                                    <constraint firstItem="welcome-client-button" firstAttribute="top" secondItem="welcome-trainer-button" secondAttribute="bottom" constant="10" id="client-top"/>
+                                    <constraint firstItem="welcome-client-button" firstAttribute="trailing" secondItem="welcome-content-container" secondAttribute="trailing" id="client-trailing"/>
+                                    <constraint firstAttribute="bottom" secondItem="welcome-client-button" secondAttribute="bottom" id="container-bottom"/>
+                                    <constraint firstItem="welcome-description" firstAttribute="leading" secondItem="welcome-content-container" secondAttribute="leading" id="description-leading"/>
+                                    <constraint firstItem="welcome-description" firstAttribute="top" secondItem="welcome-title" secondAttribute="bottom" constant="12" id="description-top"/>
+                                    <constraint firstItem="welcome-description" firstAttribute="trailing" secondItem="welcome-content-container" secondAttribute="trailing" id="description-trailing"/>
+                                    <constraint firstItem="welcome-logo-placeholder" firstAttribute="centerX" secondItem="welcome-content-container" secondAttribute="centerX" id="logo-center-x"/>
+                                    <constraint firstItem="welcome-logo-placeholder" firstAttribute="top" secondItem="welcome-content-container" secondAttribute="top" id="logo-top"/>
+                                    <constraint firstItem="welcome-title" firstAttribute="leading" secondItem="welcome-content-container" secondAttribute="leading" id="title-leading"/>
+                                    <constraint firstItem="welcome-title" firstAttribute="top" secondItem="welcome-logo-placeholder" secondAttribute="bottom" constant="16" id="title-top"/>
+                                    <constraint firstItem="welcome-title" firstAttribute="trailing" secondItem="welcome-content-container" secondAttribute="trailing" id="title-trailing"/>
+                                    <constraint firstItem="welcome-trainer-button" firstAttribute="leading" secondItem="welcome-content-container" secondAttribute="leading" id="trainer-leading"/>
+                                    <constraint firstItem="welcome-trainer-button" firstAttribute="top" secondItem="welcome-description" secondAttribute="bottom" constant="40" id="trainer-top"/>
+                                    <constraint firstItem="welcome-trainer-button" firstAttribute="trailing" secondItem="welcome-content-container" secondAttribute="trailing" id="trainer-trailing"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="welcome-safe-area"/>
+                        <color key="backgroundColor" red="0.066666666666666666" green="0.070588235294117646" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="welcome-bg-image" secondAttribute="bottom" id="bg-bottom"/>
+                            <constraint firstItem="welcome-bg-image" firstAttribute="leading" secondItem="welcome-view" secondAttribute="leading" id="bg-leading"/>
+                            <constraint firstItem="welcome-bg-image" firstAttribute="top" secondItem="welcome-view" secondAttribute="top" id="bg-top"/>
+                            <constraint firstAttribute="trailing" secondItem="welcome-bg-image" secondAttribute="trailing" id="bg-trailing"/>
+                            <constraint firstItem="welcome-content-container" firstAttribute="leading" secondItem="welcome-safe-area" secondAttribute="leading" constant="24" id="content-leading"/>
+                            <constraint firstItem="welcome-content-container" firstAttribute="top" secondItem="welcome-safe-area" secondAttribute="top" constant="391" id="content-top"/>
+                            <constraint firstItem="welcome-safe-area" firstAttribute="trailing" secondItem="welcome-content-container" secondAttribute="trailing" constant="24" id="content-trailing"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="clientButton" destination="welcome-client-button" id="outlet-client-button"/>
+                        <outlet property="trainerButton" destination="welcome-trainer-button" id="outlet-trainer-button"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="welcome-first-responder" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1728" y="138"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="signin-nav-scene">
+            <objects>
+                <navigationController storyboardIdentifier="SignInNavigationController" id="signin-nav" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="signin-navbar">
+                        <rect key="frame" x="0.0" y="96" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="signin-nav-first-responder" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-798" y="-516"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="signup-nav-scene">
+            <objects>
+                <navigationController storyboardIdentifier="SignUpNavigationController" id="signup-nav" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="signup-navbar">
+                        <rect key="frame" x="0.0" y="96" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="signup-nav-first-responder" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-798" y="792"/>
+        </scene>
         <!--Onboarding Page View Controller-->
         <scene sceneID="page-scene">
             <objects>
@@ -24,7 +182,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="image-container1">
-                                <rect key="frame" x="16" y="72" width="382" height="463"/>
+                                <rect key="frame" x="16" y="120" width="382" height="463"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Onboarding1" translatesAutoresizingMaskIntoConstraints="NO" id="image1">
                                         <rect key="frame" x="0.0" y="0.0" width="382" height="463"/>
@@ -45,19 +203,19 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Track progress and create plans" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="title1">
-                                <rect key="frame" x="16" y="595" width="382" height="67"/>
+                                <rect key="frame" x="16" y="643" width="382" height="67"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
                                 <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Easily track your client's progress and create personalized workout and diet plans." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="description1">
-                                <rect key="frame" x="16" y="674" width="382" height="38.5"/>
+                                <rect key="frame" x="16" y="722" width="382" height="38.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="next-button1">
-                                <rect key="frame" x="16" y="783" width="382" height="48"/>
+                                <rect key="frame" x="16" y="749" width="382" height="48"/>
                                 <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="next-button1-height"/>
@@ -113,7 +271,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="image-container2">
-                                <rect key="frame" x="16" y="72" width="382" height="463"/>
+                                <rect key="frame" x="16" y="120" width="382" height="463"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Onboarding2" translatesAutoresizingMaskIntoConstraints="NO" id="image2">
                                         <rect key="frame" x="0.0" y="0.0" width="382" height="463"/>
@@ -134,19 +292,19 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Classify client levels" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="title2">
-                                <rect key="frame" x="16" y="620" width="382" height="33.5"/>
+                                <rect key="frame" x="16" y="668" width="382" height="33.5"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
                                 <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Whether they are beginner, intermediate or Pro!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="description2">
-                                <rect key="frame" x="16" y="665.5" width="382" height="19.5"/>
+                                <rect key="frame" x="16" y="713.5" width="382" height="19.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="next-button2">
-                                <rect key="frame" x="16" y="783" width="382" height="48"/>
+                                <rect key="frame" x="16" y="749" width="382" height="48"/>
                                 <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="next-button2-height"/>
@@ -202,7 +360,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="image-container3">
-                                <rect key="frame" x="16" y="72" width="382" height="463"/>
+                                <rect key="frame" x="16" y="120" width="382" height="463"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Onboarding3" translatesAutoresizingMaskIntoConstraints="NO" id="image3">
                                         <rect key="frame" x="0.0" y="0.0" width="382" height="463"/>
@@ -223,19 +381,19 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Update schedule easily" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="title3">
-                                <rect key="frame" x="16" y="610" width="382" height="33.5"/>
+                                <rect key="frame" x="16" y="658" width="382" height="33.5"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
                                 <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Easily update workout, cardio, diet and sleep goals." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="description3">
-                                <rect key="frame" x="16" y="655.5" width="382" height="19.5"/>
+                                <rect key="frame" x="16" y="703.5" width="382" height="19.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <color key="textColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="get-started-button3">
-                                <rect key="frame" x="16" y="783" width="382" height="48"/>
+                                <rect key="frame" x="16" y="749" width="382" height="48"/>
                                 <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="get-started-button3-height"/>
@@ -283,9 +441,13 @@
             <point key="canvasLocation" x="132" y="792"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="welcome-to-onboarding-segue-2"/>
+    </inferredMetricsTieBreakers>
     <resources>
         <image name="Onboarding1" width="512" height="512"/>
         <image name="Onboarding2" width="512" height="512"/>
         <image name="Onboarding3" width="512" height="512"/>
+        <image name="WelcomeBackground" width="393" height="852"/>
     </resources>
 </document>
