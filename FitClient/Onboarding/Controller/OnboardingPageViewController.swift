@@ -24,7 +24,12 @@ class OnboardingPageViewController: UIPageViewController {
            let page3 = storyboard.instantiateViewController(withIdentifier: "OnboardingScreen3") as? OnboardingScreen3ViewController {
 
             pages = [page1, page2, page3]
-            setViewControllers([pages[initialPage]], direction: .forward, animated: true, completion: nil)
+            setViewControllers([pages[initialPage]], direction: .forward, animated: false, completion: { [weak self] _ in
+                // Update position after initial page is set
+                DispatchQueue.main.async {
+                    self?.updatePageControlPositionRelativeToImage(of: self?.pages[self?.initialPage ?? 0])
+                }
+            })
         }
 
         view.backgroundColor = .black
@@ -99,7 +104,10 @@ class OnboardingPageViewController: UIPageViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        updatePageControlPositionRelativeToImage(of: viewControllers?.first)
+        // Delay to ensure child views are fully laid out
+        DispatchQueue.main.async { [weak self] in
+            self?.updatePageControlPositionRelativeToImage(of: self?.viewControllers?.first)
+        }
     }
 }
 

@@ -74,7 +74,7 @@
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                         <connections>
-                                            <segue destination="page-vc" kind="push" identifier="trainer-segue" id="welcome-to-onboarding-segue"/>
+                                            <segue destination="page-vc" kind="show" identifier="trainer-segue" id="welcome-to-onboarding-trainer"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="welcome-client-button">
@@ -94,7 +94,7 @@
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                         <connections>
-                                            <segue destination="page-vc" kind="push" identifier="client-segue" id="welcome-to-onboarding-segue-2"/>
+                                            <segue destination="page-vc" kind="show" identifier="client-segue" id="welcome-to-onboarding-client"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -130,10 +130,6 @@
                             <constraint firstItem="welcome-safe-area" firstAttribute="trailing" secondItem="welcome-content-container" secondAttribute="trailing" constant="24" id="content-trailing"/>
                         </constraints>
                     </view>
-                    <connections>
-                        <outlet property="clientButton" destination="welcome-client-button" id="outlet-client-button"/>
-                        <outlet property="trainerButton" destination="welcome-trainer-button" id="outlet-trainer-button"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="welcome-first-responder" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -150,7 +146,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="signin-nav-first-responder" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-798" y="-516"/>
+            <point key="canvasLocation" x="1187" y="-285"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="signup-nav-scene">
@@ -163,7 +159,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="signup-nav-first-responder" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-798" y="792"/>
+            <point key="canvasLocation" x="1216" y="443"/>
         </scene>
         <!--Onboarding Page View Controller-->
         <scene sceneID="page-scene">
@@ -441,9 +437,6 @@
             <point key="canvasLocation" x="132" y="792"/>
         </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="welcome-to-onboarding-segue-2"/>
-    </inferredMetricsTieBreakers>
     <resources>
         <image name="Onboarding1" width="512" height="512"/>
         <image name="Onboarding2" width="512" height="512"/>
