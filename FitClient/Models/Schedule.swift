@@ -175,3 +175,20 @@ struct ClientSchedule: Codable {
         return weekSchedule.first(where: { $0.day == weekday })?.isActive ?? false
     }
 }
+
+// MARK: - JSON Models
+struct DayScheduleData: Codable {
+    let isActive: Bool
+    let sleepHours: Double
+    let waterIntake: Double
+    let cardioNotes: String
+}
+
+struct ClientScheduleData: Codable {
+    let clientId: String
+    var weekSchedule: [String: DayScheduleData]
+}
+
+struct ClientSchedulesResponse: Codable {
+    var schedules: [ClientScheduleData]
+}

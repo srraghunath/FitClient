@@ -35,6 +35,7 @@
                         <constraint firstAttribute="trailing" secondItem="weekday-stack" secondAttribute="trailing" constant="16" id="stack-trailing"/>
                         <constraint firstItem="weekday-stack" firstAttribute="top" secondItem="weekday-container" secondAttribute="top" constant="8" id="stack-top"/>
                         <constraint firstAttribute="bottom" secondItem="weekday-stack" secondAttribute="bottom" constant="8" id="stack-bottom"/>
+                        <constraint firstAttribute="height" constant="60" id="weekday-height"/>
                     </constraints>
                 </view>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="table-view">
@@ -45,13 +46,13 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" white="0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="table-view" secondAttribute="bottom" id="table-bottom"/>
-                <constraint firstItem="table-view" firstAttribute="top" secondItem="weekday-container" secondAttribute="bottom" id="table-top"/>
-                <constraint firstItem="table-view" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="table-leading"/>
-                <constraint firstItem="table-view" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="table-trailing"/>
                 <constraint firstItem="weekday-container" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="weekday-leading"/>
                 <constraint firstItem="weekday-container" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="weekday-trailing"/>
                 <constraint firstItem="weekday-container" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="weekday-top"/>
+                <constraint firstItem="table-view" firstAttribute="top" secondItem="weekday-container" secondAttribute="bottom" id="table-top"/>
+                <constraint firstItem="table-view" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="table-leading"/>
+                <constraint firstItem="table-view" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="table-trailing"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="table-view" secondAttribute="bottom" id="table-bottom"/>
             </constraints>
             <point key="canvasLocation" x="196.5" y="426"/>
         </view>
