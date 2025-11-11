@@ -23,6 +23,7 @@ class TrainerClientProfileViewController: UIViewController {
     // MARK: - Properties
     var client: Client?
     private var clientProfile: ClientProfile?
+    private var currentChildViewController: UIViewController?
     
     // MARK: - View Lifecycle
     override func viewDidLoad() {
@@ -151,6 +152,62 @@ class TrainerClientProfileViewController: UIViewController {
     
     @IBAction private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         // Handle segment changes here (Overview, Schedule, Progress)
+        switch sender.selectedSegmentIndex {
+        case 0:
+            // Overview - show regular activity table view
+            removeCurrentChildViewController()
+            recentActivitiesTableView.isHidden = false
+        case 1:
+            // Schedule - load schedule view controller
+            recentActivitiesTableView.isHidden = true
+            loadScheduleViewController()
+        case 2:
+            // Progress - load progress view controller (placeholder for now)
+            removeCurrentChildViewController()
+            recentActivitiesTableView.isHidden = false
+        default:
+            break
+        }
+    }
+    
+    private func loadScheduleViewController() {
+        // Remove existing child if present
+        removeCurrentChildViewController()
+        
+        // Load schedule view controller from XIB
+        let scheduleVC = TrainerClientProfileScheduleViewController(nibName: "TrainerClientProfileScheduleViewController", bundle: nil)
+        
+        // Add as child view controller
+        addChild(scheduleVC)
+        
+        // Get the scroll view's content view (if it exists in your layout) or the recentActivitiesTableView's parent view
+        if let scrollView = recentActivitiesTableView.superview as? UIScrollView {
+            scheduleVC.view.frame = scrollView.bounds
+            scrollView.addSubview(scheduleVC.view)
+        } else if let parentView = recentActivitiesTableView.superview {
+            scheduleVC.view.translatesAutoresizingMaskIntoConstraints = false
+            parentView.addSubview(scheduleVC.view)
+            
+            // Constrain to match table view
+            NSLayoutConstraint.activate([
+                scheduleVC.view.leadingAnchor.constraint(equalTo: parentView.leadingAnchor),
+                scheduleVC.view.trailingAnchor.constraint(equalTo: parentView.trailingAnchor),
+                scheduleVC.view.topAnchor.constraint(equalTo: parentView.topAnchor),
+                scheduleVC.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor)
+            ])
+        }
+        
+        scheduleVC.didMove(toParent: self)
+        self.currentChildViewController = scheduleVC
+    }
+    
+    private func removeCurrentChildViewController() {
+        guard let childVC = currentChildViewController else { return }
+        
+        childVC.willMove(toParent: nil)
+        childVC.view.removeFromSuperview()
+        childVC.removeFromParent()
+        self.currentChildViewController = nil
     }
 }
 

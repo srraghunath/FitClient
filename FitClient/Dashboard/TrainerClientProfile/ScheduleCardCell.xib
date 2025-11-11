@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22521" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22513"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="ScheduleCardCell" id="KGk-i7-Jjw" customClass="ScheduleCardCell" customModule="FitClient">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="70"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" id="H5M-cE-IlM">
+                <rect key="frame" x="0.0" y="0.0" width="393" height="70"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="card-view" customClass="UIView">
+                        <rect key="frame" x="16" y="8" width="361" height="54"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" alignment="center" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="content-stack">
+                                <rect key="frame" x="16" y="0" width="329" height="54"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="text-stack">
+                                        <rect key="frame" x="0.0" y="6.5" width="275" height="41"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Workout" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="title-label">
+                                                <rect key="frame" x="0.0" y="0.0" width="275" height="21"/>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap to view details" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="description-label">
+                                                <rect key="frame" x="0.0" y="25" width="275" height="16"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                <color key="textColor" white="0.60000000000000003" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                    </stackView>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="arrow-image">
+                                        <rect key="frame" x="309" y="14.5" width="20" height="25"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="20" id="arrow-width"/>
+                                            <constraint firstAttribute="height" constant="25" id="arrow-height"/>
+                                        </constraints>
+                                    </imageView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="54" id="stack-height"/>
+                                </constraints>
+                            </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="expand-button">
+                                <rect key="frame" x="16" y="0" width="329" height="54"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="54" id="btn-height"/>
+                                </constraints>
+                            </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="expanded-content-view">
+                                <rect key="frame" x="0.0" y="54" width="361" height="0"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="0" id="expanded-content-height"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" red="0.18823529411764706" green="0.18823529411764706" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="content-stack" firstAttribute="leading" secondItem="card-view" secondAttribute="leading" constant="16" id="stack-leading"/>
+                            <constraint firstItem="content-stack" firstAttribute="top" secondItem="card-view" secondAttribute="top" id="stack-top"/>
+                            <constraint firstAttribute="bottom" secondItem="content-stack" secondAttribute="bottom" id="stack-bottom"/>
+                            <constraint firstItem="expand-button" firstAttribute="leading" secondItem="card-view" secondAttribute="leading" id="btn-leading"/>
+                            <constraint firstAttribute="trailing" secondItem="expand-button" secondAttribute="trailing" id="btn-trailing"/>
+                            <constraint firstItem="expand-button" firstAttribute="top" secondItem="card-view" secondAttribute="top" id="btn-top"/>
+                            <constraint firstAttribute="trailing" secondItem="content-stack" secondAttribute="trailing" constant="16" id="stack-trailing"/>
+                            <constraint firstAttribute="trailing" secondItem="expanded-content-view" secondAttribute="trailing" id="expanded-trailing"/>
+                            <constraint firstItem="expanded-content-view" firstAttribute="leading" secondItem="card-view" secondAttribute="leading" id="expanded-leading"/>
+                            <constraint firstItem="expanded-content-view" firstAttribute="top" secondItem="content-stack" secondAttribute="bottom" id="expanded-top"/>
+                            <constraint firstAttribute="bottom" secondItem="expanded-content-view" secondAttribute="bottom" id="expanded-bottom"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="card-view" secondAttribute="trailing" constant="16" id="card-trailing"/>
+                    <constraint firstItem="card-view" firstAttribute="leading" secondItem="H5M-cE-IlM" secondAttribute="leading" constant="16" id="card-leading"/>
+                    <constraint firstItem="card-view" firstAttribute="top" secondItem="H5M-cE-IlM" secondAttribute="top" constant="8" id="card-top"/>
+                    <constraint firstAttribute="bottom" secondItem="card-view" secondAttribute="bottom" constant="8" id="card-bottom"/>
+                </constraints>
+            </tableViewCellContentView>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <connections>
+                <outlet property="cardView" destination="card-view" id="card-outlet"/>
+                <outlet property="contentStackView" destination="content-stack" id="stack-outlet"/>
+                <outlet property="descriptionLabel" destination="description-label" id="desc-outlet"/>
+                <outlet property="expandArrowImageView" destination="arrow-image" id="arrow-outlet"/>
+                <outlet property="expandButton" destination="expand-button" id="btn-outlet"/>
+                <outlet property="expandedContentHeightConstraint" destination="expanded-content-height" id="height-outlet"/>
+                <outlet property="expandedContentView" destination="expanded-content-view" id="expanded-outlet"/>
+                <outlet property="titleLabel" destination="title-label" id="title-outlet"/>
+            </connections>
+            <point key="canvasLocation" x="140" y="35"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

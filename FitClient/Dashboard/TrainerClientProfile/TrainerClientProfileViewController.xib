@@ -154,7 +154,7 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="wzA-6z-0hu">
-                                    <rect key="frame" x="0.0" y="258.66666666666663" width="393" height="200"/>
+                                    <rect key="frame" x="0.0" y="258.66666666666663" width="393" height="334"/>
                                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
                                         <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="200" id="table-height"/>
@@ -170,6 +170,7 @@
                                 <constraint firstItem="wzA-6z-0hu" firstAttribute="leading" secondItem="content-view" secondAttribute="leading" id="5Yf-rr-Pqr"/>
                                 <constraint firstItem="0sP-oZ-gyM" firstAttribute="top" secondItem="content-view" secondAttribute="top" constant="16" id="6fR-lm-DXI"/>
                                 <constraint firstItem="IVv-f9-VCc" firstAttribute="leading" secondItem="content-view" secondAttribute="leading" constant="16" id="8DL-uw-BqI"/>
+                                <constraint firstAttribute="height" constant="608.66666666666663" id="ETl-J1-aDI"/>
                                 <constraint firstAttribute="trailing" secondItem="wzA-6z-0hu" secondAttribute="trailing" id="FbR-JL-bGq"/>
                                 <constraint firstAttribute="trailing" secondItem="0sP-oZ-gyM" secondAttribute="trailing" constant="16" id="Hgw-Sh-YB3"/>
                                 <constraint firstAttribute="trailing" secondItem="IVv-f9-VCc" secondAttribute="trailing" constant="16" id="IGp-OT-gZt"/>
