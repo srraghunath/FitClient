@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TrainerSettingsEditProfileViewController: UIViewController {
+class TrainerSettingsEditProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     // MARK: - IBOutlets
     @IBOutlet weak var profileImageView: UIImageView!
@@ -66,6 +66,8 @@ class TrainerSettingsEditProfileViewController: UIViewController {
         // Setup profile image
         profileImageView.layer.cornerRadius = 60
         profileImageView.clipsToBounds = true
+        profileImageView.layer.borderWidth = 2
+        profileImageView.layer.borderColor = UIColor.primaryGreen.cgColor
         profileImageView.contentMode = .scaleAspectFill
         profileImageView.backgroundColor = UIColor(hex: "#212121")
         
@@ -131,7 +133,18 @@ class TrainerSettingsEditProfileViewController: UIViewController {
     // MARK: - IBActions
     
     @IBAction func changePhotoTapped(_ sender: Any) {
-        // Photo change functionality disabled
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.allowsEditing = true
+        picker.sourceType = .photoLibrary
+        present(picker, animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage {
+            profileImageView.image = image
+        }
+        dismiss(animated: true)
     }
     
     @IBAction func saveButtonTapped(_ sender: Any) {

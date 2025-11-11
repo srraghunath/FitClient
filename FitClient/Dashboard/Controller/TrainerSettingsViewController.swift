@@ -37,10 +37,34 @@ class TrainerSettingsViewController: UIViewController {
     
     private func loadProfileImage() {
         profileImageView.clipsToBounds = true
+        profileImageView.layer.cornerRadius = 30
+        profileImageView.layer.borderWidth = 2
+        profileImageView.layer.borderColor = UIColor.primaryGreen.cgColor
         
-        profileImageView.image = UIImage(systemName: "person.circle.fill")
-        profileImageView.tintColor = .systemGray
-
+        // Load trainer data and profile image
+        DataService.shared.loadTrainer { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let trainer):
+                    // Load profile image from URL
+                    if let url = URL(string: trainer.profileImage) {
+                        URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+                            if let data = data, let image = UIImage(data: data) {
+                                DispatchQueue.main.async {
+                                    self?.profileImageView.image = image
+                                }
+                            }
+                        }.resume()
+                    } else {
+                        self?.profileImageView.image = UIImage(systemName: "person.circle.fill")
+                        self?.profileImageView.tintColor = .systemGray
+                    }
+                case .failure:
+                    self?.profileImageView.image = UIImage(systemName: "person.circle.fill")
+                    self?.profileImageView.tintColor = .systemGray
+                }
+            }
+        }
     }
     
     @IBAction func subscriptionTapped(_ sender: Any) {
