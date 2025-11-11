@@ -16,6 +16,7 @@
                 <outlet property="recentActivitiesTableView" destination="wzA-6z-0hu" id="Ecc-6M-gjm"/>
                 <outlet property="segmentedControl" destination="YbR-Z4-udg" id="Lbh-h6-U5l"/>
                 <outlet property="specialtyLabel" destination="kPP-zh-Tpe" id="rWe-kk-oiy"/>
+                <outlet property="tableHeightConstraint" destination="table-height" id="table-height-outlet"/>
                 <outlet property="totalActiveDaysLabel" destination="1xW-ms-RJk" id="yYg-nI-fmO"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -70,10 +71,10 @@
                     <rect key="frame" x="0.0" y="411" width="393" height="373"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="content-view">
-                            <rect key="frame" x="0.0" y="0.0" width="393" height="620"/>
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="608.66666666666663"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Activity Summary" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0sP-oZ-gyM">
-                                    <rect key="frame" x="16" y="16" width="361" height="26.333333333333314"/>
+                                    <rect key="frame" x="16" y="15.999999999999998" width="361" height="26.333333333333321"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
@@ -147,16 +148,16 @@
                                     </userDefinedRuntimeAttributes>
                                 </view>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Recent Activity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IVv-f9-VCc">
-                                    <rect key="frame" x="16" y="216.33333333333337" width="361" height="26.333333333333371"/>
+                                    <rect key="frame" x="16" y="216.33333333333337" width="361" height="26.333333333333343"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <tableView clipsSubviews="YES" contentMode="scaleToFill" scrollEnabled="NO" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="wzA-6z-0hu">
-                                    <rect key="frame" x="0.0" y="258.66666666666663" width="393" height="350"/>
+                                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="wzA-6z-0hu">
+                                    <rect key="frame" x="0.0" y="258.66666666666663" width="393" height="200"/>
                                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" constant="350" id="table-height"/>
+                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="200" id="table-height"/>
                                     </constraints>
                                 </tableView>
                             </subviews>
@@ -177,7 +178,7 @@
                                 <constraint firstItem="Ij0-LV-6wr" firstAttribute="leading" secondItem="i0H-JN-mDX" secondAttribute="trailing" constant="29" id="T3l-xR-Z6C"/>
                                 <constraint firstItem="Ij0-LV-6wr" firstAttribute="width" secondItem="i0H-JN-mDX" secondAttribute="width" id="WMI-mR-SqD"/>
                                 <constraint firstAttribute="trailing" secondItem="Ij0-LV-6wr" secondAttribute="trailing" constant="24" id="b7K-Gv-OMc"/>
-                                <constraint firstAttribute="bottom" secondItem="wzA-6z-0hu" secondAttribute="bottom" constant="11.33" id="nIi-ZE-eqJ"/>
+                                <constraint firstAttribute="bottom" secondItem="wzA-6z-0hu" secondAttribute="bottom" constant="16" id="nIi-ZE-eqJ"/>
                                 <constraint firstItem="Ij0-LV-6wr" firstAttribute="centerY" secondItem="i0H-JN-mDX" secondAttribute="centerY" id="tQu-Nu-TVz"/>
                             </constraints>
                         </view>
@@ -209,10 +210,10 @@
                 <constraint firstItem="YbR-Z4-udg" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="10" id="eyC-aD-jPb"/>
                 <constraint firstItem="h3r-ZP-7n2" firstAttribute="top" secondItem="bHa-hu-3Vs" secondAttribute="bottom" constant="16" id="h7g-jJ-BMO"/>
                 <constraint firstItem="bHa-hu-3Vs" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="16" id="mOh-F3-pCZ"/>
-                <constraint firstItem="scroll-view" firstAttribute="top" secondItem="YbR-Z4-udg" secondAttribute="bottom" id="scroll-top"/>
-                <constraint firstItem="scroll-view" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="scroll-leading"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="scroll-view" secondAttribute="trailing" id="scroll-trailing"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="scroll-view" secondAttribute="bottom" id="scroll-bottom"/>
+                <constraint firstItem="scroll-view" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="scroll-leading"/>
+                <constraint firstItem="scroll-view" firstAttribute="top" secondItem="YbR-Z4-udg" secondAttribute="bottom" id="scroll-top"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="scroll-view" secondAttribute="trailing" id="scroll-trailing"/>
             </constraints>
             <point key="canvasLocation" x="32.824427480916029" y="19.718309859154932"/>
         </view>

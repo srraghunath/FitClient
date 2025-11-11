@@ -18,6 +18,7 @@ class TrainerClientProfileViewController: UIViewController {
     @IBOutlet private weak var totalActiveDaysLabel: UILabel!
     @IBOutlet private weak var consecutiveActiveDaysLabel: UILabel!
     @IBOutlet private weak var recentActivitiesTableView: UITableView!
+    @IBOutlet private weak var tableHeightConstraint: NSLayoutConstraint!
     
     // MARK: - Properties
     var client: Client?
@@ -121,6 +122,7 @@ class TrainerClientProfileViewController: UIViewController {
                     self?.clientProfile = profile
                     self?.updateProfileUI()
                     self?.recentActivitiesTableView.reloadData()
+                    self?.updateTableHeight()
                 case .failure(let error):
                     print("Error loading profile: \(error)")  // Debug log
                     self?.showAlert(title: "Error", 
@@ -128,6 +130,13 @@ class TrainerClientProfileViewController: UIViewController {
                 }
             }
         }
+    }
+    
+    private func updateTableHeight() {
+        let rowCount = clientProfile?.recentActivities.count ?? 0
+        let rowHeight: CGFloat = 72
+        let calculatedHeight = CGFloat(rowCount) * rowHeight
+        tableHeightConstraint.constant = max(calculatedHeight, 200)
     }
     
     private func updateProfileUI() {
