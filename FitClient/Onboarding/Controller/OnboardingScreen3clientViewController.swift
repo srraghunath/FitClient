@@ -50,10 +50,11 @@ class OnboardingScreen3clientViewController: UIViewController {
         // Mark onboarding as completed
         UserDefaults.standard.set(true, forKey: "hasCompletedClientOnboarding")
         
-        // Load main app (Dashboard/TabBar)
-        let tabBarVC = MainTabBarController()
-        tabBarVC.modalPresentationStyle = .fullScreen
-        tabBarVC.modalTransitionStyle = .crossDissolve
-        present(tabBarVC, animated: true, completion: nil)
+        // Navigate to Sign In
+        let signInVC = SignInClientViewController(nibName: "SignInClientViewController", bundle: nil)
+        let navController = UINavigationController(rootViewController: signInVC)
+        navController.modalPresentationStyle = .fullScreen
+        navController.modalTransitionStyle = .crossDissolve
+        present(navController, animated: true, completion: nil)
     }
 }
