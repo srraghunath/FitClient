@@ -76,6 +76,9 @@ class TrainerClientProfileViewController: UIViewController {
     }
     
     private func setupSegmentedControl() {
+        // Set background color to match progress card color
+        segmentedControl.backgroundColor = UIColor(hex: "#303131")
+        
         // Set text color for normal state (unselected)
         let normalTextAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.white
@@ -162,9 +165,9 @@ class TrainerClientProfileViewController: UIViewController {
             recentActivitiesTableView.isHidden = true
             loadScheduleViewController()
         case 2:
-            // Progress - load progress view controller (placeholder for now)
-            removeCurrentChildViewController()
-            recentActivitiesTableView.isHidden = false
+            // Progress - load progress view controller
+            recentActivitiesTableView.isHidden = true
+            loadProgressViewController()
         default:
             break
         }
@@ -200,6 +203,37 @@ class TrainerClientProfileViewController: UIViewController {
         
         scheduleVC.didMove(toParent: self)
         self.currentChildViewController = scheduleVC
+    }
+    
+    private func loadProgressViewController() {
+        // Remove existing child if present
+        removeCurrentChildViewController()
+        
+        // Load progress view controller from XIB
+        let progressVC = TrainerClientProgressViewControlller(nibName: "TrainerClientProgressViewControlller", bundle: nil)
+        
+        // Add as child view controller
+        addChild(progressVC)
+        
+        // Get the scroll view's content view (if it exists in your layout) or the recentActivitiesTableView's parent view
+        if let scrollView = recentActivitiesTableView.superview as? UIScrollView {
+            progressVC.view.frame = scrollView.bounds
+            scrollView.addSubview(progressVC.view)
+        } else if let parentView = recentActivitiesTableView.superview {
+            progressVC.view.translatesAutoresizingMaskIntoConstraints = false
+            parentView.addSubview(progressVC.view)
+            
+            // Constrain to match table view
+            NSLayoutConstraint.activate([
+                progressVC.view.leadingAnchor.constraint(equalTo: parentView.leadingAnchor),
+                progressVC.view.trailingAnchor.constraint(equalTo: parentView.trailingAnchor),
+                progressVC.view.topAnchor.constraint(equalTo: parentView.topAnchor),
+                progressVC.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor)
+            ])
+        }
+        
+        progressVC.didMove(toParent: self)
+        self.currentChildViewController = progressVC
     }
     
     private func removeCurrentChildViewController() {
