@@ -176,6 +176,7 @@ class TrainerClientProfileViewController: UIViewController {
         
         // Load schedule view controller from XIB
         let scheduleVC = TrainerClientProfileScheduleViewController(nibName: "TrainerClientProfileScheduleViewController", bundle: nil)
+        scheduleVC.clientId = client?.id
         
         // Add as child view controller
         addChild(scheduleVC)

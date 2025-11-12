@@ -118,6 +118,29 @@ class DataService {
             completion(.failure(DataServiceError.decodingFailed(error)))
         }
     }
+    
+    // MARK: - Client Schedules
+    
+    func loadClientSchedule(forClientId clientId: String, completion: @escaping (Result<ClientScheduleData, Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "clientSchedulesData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("clientSchedulesData.json")))
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let schedulesResponse = try decoder.decode(ClientSchedulesResponse.self, from: data)
+            
+            if let schedule = schedulesResponse.schedules.first(where: { $0.clientId == clientId }) {
+                completion(.success(schedule))
+            } else {
+                completion(.failure(DataServiceError.clientScheduleNotFound(clientId)))
+            }
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
 }
 
 // MARK: - Custom Errors
@@ -127,6 +150,7 @@ enum DataServiceError: LocalizedError {
     case decodingFailed(Error)
     case chatNotFound(String)
     case clientProfileNotFound(String)
+    case clientScheduleNotFound(String)
     
     var errorDescription: String? {
         switch self {
@@ -138,6 +162,8 @@ enum DataServiceError: LocalizedError {
             return "Chat not found for client: \(clientId)"
         case .clientProfileNotFound(let clientId):
             return "Profile not found for client: \(clientId)"
+        case .clientScheduleNotFound(let clientId):
+            return "Schedule not found for client: \(clientId)"
         }
     }
 }
