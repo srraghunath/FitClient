@@ -1,0 +1,160 @@
+{
+  "clientId": "client123",
+  "monthlyData": {
+    "2025-09": [
+      {"date": "2025-09-01", "workout": false, "diet": false, "sleep": false, "waterIntake": false, "cardio": true},
+      {"date": "2025-09-02", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-03", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-04", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-05", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-06", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-07", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-08", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-09", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-10", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-11", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-12", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-13", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-14", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-15", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-16", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-17", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-18", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-19", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-20", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-21", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-22", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-23", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-24", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-25", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-26", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-27", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-28", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-29", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-09-30", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true}
+    ],
+    "2025-10": [
+      {"date": "2025-10-01", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-02", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-03", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-04", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-05", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-06", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-07", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-08", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-09", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-10", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-11", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-12", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-13", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-14", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-15", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-16", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-17", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-18", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-19", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-20", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-21", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-22", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-23", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-24", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-25", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-26", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-27", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-28", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-29", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-30", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
+      {"date": "2025-10-31", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true}
+    ],
+    "2025-11": [
+    {
+      "date": "2025-11-01",
+      "workout": false,
+      "diet": false,
+      "sleep": false,
+      "waterIntake": false,
+      "cardio": false
+    },
+    {
+      "date": "2025-11-02",
+      "workout": true,
+      "diet": true,
+      "sleep": true,
+      "waterIntake": true,
+      "cardio": true
+    },
+    {
+      "date": "2025-11-03",
+      "workout": true,
+      "diet": false,
+      "sleep": true,
+      "waterIntake": true,
+      "cardio": false
+    },
+    {
+      "date": "2025-11-04",
+      "workout": true,
+      "diet": true,
+      "sleep": false,
+      "waterIntake": false,
+      "cardio": true
+    },
+    {
+      "date": "2025-11-05",
+      "workout": false,
+      "diet": false,
+      "sleep": false,
+      "waterIntake": false,
+      "cardio": false
+    },
+    {
+      "date": "2025-11-06",
+      "workout": true,
+      "diet": true,
+      "sleep": true,
+      "waterIntake": true,
+      "cardio": true
+    },
+    {
+      "date": "2025-11-07",
+      "workout": true,
+      "diet": true,
+      "sleep": true,
+      "waterIntake": true,
+      "cardio": false
+    },
+    {
+      "date": "2025-11-08",
+      "workout": true,
+      "diet": false,
+      "sleep": true,
+      "waterIntake": false,
+      "cardio": true
+    },
+    {
+      "date": "2025-11-09",
+      "workout": true,
+      "diet": true,
+      "sleep": true,
+      "waterIntake": true,
+      "cardio": true
+    },
+    {
+      "date": "2025-11-10",
+      "workout": false,
+      "diet": true,
+      "sleep": false,
+      "waterIntake": true,
+      "cardio": false
+    },
+    {
+      "date": "2025-11-11",
+      "workout": true,
+      "diet": true,
+      "sleep": true,
+      "waterIntake": true,
+      "cardio": true
+    }
+  ]
+  }
+}
