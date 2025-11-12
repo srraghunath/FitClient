@@ -543,11 +543,11 @@ extension TrainerClientProfileScheduleViewController: UITableViewDelegate {
     }
     
     private func updateSelectedWorkouts(_ selectedIds: [String]) {
-        guard var scheduleData = clientScheduleData, var dayData = currentDayData else { return }
+        guard var scheduleData = clientScheduleData, let dayData = currentDayData else { return }
         let dayName = getDayName(from: selectedDay)
         
         // Update the day data with new workout selections
-        var updatedDayData = DayScheduleData(
+        let updatedDayData = DayScheduleData(
             isActive: dayData.isActive,
             sleepHours: dayData.sleepHours,
             waterIntake: dayData.waterIntake,

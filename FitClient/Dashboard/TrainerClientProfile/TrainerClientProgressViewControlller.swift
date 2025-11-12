@@ -101,8 +101,6 @@ class TrainerClientProgressViewControlller: UIViewController {
         layout.scrollDirection = .vertical
         heatmapCollectionView.collectionViewLayout = layout
         
-        print("🔧 Collection view layout: 3px spacing, vertical scroll")
-        
         // Calendar Button
         calendarButton.setImage(UIImage(systemName: "calendar"), for: .normal)
         calendarButton.tintColor = UIColor(hex: "#F5F5F5")
@@ -135,7 +133,7 @@ class TrainerClientProgressViewControlller: UIViewController {
             rotatedWeekdays.append(allWeekdays[(firstDayIndex + i) % 7])
         }
         
-        print("📅 Month starts on weekday \(firstWeekday) (1=Sun, 7=Sat), headers: \(rotatedWeekdays.joined(separator: " "))")
+        print("Month starts on weekday \(firstWeekday) (1=Sun, 7=Sat), headers: \(rotatedWeekdays.joined(separator: " "))")
         
         for day in rotatedWeekdays {
             let label = UILabel()
@@ -215,9 +213,9 @@ class TrainerClientProgressViewControlller: UIViewController {
         let isFutureMonth = currentMonth > today
         let isPastMonth = currentMonth < calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
         
-        print("📅 Selected month: \(selectedMonthKey)")
-        print("📅 Current month: \(currentMonthKey)")
-        print("📅 Is current: \(isCurrentMonth), Is future: \(isFutureMonth), Is past: \(isPastMonth)")
+        print("Selected month: \(selectedMonthKey)")
+        print("Current month: \(currentMonthKey)")
+        print("Is current: \(isCurrentMonth), Is future: \(isFutureMonth), Is past: \(isPastMonth)")
         
         // Get activity data for this specific month
         let monthActivities = clientActivityData?.monthlyData[selectedMonthKey]
@@ -302,7 +300,7 @@ class TrainerClientProgressViewControlller: UIViewController {
                 ProgressSegment(title: "Water", percentage: 0, color: UIColor(hex: "#14FEFF")),
                 ProgressSegment(title: "Cardio", percentage: 0, color: UIColor(hex: "#FF8C14"))
             ]
-            print("📊 Future or old month - showing 0% for all activities")
+            print("Future or old month - showing 0% for all activities")
             return
         }
         
@@ -315,7 +313,7 @@ class TrainerClientProgressViewControlller: UIViewController {
                 ProgressSegment(title: "Water", percentage: 0, color: UIColor(hex: "#14FEFF")),
                 ProgressSegment(title: "Cardio", percentage: 0, color: UIColor(hex: "#FF8C14"))
             ]
-            print("⚠️ No activity data for this month")
+            print("No activity data for this month")
             return
         }
         
@@ -338,7 +336,7 @@ class TrainerClientProgressViewControlller: UIViewController {
         
         let totalDays = Double(validActivities.count)
         
-        print("📊 Calculating pie chart from \(Int(totalDays)) days of data:")
+        print("Calculating pie chart from \(Int(totalDays)) days of data:")
         
         if totalDays == 0 {
             segments = [
@@ -380,12 +378,12 @@ class TrainerClientProgressViewControlller: UIViewController {
             ProgressSegment(title: "Cardio", percentage: cardioPct, color: UIColor(hex: "#FF8C14"))
         ]
         
-        print("✅ All 5 segments created with actual percentages from JSON")
+        print("All 5 segments created with actual percentages from JSON")
     }
     
     private func loadClientActivityData() {
         guard let url = Bundle.main.url(forResource: "clientActivityData", withExtension: "json") else {
-            print("❌ JSON file not found")
+            print("JSON file not found")
             return
         }
         
@@ -393,18 +391,18 @@ class TrainerClientProgressViewControlller: UIViewController {
             let data = try Data(contentsOf: url)
             clientActivityData = try JSONDecoder().decode(ClientActivityData.self, from: data)
             let totalMonths = clientActivityData?.monthlyData.count ?? 0
-            print("✅ Successfully loaded activity data: \(totalMonths) months")
+            print("Successfully loaded activity data: \(totalMonths) months")
             if let monthData = clientActivityData?.monthlyData["2025-11"]?.first {
                 print("   November first entry: \(monthData.date) - workout:\(monthData.workout) diet:\(monthData.diet)")
             }
             if let octoberData = clientActivityData?.monthlyData["2025-10"] {
-                print("   October has \(octoberData.count) days of data")
+                print("October has \(octoberData.count) days of data")
             }
             if let septemberData = clientActivityData?.monthlyData["2025-09"] {
                 print("   September has \(septemberData.count) days of data (all 100%)")
             }
         } catch {
-            print("❌ Error loading JSON: \(error)")
+            print("Error loading JSON: \(error)")
         }
     }
     
@@ -478,7 +476,7 @@ extension TrainerClientProgressViewControlller: UICollectionViewDataSource, UICo
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let count = activities.count
-        print("📦 Collection view will show \(count) boxes for \(count) days")
+        print("Collection view will show \(count) boxes for \(count) days")
         return count
     }
     
@@ -489,7 +487,7 @@ extension TrainerClientProgressViewControlller: UICollectionViewDataSource, UICo
             let level = activities[indexPath.item].activityLevel
             cell.configure(level: level)
             if indexPath.item < 7 {
-                print("   Box \(indexPath.item + 1): level \(level)")
+                print("Box \(indexPath.item + 1): level \(level)")
             }
         } else {
             cell.configure(level: 0) // Grey
@@ -504,7 +502,7 @@ extension TrainerClientProgressViewControlller: UICollectionViewDataSource, UICo
         let availableWidth = collectionView.bounds.width - totalSpacing
         let cellWidth = floor(availableWidth / 7.0) // EXACTLY 7 columns
         
-        print("📐 Cell size: \(cellWidth) x \(cellWidth) for 7 columns (total width: \(collectionView.bounds.width))")
+        print("Cell size: \(cellWidth) x \(cellWidth) for 7 columns (total width: \(collectionView.bounds.width))")
         
         return CGSize(width: cellWidth, height: cellWidth)
     }
@@ -617,7 +615,7 @@ class PieChartView: UIView {
         // Grey color for unfilled portion
         let greyColor = UIColor(hex: "#3A3A3A")
         
-        print("🎨 Drawing pie chart with \(segments.count) equal slices:")
+        print("Drawing pie chart with \(segments.count) equal slices:")
         
         for (index, segment) in segments.enumerated() {
             let endAngle = startAngle + sliceAngle
@@ -668,7 +666,7 @@ class PieChartView: UIView {
             startAngle = endAngle + gapAngle
         }
         
-        print("✅ Pie chart drawn with all \(segments.count) equal slices, colors filled by percentage")
+        print("Pie chart drawn with all \(segments.count) equal slices, colors filled by percentage")
     }
 }
 
