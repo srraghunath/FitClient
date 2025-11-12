@@ -11,6 +11,7 @@ extension UIColor {
     static let backgroundBlack = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 1.0)
     static let backgroundDark = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
     static let backgroundGray = UIColor(red: 48/255, green: 49/255, blue: 49/255, alpha: 1.0)
+    static let backgroundLight = UIColor(red: 60/255, green: 60/255, blue: 60/255, alpha: 1.0)
     static let cardBackground = UIColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1.0)
     static let tabBarBackground = UIColor(red: 0.129, green: 0.129, blue: 0.129, alpha: 1.0)
     

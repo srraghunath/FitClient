@@ -1,0 +1,62 @@
+{
+  "dashboard": {
+    "userName": "Alex",
+    "greeting": "Good Morning",
+    "upcomingSession": {
+      "title": "Morning Cardio",
+      "time": "Tomorrow, 7:00 AM",
+      "trainer": "John Smith"
+    },
+    "todayWorkouts": [
+      {
+        "id": "tw1",
+        "name": "Push-ups",
+        "reps": "3 sets of 15 reps",
+        "imageUrl": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b"
+      },
+      {
+        "id": "tw2",
+        "name": "Bench Press",
+        "reps": "4 sets of 12 reps",
+        "imageUrl": "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5"
+      },
+      {
+        "id": "tw3",
+        "name": "Squats",
+        "reps": "4 sets of 15 reps",
+        "imageUrl": "https://images.unsplash.com/photo-1574680096145-d05b474e2155"
+      }
+    ],
+    "todayDiet": [
+      {
+        "id": "td1",
+        "mealType": "Breakfast",
+        "name": "Oatmeal with Berries",
+        "calories": "350 kcal",
+        "time": "8:00 AM",
+        "imageUrl": "https://images.unsplash.com/photo-1517673132405-a56a62b18caf"
+      },
+      {
+        "id": "td2",
+        "mealType": "Lunch",
+        "name": "Grilled Chicken Salad",
+        "calories": "450 kcal",
+        "time": "1:00 PM",
+        "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"
+      },
+      {
+        "id": "td3",
+        "mealType": "Dinner",
+        "name": "Salmon with Vegetables",
+        "calories": "550 kcal",
+        "time": "7:00 PM",
+        "imageUrl": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2"
+      }
+    ],
+    "progressStats": {
+      "workoutsCompleted": 12,
+      "caloriesBurned": 3450,
+      "activeMinutes": 240
+    }
+  }
+}

@@ -159,6 +159,24 @@ class DataService {
             completion(.failure(DataServiceError.decodingFailed(error)))
         }
     }
+    
+    // MARK: - Client Dashboard
+    
+    func loadClientDashboard(completion: @escaping (Result<ClientDashboard, Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "clientDashboardData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("clientDashboardData.json")))
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let dashboardData = try decoder.decode(ClientDashboardData.self, from: data)
+            completion(.success(dashboardData.dashboard))
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
 }
 
 // MARK: - Custom Errors

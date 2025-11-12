@@ -57,7 +57,7 @@ class SignInClientViewController: UIViewController {
     }
     
     private func navigateToDashboard() {
-        let tabBarController = MainTabBarController()
+        let tabBarController = ClientTabBarController()
         tabBarController.modalPresentationStyle = .fullScreen
         tabBarController.modalTransitionStyle = .crossDissolve
         present(tabBarController, animated: true)
