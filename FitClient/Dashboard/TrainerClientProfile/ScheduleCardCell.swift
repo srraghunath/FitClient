@@ -78,28 +78,18 @@ class ScheduleCardCell: UITableViewCell {
     @objc private func expandButtonTapped() {
         guard let item = scheduleItem else { return }
         
-        isCurrentlyExpanded.toggle()
+        // Don't toggle expanded state, just trigger delegate
         var updatedItem = item
-        updatedItem.isExpanded = isCurrentlyExpanded
+        updatedItem.isExpanded = false  // Always keep it collapsed visually
         
         delegate?.scheduleCardCell(self, didTapExpandFor: updatedItem)
-        updateExpandedState(animated: true)
     }
     
     // MARK: - Private Methods
     private func updateExpandedState(animated: Bool) {
-        let rotationAngle: CGFloat = isCurrentlyExpanded ? CGFloat.pi : 0
-        
-        if animated {
-            UIView.animate(withDuration: 0.3) {
-                self.expandArrowImageView.transform = CGAffineTransform(rotationAngle: rotationAngle)
-                self.expandedContentView?.alpha = self.isCurrentlyExpanded ? 1 : 0
-            }
-        } else {
-            self.expandArrowImageView.transform = CGAffineTransform(rotationAngle: rotationAngle)
-            self.expandedContentView?.alpha = isCurrentlyExpanded ? 1 : 0
-        }
-        
-        expandedContentView?.isHidden = !isCurrentlyExpanded
+        // NO ROTATION - arrow always stays in default position (down)
+        expandArrowImageView.transform = .identity
+        expandedContentView?.isHidden = true
+        expandedContentView?.alpha = 0
     }
 }

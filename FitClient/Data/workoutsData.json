@@ -1,0 +1,244 @@
+{
+  "workouts": [
+    {
+      "id": "workout_001",
+      "name": "Push-ups",
+      "description": "3 sets of 10 reps",
+      "image_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+      "category": "upper_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_002",
+      "name": "Bench Press",
+      "description": "3 sets of 12 reps",
+      "image_url": "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=400&h=300&fit=crop",
+      "category": "upper_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_003",
+      "name": "Pull-ups",
+      "description": "3 sets of 10 reps",
+      "image_url": "https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=400&h=300&fit=crop",
+      "category": "upper_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_004",
+      "name": "Shoulder Press",
+      "description": "3 sets of 12 reps",
+      "image_url": "https://images.unsplash.com/photo-1532384748853-8f54a8f476e2?w=400&h=300&fit=crop",
+      "category": "upper_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_005",
+      "name": "Bicep Curls",
+      "description": "3 sets of 10 reps",
+      "image_url": "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop",
+      "category": "upper_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_006",
+      "name": "Tricep Extensions",
+      "description": "3 sets of 12 reps",
+      "image_url": "https://images.unsplash.com/photo-1598971861713-54ad16d9c293?w=400&h=300&fit=crop",
+      "category": "upper_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_007",
+      "name": "Dumbbell Rows",
+      "description": "3 sets of 10 reps",
+      "image_url": "https://images.unsplash.com/photo-1434596922112-19c563067271?w=400&h=300&fit=crop",
+      "category": "upper_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_008",
+      "name": "Chest Flyes",
+      "description": "3 sets of 12 reps",
+      "image_url": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=300&fit=crop",
+      "category": "upper_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_009",
+      "name": "Squats",
+      "description": "4 sets of 12 reps",
+      "image_url": "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
+      "category": "lower_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_010",
+      "name": "Lunges",
+      "description": "3 sets of 10 reps each leg",
+      "image_url": "https://images.unsplash.com/photo-1566241134471-c83d5cf5eb33?w=400&h=300&fit=crop",
+      "category": "lower_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_011",
+      "name": "Leg Press",
+      "description": "4 sets of 15 reps",
+      "image_url": "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=400&h=300&fit=crop",
+      "category": "lower_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_012",
+      "name": "Deadlifts",
+      "description": "4 sets of 8 reps",
+      "image_url": "https://images.unsplash.com/photo-1554244933-d876deb6b2ff?w=400&h=300&fit=crop",
+      "category": "lower_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_013",
+      "name": "Leg Curls",
+      "description": "3 sets of 12 reps",
+      "image_url": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop",
+      "category": "lower_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_014",
+      "name": "Calf Raises",
+      "description": "4 sets of 15 reps",
+      "image_url": "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=400&h=300&fit=crop",
+      "category": "lower_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_015",
+      "name": "Burpees",
+      "description": "3 sets of 15 reps",
+      "image_url": "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=300&fit=crop",
+      "category": "full_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_016",
+      "name": "Mountain Climbers",
+      "description": "3 sets of 20 reps",
+      "image_url": "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=400&h=300&fit=crop",
+      "category": "full_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_017",
+      "name": "Jumping Jacks",
+      "description": "4 sets of 30 reps",
+      "image_url": "https://images.unsplash.com/photo-1549060279-7e168fcee0c2?w=400&h=300&fit=crop",
+      "category": "full_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_018",
+      "name": "Plank",
+      "description": "3 sets of 60 seconds",
+      "image_url": "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop",
+      "category": "full_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_019",
+      "name": "Box Jumps",
+      "description": "3 sets of 12 reps",
+      "image_url": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=300&fit=crop",
+      "category": "full_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_020",
+      "name": "Rowing Machine",
+      "description": "20 minutes steady pace",
+      "image_url": "https://images.unsplash.com/photo-1519311965067-36d3e5f33d39?w=400&h=300&fit=crop",
+      "category": "full_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_021",
+      "name": "Overhead Press",
+      "description": "4 sets of 10 reps",
+      "image_url": "https://images.unsplash.com/photo-1584863231364-2edc166de576?w=400&h=300&fit=crop",
+      "category": "upper_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_022",
+      "name": "Lateral Raises",
+      "description": "3 sets of 15 reps",
+      "image_url": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop",
+      "category": "upper_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_023",
+      "name": "Cable Crossover",
+      "description": "3 sets of 12 reps",
+      "image_url": "https://images.unsplash.com/photo-1593476087123-36d1de271f08?w=400&h=300&fit=crop",
+      "category": "upper_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_024",
+      "name": "Hammer Curls",
+      "description": "3 sets of 12 reps",
+      "image_url": "https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?w=400&h=300&fit=crop",
+      "category": "upper_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_025",
+      "name": "Bulgarian Split Squats",
+      "description": "3 sets of 10 reps each",
+      "image_url": "https://images.unsplash.com/photo-1550345332-09e3ac987658?w=400&h=300&fit=crop",
+      "category": "lower_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_026",
+      "name": "Romanian Deadlift",
+      "description": "4 sets of 10 reps",
+      "image_url": "https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=400&h=300&fit=crop",
+      "category": "lower_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_027",
+      "name": "Leg Extensions",
+      "description": "3 sets of 15 reps",
+      "image_url": "https://images.unsplash.com/photo-1518459031867-a89b944bffe4?w=400&h=300&fit=crop",
+      "category": "lower_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_028",
+      "name": "Glute Bridges",
+      "description": "4 sets of 12 reps",
+      "image_url": "https://images.unsplash.com/photo-1550259979-ed79b48d2a30?w=400&h=300&fit=crop",
+      "category": "lower_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_029",
+      "name": "Kettlebell Swings",
+      "description": "3 sets of 20 reps",
+      "image_url": "https://images.unsplash.com/photo-1517344884509-a0c97ec11bcc?w=400&h=300&fit=crop",
+      "category": "full_body",
+      "is_selected": false
+    },
+    {
+      "id": "workout_030",
+      "name": "Battle Ropes",
+      "description": "3 sets of 30 seconds",
+      "image_url": "https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=400&h=300&fit=crop",
+      "category": "full_body",
+      "is_selected": false
+    }
+  ]
+}

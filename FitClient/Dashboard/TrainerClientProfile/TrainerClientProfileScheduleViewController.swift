@@ -21,12 +21,30 @@ class TrainerClientProfileScheduleViewController: UIViewController {
     private var expandedIndexPaths: Set<IndexPath> = []
     private var currentDayData: DayScheduleData?
     
+    // DEBUG: when true, automatically open workout modal once on viewDidAppear (temporary)
+    // Set to false for production / normal behavior so the modal only opens on explicit user tap.
+    private let debugAutoOpenWorkoutModal = false
+    private var debugHasAutoOpenedModal = false
+    
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupTableView()
         loadScheduleData()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // Auto-open the workout modal once for quick verification of logs during development.
+        if debugAutoOpenWorkoutModal && !debugHasAutoOpenedModal {
+            debugHasAutoOpenedModal = true
+            // small delay so view is fully visible
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
+                self?.showWorkoutModal()
+            }
+        }
     }
     
     // MARK: - Setup Methods
@@ -234,7 +252,8 @@ class TrainerClientProfileScheduleViewController: UIViewController {
             isActive: false,
             sleepHours: 0,
             waterIntake: 0,
-            cardioNotes: ""
+            cardioNotes: "",
+            selectedWorkoutIds: []
         )
         
         clientScheduleData = updatedSchedule
@@ -309,6 +328,25 @@ class TrainerClientProfileScheduleViewController: UIViewController {
             print("✅ Schedule saved to: \(writableURL.path)")
         } catch {
             print("❌ Error saving schedule: \(error)")
+        }
+    }
+    
+    // MARK: - Debug Logging
+    private func logDebug(_ message: String) {
+        let logMessage = "[ScheduleVC] \(message)\n"
+        if let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let logURL = documentsPath.appendingPathComponent("schedule_debug.log")
+            if let data = logMessage.data(using: .utf8) {
+                if FileManager.default.fileExists(atPath: logURL.path) {
+                    if let fileHandle = try? FileHandle(forWritingTo: logURL) {
+                        fileHandle.seekToEndOfFile()
+                        fileHandle.write(data)
+                        fileHandle.closeFile()
+                    }
+                } else {
+                    try? data.write(to: logURL)
+                }
+            }
         }
     }
     
@@ -480,13 +518,65 @@ extension TrainerClientProfileScheduleViewController: UITableViewDelegate {
             return 100  // Text input items
         }
     }
+    
+    private func showWorkoutModal() {
+        let modal = WorkoutModalViewController(nibName: "WorkoutModalViewController", bundle: nil)
+        modal.initialSelectedIds = currentDayData?.selectedWorkoutIds ?? []
+        
+        // Handle save callback
+        modal.onSave = { [weak self] selectedIds in
+            self?.updateSelectedWorkouts(selectedIds)
+        }
+        
+        // Handle modal dismissal to reset card arrow
+        modal.presentationController?.delegate = self
+        
+        modal.modalPresentationStyle = .pageSheet
+        if let sheet = modal.sheetPresentationController {
+            sheet.detents = [.large()]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 10
+        }
+        
+        present(modal, animated: true)
+        logDebug("Presenting workout modal with \(modal.initialSelectedIds.count) pre-selected workouts")
+    }
+    
+    private func updateSelectedWorkouts(_ selectedIds: [String]) {
+        guard var scheduleData = clientScheduleData, var dayData = currentDayData else { return }
+        let dayName = getDayName(from: selectedDay)
+        
+        // Update the day data with new workout selections
+        var updatedDayData = DayScheduleData(
+            isActive: dayData.isActive,
+            sleepHours: dayData.sleepHours,
+            waterIntake: dayData.waterIntake,
+            cardioNotes: dayData.cardioNotes,
+            selectedWorkoutIds: selectedIds
+        )
+        
+        scheduleData.weekSchedule[dayName] = updatedDayData
+        clientScheduleData = scheduleData
+        currentDayData = updatedDayData
+        
+        scheduleTableView.reloadData()
+        persistSchedule()
+        logDebug("Updated workouts for \(dayName): \(selectedIds.count) workouts selected")
+    }
 }
 
 // MARK: - ScheduleCardCellDelegate
 extension TrainerClientProfileScheduleViewController: ScheduleCardCellDelegate {
     
     func scheduleCardCell(_ cell: ScheduleCardCell, didTapExpandFor item: ScheduleItem) {
-        // Handle card expansion
+        // Check which card was tapped
+        if item.id == "1" {
+            // Workout card tapped
+            showWorkoutModal()
+        } else if item.id == "2" {
+            // Diet card tapped - TODO: implement diet modal later
+        }
+        
         persistSchedule()
     }
 }
@@ -504,14 +594,16 @@ extension TrainerClientProfileScheduleViewController: SliderCardCellDelegate {
                 isActive: dayData.isActive,
                 sleepHours: value,
                 waterIntake: dayData.waterIntake,
-                cardioNotes: dayData.cardioNotes
+                cardioNotes: dayData.cardioNotes,
+                selectedWorkoutIds: dayData.selectedWorkoutIds
             )
         } else if sliderItem.id == "water" {
             dayData = DayScheduleData(
                 isActive: dayData.isActive,
                 sleepHours: dayData.sleepHours,
                 waterIntake: value,
-                cardioNotes: dayData.cardioNotes
+                cardioNotes: dayData.cardioNotes,
+                selectedWorkoutIds: dayData.selectedWorkoutIds
             )
         }
         
@@ -537,7 +629,8 @@ extension TrainerClientProfileScheduleViewController: CardioInputCellDelegate {
             isActive: dayData.isActive,
             sleepHours: dayData.sleepHours,
             waterIntake: dayData.waterIntake,
-            cardioNotes: text
+            cardioNotes: text,
+            selectedWorkoutIds: dayData.selectedWorkoutIds
         )
         
         // Update schedule data
@@ -547,6 +640,15 @@ extension TrainerClientProfileScheduleViewController: CardioInputCellDelegate {
         currentDayData = dayData
         
         persistSchedule()
+    }
+}
+
+// MARK: - UIAdaptivePresentationControllerDelegate
+extension TrainerClientProfileScheduleViewController: UIAdaptivePresentationControllerDelegate {
+    
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        // Modal dismissed - no arrow animation needed since we removed it
+        logDebug("Modal dismissed")
     }
 }
 

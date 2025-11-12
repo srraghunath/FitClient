@@ -4,46 +4,53 @@
       "clientId": "client_001",
       "weekSchedule": {
         "Monday": {
-          "isActive": true,
-          "sleepHours": 8.0,
-          "waterIntake": 3.5,
-          "cardioNotes": "30 min morning run, 5km"
+          "is_active": true,
+          "sleep_hours": 8.0,
+          "water_intake": 3.5,
+          "cardio_notes": "30 min morning run, 5km",
+          "selected_workout_ids": ["workout_001", "workout_002", "workout_003"]
         },
         "Tuesday": {
-          "isActive": true,
-          "sleepHours": 7.0,
-          "waterIntake": 4.0,
-          "cardioNotes": "Evening cycling, 45 min"
+          "is_active": true,
+          "sleep_hours": 7.0,
+          "water_intake": 4.0,
+          "cardio_notes": "Evening cycling, 45 min",
+          "selected_workout_ids": ["workout_002", "workout_004", "workout_006"]
         },
         "Wednesday": {
-          "isActive": true,
-          "sleepHours": 8.5,
-          "waterIntake": 3.0,
-          "cardioNotes": "Swimming, 30 min"
+          "is_active": true,
+          "sleep_hours": 8.5,
+          "water_intake": 3.0,
+          "cardio_notes": "Swimming, 30 min",
+          "selected_workout_ids": ["workout_001", "workout_003"]
         },
         "Thursday": {
-          "isActive": true,
-          "sleepHours": 7.5,
-          "waterIntake": 4.5,
-          "cardioNotes": "HIIT training, 25 min"
+          "is_active": true,
+          "sleep_hours": 7.5,
+          "water_intake": 4.5,
+          "cardio_notes": "HIIT training, 25 min",
+          "selected_workout_ids": ["workout_004", "workout_005", "workout_006"]
         },
         "Friday": {
-          "isActive": true,
-          "sleepHours": 9.0,
-          "waterIntake": 3.5,
-          "cardioNotes": "Light jog, 20 min"
+          "is_active": true,
+          "sleep_hours": 9.0,
+          "water_intake": 3.5,
+          "cardio_notes": "Light jog, 20 min",
+          "selected_workout_ids": ["workout_001", "workout_002"]
         },
         "Saturday": {
-          "isActive": false,
-          "sleepHours": 0,
-          "waterIntake": 0,
-          "cardioNotes": ""
+          "is_active": false,
+          "sleep_hours": 0,
+          "water_intake": 0,
+          "cardio_notes": "",
+          "selected_workout_ids": ["workout_005", "workout_007"]
         },
         "Sunday": {
-          "isActive": false,
-          "sleepHours": 0,
-          "waterIntake": 0,
-          "cardioNotes": ""
+          "is_active": false,
+          "sleep_hours": 0,
+          "water_intake": 0,
+          "cardio_notes": "",
+          "selected_workout_ids": ["workout_008", "workout_009", "workout_010"]
         }
       }
     },
@@ -51,46 +58,53 @@
       "clientId": "client_002",
       "weekSchedule": {
         "Monday": {
-          "isActive": true,
-          "sleepHours": 7.0,
-          "waterIntake": 2.5,
-          "cardioNotes": "Morning jog, easy pace"
+          "is_active": true,
+          "sleep_hours": 7.0,
+          "water_intake": 2.5,
+          "cardio_notes": "Morning jog, easy pace",
+          "selected_workout_ids": ["workout_007", "workout_008"]
         },
         "Tuesday": {
-          "isActive": true,
-          "sleepHours": 7.5,
-          "waterIntake": 3.0,
-          "cardioNotes": "Bike ride, 1 hour"
+          "is_active": true,
+          "sleep_hours": 7.5,
+          "water_intake": 3.0,
+          "cardio_notes": "Bike ride, 1 hour",
+          "selected_workout_ids": ["workout_009", "workout_010"]
         },
         "Wednesday": {
-          "isActive": true,
-          "sleepHours": 7.0,
-          "waterIntake": 2.5,
-          "cardioNotes": "Yoga session, flexibility"
+          "is_active": true,
+          "sleep_hours": 7.0,
+          "water_intake": 2.5,
+          "cardio_notes": "Yoga session, flexibility",
+          "selected_workout_ids": ["workout_011"]
         },
         "Thursday": {
-          "isActive": false,
-          "sleepHours": 0,
-          "waterIntake": 0,
-          "cardioNotes": ""
+          "is_active": false,
+          "sleep_hours": 0,
+          "water_intake": 0,
+          "cardio_notes": "",
+          "selected_workout_ids": ["workout_003", "workout_004"]
         },
         "Friday": {
-          "isActive": true,
-          "sleepHours": 8.0,
-          "waterIntake": 3.5,
-          "cardioNotes": "Running intervals, track"
+          "is_active": true,
+          "sleep_hours": 8.0,
+          "water_intake": 3.5,
+          "cardio_notes": "Running intervals, track",
+          "selected_workout_ids": ["workout_007", "workout_010"]
         },
         "Saturday": {
-          "isActive": true,
-          "sleepHours": 9.0,
-          "waterIntake": 4.0,
-          "cardioNotes": "Long distance run, 10km"
+          "is_active": true,
+          "sleep_hours": 9.0,
+          "water_intake": 4.0,
+          "cardio_notes": "Long distance run, 10km",
+          "selected_workout_ids": ["workout_011", "workout_012", "workout_013"]
         },
         "Sunday": {
-          "isActive": false,
-          "sleepHours": 0,
-          "waterIntake": 0,
-          "cardioNotes": ""
+          "is_active": false,
+          "sleep_hours": 0,
+          "water_intake": 0,
+          "cardio_notes": "",
+          "selected_workout_ids": ["workout_001", "workout_005", "workout_006"]
         }
       }
     },
@@ -98,46 +112,53 @@
       "clientId": "client_003",
       "weekSchedule": {
         "Monday": {
-          "isActive": true,
-          "sleepHours": 8.0,
-          "waterIntake": 4.0,
-          "cardioNotes": "Elliptical 30 min"
+          "is_active": true,
+          "sleep_hours": 8.0,
+          "water_intake": 4.0,
+          "cardio_notes": "Elliptical 30 min",
+          "selected_workout_ids": ["workout_001", "workout_005"]
         },
         "Tuesday": {
-          "isActive": true,
-          "sleepHours": 7.5,
-          "waterIntake": 3.5,
-          "cardioNotes": "Stair climbing"
+          "is_active": true,
+          "sleep_hours": 7.5,
+          "water_intake": 3.5,
+          "cardio_notes": "Stair climbing",
+          "selected_workout_ids": ["workout_007", "workout_009"]
         },
         "Wednesday": {
-          "isActive": true,
-          "sleepHours": 8.0,
-          "waterIntake": 4.0,
-          "cardioNotes": "Rowing machine"
+          "is_active": true,
+          "sleep_hours": 8.0,
+          "water_intake": 4.0,
+          "cardio_notes": "Rowing machine",
+          "selected_workout_ids": ["workout_002", "workout_003", "workout_006"]
         },
         "Thursday": {
-          "isActive": true,
-          "sleepHours": 7.0,
-          "waterIntake": 3.0,
-          "cardioNotes": "Jump rope"
+          "is_active": true,
+          "sleep_hours": 7.0,
+          "water_intake": 3.0,
+          "cardio_notes": "Jump rope",
+          "selected_workout_ids": ["workout_011", "workout_012"]
         },
         "Friday": {
-          "isActive": true,
-          "sleepHours": 8.0,
-          "waterIntake": 4.0,
-          "cardioNotes": "Dance cardio"
+          "is_active": true,
+          "sleep_hours": 8.0,
+          "water_intake": 4.0,
+          "cardio_notes": "Dance cardio",
+          "selected_workout_ids": ["workout_001", "workout_004"]
         },
         "Saturday": {
-          "isActive": true,
-          "sleepHours": 9.0,
-          "waterIntake": 4.5,
-          "cardioNotes": "Outdoor hiking"
+          "is_active": true,
+          "sleep_hours": 9.0,
+          "water_intake": 4.5,
+          "cardio_notes": "Outdoor hiking",
+          "selected_workout_ids": ["workout_008", "workout_010"]
         },
         "Sunday": {
-          "isActive": false,
-          "sleepHours": 0,
-          "waterIntake": 0,
-          "cardioNotes": ""
+          "is_active": false,
+          "sleep_hours": 0,
+          "water_intake": 0,
+          "cardio_notes": "",
+          "selected_workout_ids": ["workout_004", "workout_009"]
         }
       }
     },
@@ -145,46 +166,53 @@
       "clientId": "client_004",
       "weekSchedule": {
         "Monday": {
-          "isActive": true,
-          "sleepHours": 7.5,
-          "waterIntake": 3.0,
-          "cardioNotes": "Treadmill intervals, HIIT"
+          "is_active": true,
+          "sleep_hours": 7.5,
+          "water_intake": 3.0,
+          "cardio_notes": "Treadmill intervals, HIIT",
+          "selected_workout_ids": ["workout_011", "workout_013"]
         },
         "Tuesday": {
-          "isActive": false,
-          "sleepHours": 0,
-          "waterIntake": 0,
-          "cardioNotes": ""
+          "is_active": false,
+          "sleep_hours": 0,
+          "water_intake": 0,
+          "cardio_notes": "",
+          "selected_workout_ids": ["workout_002", "workout_004", "workout_009"]
         },
         "Wednesday": {
-          "isActive": true,
-          "sleepHours": 8.0,
-          "waterIntake": 3.5,
-          "cardioNotes": "Boxing workout, heavy bag"
+          "is_active": true,
+          "sleep_hours": 8.0,
+          "water_intake": 3.5,
+          "cardio_notes": "Boxing workout, heavy bag",
+          "selected_workout_ids": ["workout_001", "workout_003", "workout_005"]
         },
         "Thursday": {
-          "isActive": true,
-          "sleepHours": 7.0,
-          "waterIntake": 3.0,
-          "cardioNotes": "Spin class, high intensity"
+          "is_active": true,
+          "sleep_hours": 7.0,
+          "water_intake": 3.0,
+          "cardio_notes": "Spin class, high intensity",
+          "selected_workout_ids": ["workout_007", "workout_008"]
         },
         "Friday": {
-          "isActive": true,
-          "sleepHours": 8.0,
-          "waterIntake": 3.5,
-          "cardioNotes": "Circuit training, full body"
+          "is_active": true,
+          "sleep_hours": 8.0,
+          "water_intake": 3.5,
+          "cardio_notes": "Circuit training, full body",
+          "selected_workout_ids": ["workout_011", "workout_012", "workout_013"]
         },
         "Saturday": {
-          "isActive": false,
-          "sleepHours": 0,
-          "waterIntake": 0,
-          "cardioNotes": ""
+          "is_active": false,
+          "sleep_hours": 0,
+          "water_intake": 0,
+          "cardio_notes": "",
+          "selected_workout_ids": ["workout_006", "workout_010"]
         },
         "Sunday": {
-          "isActive": true,
-          "sleepHours": 9.0,
-          "waterIntake": 4.0,
-          "cardioNotes": "Light stretching, recovery"
+          "is_active": true,
+          "sleep_hours": 9.0,
+          "water_intake": 4.0,
+          "cardio_notes": "Light stretching, recovery",
+          "selected_workout_ids": ["workout_002", "workout_006"]
         }
       }
     }

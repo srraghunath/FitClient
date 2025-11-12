@@ -182,6 +182,15 @@ struct DayScheduleData: Codable {
     let sleepHours: Double
     let waterIntake: Double
     let cardioNotes: String
+    let selectedWorkoutIds: [String]
+    
+    enum CodingKeys: String, CodingKey {
+        case isActive = "is_active"
+        case sleepHours = "sleep_hours"
+        case waterIntake = "water_intake"
+        case cardioNotes = "cardio_notes"
+        case selectedWorkoutIds = "selected_workout_ids"
+    }
 }
 
 struct ClientScheduleData: Codable {
