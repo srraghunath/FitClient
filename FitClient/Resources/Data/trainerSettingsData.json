@@ -1,0 +1,20 @@
+{
+  "notifications": {
+    "upcomingSessions": true,
+    "sessionChanges": true,
+    "newClientRequests": true,
+    "clientMessages": true,
+    "email": true,
+    "push": true
+  },
+  "help": {
+    "contactEmail": "coach-support@fitclient.app",
+    "contactPhone": "+91 9123456789",
+    "faqs": [
+      { "q": "How do I add a new client?", "a": "Open Clients tab and tap the + button to add a new client." },
+      { "q": "How do I schedule sessions?", "a": "Open a client's profile and use the Schedule section to add sessions." },
+      { "q": "How can I upgrade my plan?", "a": "Go to Settings > Subscription to view and upgrade your plan." }
+    ],
+    "resources": ["Coach Handbook", "Video Tutorials"]
+  }
+}

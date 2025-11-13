@@ -178,6 +178,40 @@ class DataService {
         }
     }
     
+    // MARK: - Settings (Client & Trainer)
+
+    func loadClientSettings(completion: @escaping (Result<ClientSettingsConfig, Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "clientSettingsData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("clientSettingsData.json")))
+            return
+        }
+
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let config = try decoder.decode(ClientSettingsConfig.self, from: data)
+            completion(.success(config))
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
+
+    func loadTrainerSettings(completion: @escaping (Result<TrainerSettingsConfig, Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "trainerSettingsData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("trainerSettingsData.json")))
+            return
+        }
+
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let config = try decoder.decode(TrainerSettingsConfig.self, from: data)
+            completion(.success(config))
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
+
     // MARK: - Client Dashboard
     
     func loadClientDashboard(completion: @escaping (Result<ClientDashboard, Error>) -> Void) {

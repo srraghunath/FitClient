@@ -1,0 +1,20 @@
+{
+  "notifications": {
+    "upcomingWorkouts": true,
+    "dietReminders": true,
+    "messages": true,
+    "goalProgress": true,
+    "email": false,
+    "push": true
+  },
+  "help": {
+    "contactEmail": "support@fitclient.app",
+    "contactPhone": "+91 9876543210",
+    "faqs": [
+      { "q": "How do I track my workouts?", "a": "Go to Dashboard > Today and tap Start on the workout card." },
+      { "q": "How do I edit my goals?", "a": "Open Settings > Profile and update your Goal field." },
+      { "q": "How can I contact my trainer?", "a": "Use the Chats tab to message your trainer directly." }
+    ],
+    "resources": ["User Guide", "Video Tutorials"]
+  }
+}

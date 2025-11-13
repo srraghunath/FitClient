@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ClientSettingsEditProfileViewController" customModule="FitClient" customModuleProvider="target">
+            <connections>
+                <outlet property="bioTextView" destination="bio-textview" id="bio-outlet"/>
+                <outlet property="emailTextField" destination="email-field" id="email-outlet"/>
+                <outlet property="goalTextField" destination="goal-field" id="goal-outlet"/>
+                <outlet property="nameTextField" destination="name-field" id="name-outlet"/>
+                <outlet property="phoneTextField" destination="phone-field" id="phone-outlet"/>
+                <outlet property="profileImageView" destination="profile-image" id="profile-image-outlet"/>
+                <outlet property="saveButton" destination="save-button" id="save-outlet"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="scroll-view">
+                    <rect key="frame" x="0.0" y="59" width="393" height="759"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="content-view">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="850"/>
+                            <subviews>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="profile-image">
+                                    <rect key="frame" x="136.6667" y="32" width="120" height="120"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="120" id="profile-width"/>
+                                        <constraint firstAttribute="height" constant="120" id="profile-height"/>
+                                    </constraints>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="60"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
+                                            <real key="value" value="2"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="color" keyPath="layer.borderColor">
+                                            <color key="value" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                </imageView>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="change-photo-button">
+                                    <rect key="frame" x="146.6667" y="172" width="100" height="30"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="30" id="change-photo-height"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                    <inset key="contentEdgeInsets" minX="16" minY="0.0" maxX="16" maxY="0.0"/>
+                                    <state key="normal" title="Change Photo">
+                                        <color key="titleColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <connections>
+                                        <action selector="changePhotoTapped:" destination="-1" eventType="touchUpInside" id="change-photo-action"/>
+                                    </connections>
+                                </button>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Full Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="name-label">
+                                    <rect key="frame" x="24" y="230" width="71.3333" height="17"/>
+                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                    <color key="textColor" red="0.8431372549" green="0.8" blue="0.7843137255" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter your name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="name-field">
+                                    <rect key="frame" x="24" y="255" width="345" height="48"/>
+                                    <color key="backgroundColor" red="0.1294117647" green="0.1294117647" blue="0.1294117647" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="48" id="name-field-height"/>
+                                    </constraints>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                    <textInputTraits key="textInputTraits" autocapitalizationType="words"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="8"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                </textField>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="email-label">
+                                    <rect key="frame" x="24" y="323" width="39.3333" height="17"/>
+                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                    <color key="textColor" red="0.8431372549" green="0.8" blue="0.7843137255" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter your email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="email-field">
+                                    <rect key="frame" x="24" y="348" width="345" height="48"/>
+                                    <color key="backgroundColor" red="0.1294117647" green="0.1294117647" blue="0.1294117647" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="48" id="email-field-height"/>
+                                    </constraints>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                    <textInputTraits key="textInputTraits" autocapitalizationType="none" keyboardType="emailAddress"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="8"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                </textField>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Phone" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="phone-label">
+                                    <rect key="frame" x="24" y="416" width="43.6667" height="17"/>
+                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                    <color key="textColor" red="0.8431372549" green="0.8" blue="0.7843137255" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter your phone" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="phone-field">
+                                    <rect key="frame" x="24" y="441" width="345" height="48"/>
+                                    <color key="backgroundColor" red="0.1294117647" green="0.1294117647" blue="0.1294117647" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="48" id="phone-field-height"/>
+                                    </constraints>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                    <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="8"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                </textField>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Goal" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="goal-label">
+                                    <rect key="frame" x="24" y="509" width="32" height="17"/>
+                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                    <color key="textColor" red="0.8431372549" green="0.8" blue="0.7843137255" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter your goal" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="goal-field">
+                                    <rect key="frame" x="24" y="534" width="345" height="48"/>
+                                    <color key="backgroundColor" red="0.1294117647" green="0.1294117647" blue="0.1294117647" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="48" id="goal-field-height"/>
+                                    </constraints>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="8"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                </textField>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bio" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bio-label">
+                                    <rect key="frame" x="24" y="602" width="23.3333" height="17"/>
+                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                    <color key="textColor" red="0.8431372549" green="0.8" blue="0.7843137255" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="bio-textview">
+                                    <rect key="frame" x="24" y="627" width="345" height="120"/>
+                                    <color key="backgroundColor" red="0.1294117647" green="0.1294117647" blue="0.1294117647" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="120" id="bio-height"/>
+                                    </constraints>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="8"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                </textView>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="save-button">
+                                    <rect key="frame" x="24" y="777" width="345" height="56"/>
+                                    <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="56" id="save-button-height"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                    <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" title="Save Changes">
+                                        <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="28"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="saveButtonTapped:" destination="-1" eventType="touchUpInside" id="save-action"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstItem="profile-image" firstAttribute="centerX" secondItem="content-view" secondAttribute="centerX" id="profile-center-x"/>
+                                <constraint firstItem="profile-image" firstAttribute="top" secondItem="content-view" secondAttribute="top" constant="32" id="profile-top"/>
+                                <constraint firstItem="change-photo-button" firstAttribute="centerX" secondItem="content-view" secondAttribute="centerX" id="change-photo-center"/>
+                                <constraint firstItem="change-photo-button" firstAttribute="top" secondItem="profile-image" secondAttribute="bottom" constant="20" id="change-photo-top"/>
+                                <constraint firstItem="name-label" firstAttribute="leading" secondItem="content-view" secondAttribute="leading" constant="24" id="name-label-leading"/>
+                                <constraint firstItem="name-label" firstAttribute="top" secondItem="change-photo-button" secondAttribute="bottom" constant="28" id="name-label-top"/>
+                                <constraint firstItem="name-field" firstAttribute="leading" secondItem="content-view" secondAttribute="leading" constant="24" id="name-field-leading"/>
+                                <constraint firstAttribute="trailing" secondItem="name-field" secondAttribute="trailing" constant="24" id="name-field-trailing"/>
+                                <constraint firstItem="name-field" firstAttribute="top" secondItem="name-label" secondAttribute="bottom" constant="8" id="name-field-top"/>
+                                <constraint firstItem="email-label" firstAttribute="leading" secondItem="content-view" secondAttribute="leading" constant="24" id="email-label-leading"/>
+                                <constraint firstItem="email-label" firstAttribute="top" secondItem="name-field" secondAttribute="bottom" constant="20" id="email-label-top"/>
+                                <constraint firstItem="email-field" firstAttribute="leading" secondItem="content-view" secondAttribute="leading" constant="24" id="email-field-leading"/>
+                                <constraint firstAttribute="trailing" secondItem="email-field" secondAttribute="trailing" constant="24" id="email-field-trailing"/>
+                                <constraint firstItem="email-field" firstAttribute="top" secondItem="email-label" secondAttribute="bottom" constant="8" id="email-field-top"/>
+                                <constraint firstItem="phone-label" firstAttribute="leading" secondItem="content-view" secondAttribute="leading" constant="24" id="phone-label-leading"/>
+                                <constraint firstItem="phone-label" firstAttribute="top" secondItem="email-field" secondAttribute="bottom" constant="20" id="phone-label-top"/>
+                                <constraint firstItem="phone-field" firstAttribute="leading" secondItem="content-view" secondAttribute="leading" constant="24" id="phone-field-leading"/>
+                                <constraint firstAttribute="trailing" secondItem="phone-field" secondAttribute="trailing" constant="24" id="phone-field-trailing"/>
+                                <constraint firstItem="phone-field" firstAttribute="top" secondItem="phone-label" secondAttribute="bottom" constant="8" id="phone-field-top"/>
+                                <constraint firstItem="goal-label" firstAttribute="leading" secondItem="content-view" secondAttribute="leading" constant="24" id="goal-label-leading"/>
+                                <constraint firstItem="goal-label" firstAttribute="top" secondItem="phone-field" secondAttribute="bottom" constant="20" id="goal-label-top"/>
+                                <constraint firstItem="goal-field" firstAttribute="leading" secondItem="content-view" secondAttribute="leading" constant="24" id="goal-field-leading"/>
+                                <constraint firstAttribute="trailing" secondItem="goal-field" secondAttribute="trailing" constant="24" id="goal-field-trailing"/>
+                                <constraint firstItem="goal-field" firstAttribute="top" secondItem="goal-label" secondAttribute="bottom" constant="8" id="goal-field-top"/>
+                                <constraint firstItem="bio-label" firstAttribute="leading" secondItem="content-view" secondAttribute="leading" constant="24" id="bio-label-leading"/>
+                                <constraint firstItem="bio-label" firstAttribute="top" secondItem="goal-field" secondAttribute="bottom" constant="20" id="bio-label-top"/>
+                                <constraint firstItem="bio-textview" firstAttribute="leading" secondItem="content-view" secondAttribute="leading" constant="24" id="bio-leading"/>
+                                <constraint firstAttribute="trailing" secondItem="bio-textview" secondAttribute="trailing" constant="24" id="bio-trailing"/>
+                                <constraint firstItem="bio-textview" firstAttribute="top" secondItem="bio-label" secondAttribute="bottom" constant="8" id="bio-top"/>
+                                <constraint firstItem="save-button" firstAttribute="leading" secondItem="content-view" secondAttribute="leading" constant="24" id="save-leading"/>
+                                <constraint firstAttribute="trailing" secondItem="save-button" secondAttribute="trailing" constant="24" id="save-trailing"/>
+                                <constraint firstItem="save-button" firstAttribute="top" secondItem="bio-textview" secondAttribute="bottom" constant="30" id="save-top"/>
+                                <constraint firstAttribute="bottom" secondItem="save-button" secondAttribute="bottom" constant="17" id="save-bottom"/>
+                                <constraint firstAttribute="height" constant="850" id="content-height"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="content-view" firstAttribute="width" secondItem="scroll-view" secondAttribute="width" id="content-width"/>
+                        <constraint firstItem="content-view" firstAttribute="leading" secondItem="scroll-view" secondAttribute="leading" id="content-leading"/>
+                        <constraint firstItem="content-view" firstAttribute="top" secondItem="scroll-view" secondAttribute="top" id="content-top"/>
+                        <constraint firstItem="content-view" firstAttribute="trailing" secondItem="scroll-view" secondAttribute="trailing" id="content-trailing"/>
+                        <constraint firstItem="content-view" firstAttribute="bottom" secondItem="scroll-view" secondAttribute="bottom" id="content-bottom"/>
+                    </constraints>
+                </scrollView>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="scroll-view" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="scroll-top"/>
+                <constraint firstItem="scroll-view" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="scroll-leading"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="scroll-view" secondAttribute="trailing" id="scroll-trailing"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="scroll-view" secondAttribute="bottom" id="scroll-bottom"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <point key="canvasLocation" x="44" y="17"/>
+        </view>
+    </objects>
+</document>
