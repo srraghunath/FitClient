@@ -76,8 +76,8 @@
                                                 <constraint firstAttribute="height" constant="15" id="wh-height"/>
                                             </constraints>
                                         </stackView>
-                                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="heatmap-cv">
-                                            <rect key="frame" x="12" y="109" width="353" height="276"/>
+                                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" scrollEnabled="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="heatmap-cv">
+                                            <rect key="frame" x="-111" y="109" width="353" height="276"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="276" id="cv-height"/>
@@ -146,6 +146,7 @@
                                         <constraint firstItem="legend-stack" firstAttribute="leading" secondItem="pie-container" secondAttribute="leading" constant="19" id="legend-leading"/>
                                         <constraint firstItem="legend-stack" firstAttribute="top" secondItem="pie-chart-view" secondAttribute="bottom" constant="15" id="legend-top"/>
                                         <constraint firstAttribute="trailing" secondItem="legend-stack" secondAttribute="trailing" constant="19" id="legend-trailing"/>
+                                        <constraint firstItem="pie-chart-view" firstAttribute="centerX" secondItem="pie-container" secondAttribute="centerX" id="pie-center"/>
                                         <constraint firstAttribute="height" constant="416" id="pie-container-height"/>
                                         <constraint firstItem="pie-subtitle" firstAttribute="leading" secondItem="pie-container" secondAttribute="leading" constant="19" id="pie-subtitle-leading"/>
                                         <constraint firstItem="pie-subtitle" firstAttribute="top" secondItem="pie-title" secondAttribute="bottom" constant="5" id="pie-subtitle-top"/>
@@ -153,7 +154,6 @@
                                         <constraint firstItem="pie-title" firstAttribute="leading" secondItem="pie-container" secondAttribute="leading" constant="19" id="pie-title-leading"/>
                                         <constraint firstItem="pie-title" firstAttribute="top" secondItem="pie-container" secondAttribute="top" constant="19" id="pie-title-top"/>
                                         <constraint firstAttribute="trailing" secondItem="pie-title" secondAttribute="trailing" constant="19" id="pie-title-trailing"/>
-                                        <constraint firstItem="pie-chart-view" firstAttribute="centerX" secondItem="pie-container" secondAttribute="centerX" id="pie-center"/>
                                         <constraint firstItem="pie-chart-view" firstAttribute="top" secondItem="pie-subtitle" secondAttribute="bottom" constant="15" id="pie-top"/>
                                     </constraints>
                                     <userDefinedRuntimeAttributes>
