@@ -34,9 +34,9 @@ class ClientTabBarController: UITabBarController {
         // Dashboard Tab - HOME with house icon
         let dashboardVC = DashboardViewController(nibName: "DashboardViewController", bundle: nil)
         let dashboardNav = UINavigationController(rootViewController: dashboardVC)
-        dashboardNav.view.backgroundColor = .black
-        dashboardNav.navigationBar.barTintColor = .black
-        dashboardNav.navigationBar.backgroundColor = .black
+        dashboardNav.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
+        dashboardNav.navigationBar.barTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
+        dashboardNav.navigationBar.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
         dashboardNav.tabBarItem = UITabBarItem(
             title: "Home",
             image: UIImage(systemName: "house"),
@@ -46,9 +46,9 @@ class ClientTabBarController: UITabBarController {
         // Workouts Tab - PROGRESS with chart icon
         let progressVC = ClientProgressViewController(nibName: "ClientProgressViewController", bundle: nil)
         let progressNav = UINavigationController(rootViewController: progressVC)
-        progressNav.view.backgroundColor = .black
-        progressNav.navigationBar.barTintColor = .black
-        progressNav.navigationBar.backgroundColor = .black
+        progressNav.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
+        progressNav.navigationBar.barTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
+        progressNav.navigationBar.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
         progressNav.tabBarItem = UITabBarItem(
             title: "Progress",
             image: UIImage(systemName: "chart.bar"),
@@ -56,11 +56,11 @@ class ClientTabBarController: UITabBarController {
         )
         
         // Chat Tab - CHAT with message icon
-        let chatVC = ClientWorkoutsViewController(nibName: "ClientWorkoutsViewController", bundle: nil) // Placeholder
+        let chatVC = ClientchatViewController(nibName: "ClientchatViewController", bundle: nil)
         let chatNav = UINavigationController(rootViewController: chatVC)
-        chatNav.view.backgroundColor = .black
-        chatNav.navigationBar.barTintColor = .black
-        chatNav.navigationBar.backgroundColor = .black
+        chatNav.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
+        chatNav.navigationBar.barTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
+        chatNav.navigationBar.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
         chatNav.tabBarItem = UITabBarItem(
             title: "Chat",
             image: UIImage(systemName: "message"),
@@ -70,9 +70,9 @@ class ClientTabBarController: UITabBarController {
         // Settings Tab - SETTINGS with gear icon
         let settingsVC = ClientSettingsViewController(nibName: "ClientSettingsViewController", bundle: nil)
         let settingsNav = UINavigationController(rootViewController: settingsVC)
-        settingsNav.view.backgroundColor = .black
-        settingsNav.navigationBar.barTintColor = .black
-        settingsNav.navigationBar.backgroundColor = .black
+        settingsNav.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
+        settingsNav.navigationBar.barTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
+        settingsNav.navigationBar.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
         settingsNav.tabBarItem = UITabBarItem(
             title: "Settings",
             image: UIImage(systemName: "gearshape"),

@@ -1,0 +1,92 @@
+[
+  {
+    "id": "msg_001",
+    "senderId": "trainer_001",
+    "senderName": "DINESH",
+    "senderImage": "https://via.placeholder.com/40x40?text=Trainer",
+    "message": "Hey there!",
+    "timestamp": "2025-11-13T09:15:00Z",
+    "isClient": false
+  },
+  {
+    "id": "msg_002",
+    "senderId": "client_001",
+    "senderName": "S R RAGHUNATH",
+    "senderImage": "https://via.placeholder.com/40x40?text=Client",
+    "message": "Morning!",
+    "timestamp": "2025-11-13T09:16:00Z",
+    "isClient": true
+  },
+  {
+    "id": "msg_003",
+    "senderId": "trainer_001",
+    "senderName": "DINESH",
+    "senderImage": "https://via.placeholder.com/40x40?text=Trainer",
+    "message": "How are you doing with your workout routine?",
+    "timestamp": "2025-11-13T09:17:00Z",
+    "isClient": false
+  },
+  {
+    "id": "msg_004",
+    "senderId": "trainer_001",
+    "senderName": "DINESH",
+    "senderImage": "https://via.placeholder.com/40x40?text=Trainer",
+    "message": "I wanted to check your progress from last week",
+    "timestamp": "2025-11-13T09:18:00Z",
+    "isClient": false
+  },
+  {
+    "id": "msg_005",
+    "senderId": "client_001",
+    "senderName": "S R RAGHUNATH",
+    "senderImage": "https://via.placeholder.com/40x40?text=Client",
+    "message": "Great! I've been following the plan strictly",
+    "timestamp": "2025-11-13T09:19:00Z",
+    "isClient": true
+  },
+  {
+    "id": "msg_006",
+    "senderId": "client_001",
+    "senderName": "S R RAGHUNATH",
+    "senderImage": "https://via.placeholder.com/40x40?text=Client",
+    "message": "Completed all 5 workouts this week",
+    "timestamp": "2025-11-13T09:20:00Z",
+    "isClient": true
+  },
+  {
+    "id": "msg_007",
+    "senderId": "trainer_001",
+    "senderName": "DINESH",
+    "senderImage": "https://via.placeholder.com/40x40?text=Trainer",
+    "message": "That's awesome! Keep up the great work",
+    "timestamp": "2025-11-13T09:21:00Z",
+    "isClient": false
+  },
+  {
+    "id": "msg_008",
+    "senderId": "trainer_001",
+    "senderName": "DINESH",
+    "senderImage": "https://via.placeholder.com/40x40?text=Trainer",
+    "message": "Your diet plan looks good too",
+    "timestamp": "2025-11-13T09:22:00Z",
+    "isClient": false
+  },
+  {
+    "id": "msg_009",
+    "senderId": "client_001",
+    "senderName": "S R RAGHUNATH",
+    "senderImage": "https://via.placeholder.com/40x40?text=Client",
+    "message": "Thanks! Feeling much better",
+    "timestamp": "2025-11-13T09:23:00Z",
+    "isClient": true
+  },
+  {
+    "id": "msg_010",
+    "senderId": "client_001",
+    "senderName": "S R RAGHUNATH",
+    "senderImage": "https://via.placeholder.com/40x40?text=Client",
+    "message": "When should I expect to see results?",
+    "timestamp": "2025-11-13T09:24:00Z",
+    "isClient": true
+  }
+]

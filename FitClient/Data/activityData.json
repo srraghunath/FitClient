@@ -1,0 +1,85 @@
+[
+  {
+    "id": "tracker_workout",
+    "type": "dayTracker",
+    "title": "Workout",
+    "subtitle": "Full body",
+    "icon": "dumbbell.2",
+    "isCompleted": true,
+    "date": "2025-10-29"
+  },
+  {
+    "id": "tracker_cardio",
+    "type": "dayTracker",
+    "title": "Cardio",
+    "subtitle": "Running, 30 minutes",
+    "icon": "figure.walk",
+    "isCompleted": false,
+    "date": "2025-10-29"
+  },
+  {
+    "id": "tracker_water",
+    "type": "dayTracker",
+    "title": "Water Intake",
+    "subtitle": "8 litres",
+    "icon": "drop.fill",
+    "isCompleted": false,
+    "date": "2025-10-29"
+  },
+  {
+    "id": "tracker_diet",
+    "type": "dayTracker",
+    "title": "Diet Plan",
+    "subtitle": "Balanced",
+    "icon": "leaf.fill",
+    "isCompleted": true,
+    "date": "2025-10-29"
+  },
+  {
+    "id": "tracker_sleep",
+    "type": "dayTracker",
+    "title": "Sleep Cycle",
+    "subtitle": "8 hours",
+    "icon": "moon.stars.fill",
+    "isCompleted": true,
+    "date": "2025-10-29"
+  },
+  {
+    "id": "summary_total",
+    "type": "activitySummary",
+    "title": "Total Active Days",
+    "value": "12 Days",
+    "icon": "calendar"
+  },
+  {
+    "id": "summary_consecutive",
+    "type": "activitySummary",
+    "title": "Consecutive Active Days",
+    "value": "7 Days",
+    "icon": "flame.fill"
+  },
+  {
+    "id": "workout_pushups",
+    "type": "scheduledWorkout",
+    "title": "Push-ups",
+    "description": "3 sets of 10 reps",
+    "image": "https://via.placeholder.com/56x56?text=Pushups",
+    "date": "2025-10-29"
+  },
+  {
+    "id": "workout_benchpress",
+    "type": "scheduledWorkout",
+    "title": "Bench Press",
+    "description": "3 sets of 12 reps",
+    "image": "https://via.placeholder.com/56x56?text=BenchPress",
+    "date": "2025-10-29"
+  },
+  {
+    "id": "workout_pullups",
+    "type": "scheduledWorkout",
+    "title": "Pull-ups",
+    "description": "3 sets of 10 reps",
+    "image": "https://via.placeholder.com/56x56?text=Pullups",
+    "date": "2025-10-29"
+  }
+]
