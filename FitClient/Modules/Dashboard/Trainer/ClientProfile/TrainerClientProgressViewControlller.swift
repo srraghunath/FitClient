@@ -114,30 +114,30 @@ class TrainerClientProgressViewControlller: UIViewController {
     
     private func setupWeekdayHeaders() {
         weekdayHeaderStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        
-        // Get the weekday of the 1st of current month
-        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentMonth))!
-        let firstWeekday = calendar.component(.weekday, from: startOfMonth)
-        
-        // firstWeekday: 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri, 7=Sat
-        // We want M T W T F S S order, so Mon=0, Tue=1, ..., Sun=6
-        // If Nov 1st is Saturday (6), we want: S S M T W T F
-        // If Nov 1st is Sunday (1), we want: S M T W T F S
-        let firstDayIndex = (firstWeekday - 1) % 7  // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
-        
-        let allWeekdays = ["S", "M", "T", "W", "T", "F", "S"]  // Starting from Sunday
-        
-        // Rotate the array to start from the first day of the month
-        var rotatedWeekdays: [String] = []
-        for i in 0..<7 {
-            rotatedWeekdays.append(allWeekdays[(firstDayIndex + i) % 7])
+        weekdayHeaderStackView.isHidden = false
+        if let headerHeightConstraint = weekdayHeaderStackView.constraints.first(where: { $0.firstAttribute == .height }) {
+            headerHeightConstraint.constant = 15
         }
-        
-        print("Month starts on weekday \(firstWeekday) (1=Sun, 7=Sat), headers: \(rotatedWeekdays.joined(separator: " "))")
-        
-        for day in rotatedWeekdays {
+        if let cvTopConstraint = heatmapContainerView.constraints.first(where: { $0.identifier == "cv-top" }) {
+            cvTopConstraint.constant = 8
+        }
+
+        // Determine the weekday of the first day of the current month
+        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentMonth)) else { return }
+        let firstWeekday = calendar.component(.weekday, from: startOfMonth) // 1=Sun ... 7=Sat
+
+        // Base order starting from Sunday so we can rotate depending on the month
+        let allWeekdays = ["S", "M", "T", "W", "T", "F", "S"]
+        let firstDayIndex = (firstWeekday - 1) % 7
+
+        var rotated: [String] = []
+        for i in 0..<7 {
+            rotated.append(allWeekdays[(firstDayIndex + i) % 7])
+        }
+
+        for symbol in rotated {
             let label = UILabel()
-            label.text = day
+            label.text = symbol
             label.font = .systemFont(ofSize: 11, weight: .medium)
             label.textColor = UIColor(hex: "#F5F5F5")
             label.textAlignment = .center
@@ -150,7 +150,7 @@ class TrainerClientProgressViewControlller: UIViewController {
         
         // Order: Workout, Diet, Sleep, Water, Cardio
         let legendItems = [
-            ("Workout", "#FF6B35"),
+            ("Workout", "#FFD74D"),
             ("Diet", "#FE14A5"),
             ("Sleep", "#A514FE"),
             ("Water", "#14FEFF"),
@@ -217,8 +217,9 @@ class TrainerClientProgressViewControlller: UIViewController {
         print("Current month: \(currentMonthKey)")
         print("Is current: \(isCurrentMonth), Is future: \(isFutureMonth), Is past: \(isPastMonth)")
         
-        // Get activity data for this specific month
-        let monthActivities = clientActivityData?.monthlyData[selectedMonthKey]
+    // Get activity data for this specific month
+    let monthActivities = clientActivityData?.monthlyData[selectedMonthKey]
+    let hasMonthData = (monthActivities?.isEmpty == false)
         
         // NO EMPTY BOXES - just add the actual days starting from day 1
         for day in 1...range {
@@ -231,14 +232,14 @@ class TrainerClientProgressViewControlller: UIViewController {
                     if day <= 3 {
                         print("   Day \(day): FUTURE MONTH (grey)")
                     }
-                } else if isPastMonth && selectedMonthKey != "2025-10" && selectedMonthKey != "2025-09" {
-                    // OLD PAST MONTHS (not October or September): All boxes grey (level 0)
+                } else if isPastMonth && !hasMonthData {
+                    // Past month without data: grey boxes
                     activities.append(DayActivity(date: date, activityLevel: 0))
                     if day <= 3 {
-                        print("   Day \(day): OLD MONTH (grey)")
+                        print("   Day \(day): PAST MONTH NO DATA (grey)")
                     }
                 } else {
-                    // CURRENT MONTH or OCTOBER or SEPTEMBER: Show actual data
+                    // CURRENT MONTH or PAST MONTH WITH DATA: Show actual data
                     let todayComponents = calendar.dateComponents([.day], from: today)
                     let currentDay = todayComponents.day ?? 0
                     
@@ -289,25 +290,23 @@ class TrainerClientProgressViewControlller: UIViewController {
         let currentMonthKey = monthFormatter.string(from: today)
         
         let isFutureMonth = currentMonth > today
-        let isPastMonth = currentMonth < calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
         
-        // For future months or old past months (not October/September), show 0% for all
-        if isFutureMonth || (isPastMonth && selectedMonthKey != "2025-10" && selectedMonthKey != "2025-09") {
+        if isFutureMonth {
             segments = [
-                ProgressSegment(title: "Workout", percentage: 0, color: UIColor(hex: "#FF6B35")),
+                ProgressSegment(title: "Workout", percentage: 0, color: UIColor(hex: "#FFD74D")),
                 ProgressSegment(title: "Diet", percentage: 0, color: UIColor(hex: "#FE14A5")),
                 ProgressSegment(title: "Sleep", percentage: 0, color: UIColor(hex: "#A514FE")),
                 ProgressSegment(title: "Water", percentage: 0, color: UIColor(hex: "#14FEFF")),
                 ProgressSegment(title: "Cardio", percentage: 0, color: UIColor(hex: "#FF8C14"))
             ]
-            print("Future or old month - showing 0% for all activities")
+            print("Future month - showing 0% for all activities")
             return
         }
         
         // Get activity data for this specific month
-        guard let monthActivities = clientActivityData?.monthlyData[selectedMonthKey] else {
+        guard let monthActivities = clientActivityData?.monthlyData[selectedMonthKey], !monthActivities.isEmpty else {
             segments = [
-                ProgressSegment(title: "Workout", percentage: 0, color: UIColor(hex: "#FF6B35")),
+                ProgressSegment(title: "Workout", percentage: 0, color: UIColor(hex: "#FFD74D")),
                 ProgressSegment(title: "Diet", percentage: 0, color: UIColor(hex: "#FE14A5")),
                 ProgressSegment(title: "Sleep", percentage: 0, color: UIColor(hex: "#A514FE")),
                 ProgressSegment(title: "Water", percentage: 0, color: UIColor(hex: "#14FEFF")),
@@ -330,7 +329,7 @@ class TrainerClientProgressViewControlller: UIViewController {
                 return false
             }
         } else {
-            // For October and September, use all days
+            // For past months, use all recorded days
             validActivities = monthActivities
         }
         
@@ -340,7 +339,7 @@ class TrainerClientProgressViewControlller: UIViewController {
         
         if totalDays == 0 {
             segments = [
-                ProgressSegment(title: "Workout", percentage: 0, color: UIColor(hex: "#FF6B35")),
+                ProgressSegment(title: "Workout", percentage: 0, color: UIColor(hex: "#FFD74D")),
                 ProgressSegment(title: "Diet", percentage: 0, color: UIColor(hex: "#FE14A5")),
                 ProgressSegment(title: "Sleep", percentage: 0, color: UIColor(hex: "#A514FE")),
                 ProgressSegment(title: "Water", percentage: 0, color: UIColor(hex: "#14FEFF")),
@@ -371,7 +370,7 @@ class TrainerClientProgressViewControlller: UIViewController {
         
         // PIE CHART ORDER: WORKOUT, DIET, SLEEP, WATER, CARDIO (percentages are ACTUAL from JSON)
         segments = [
-            ProgressSegment(title: "Workout", percentage: workoutPct, color: UIColor(hex: "#FF6B35")),
+            ProgressSegment(title: "Workout", percentage: workoutPct, color: UIColor(hex: "#FFD74D")),
             ProgressSegment(title: "Diet", percentage: dietPct, color: UIColor(hex: "#FE14A5")),
             ProgressSegment(title: "Sleep", percentage: sleepPct, color: UIColor(hex: "#A514FE")),
             ProgressSegment(title: "Water", percentage: waterPct, color: UIColor(hex: "#14FEFF")),
@@ -452,6 +451,7 @@ class TrainerClientProgressViewControlller: UIViewController {
             guard let self = self else { return }
             let selectedMonth = pickerView.selectedRow(inComponent: 0) + 1
             let selectedYear = pickerView.selectedRow(inComponent: 1) + 2020
+            print("📅 Trainer picker chose month: \(selectedMonth) year: \(selectedYear)")
             
             var components = DateComponents()
             components.year = selectedYear
@@ -484,13 +484,15 @@ extension TrainerClientProgressViewControlller: UICollectionViewDataSource, UICo
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HeatmapCell.id, for: indexPath) as! HeatmapCell
         
         if indexPath.item < activities.count {
-            let level = activities[indexPath.item].activityLevel
-            cell.configure(level: level)
+            let activity = activities[indexPath.item]
+            let level = activity.activityLevel
+            let dayNumber = calendar.component(.day, from: activity.date)
+            cell.configure(day: dayNumber, level: level)
             if indexPath.item < 7 {
-                print("Box \(indexPath.item + 1): level \(level)")
+                print("Box \(indexPath.item + 1): day \(dayNumber) level \(level)")
             }
         } else {
-            cell.configure(level: 0) // Grey
+            cell.configure(day: nil, level: 0) // Grey filler
         }
         
         return cell
@@ -516,10 +518,13 @@ extension TrainerClientProgressViewControlller: UICollectionViewDataSource, UICo
 class HeatmapCell: UICollectionViewCell {
     static let id = "HeatmapCell"
     private let box = UIView()
+    private let dayLabel = UILabel()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        box.layer.cornerRadius = 3
+        box.layer.cornerRadius = 6
+        box.layer.masksToBounds = true
+        box.layer.borderWidth = 1
         box.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(box)
         NSLayoutConstraint.activate([
@@ -528,26 +533,57 @@ class HeatmapCell: UICollectionViewCell {
             box.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             box.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
+
+        dayLabel.font = .systemFont(ofSize: 13, weight: .semibold)
+        dayLabel.translatesAutoresizingMaskIntoConstraints = false
+        box.addSubview(dayLabel)
+        NSLayoutConstraint.activate([
+            dayLabel.centerXAnchor.constraint(equalTo: box.centerXAnchor),
+            dayLabel.centerYAnchor.constraint(equalTo: box.centerYAnchor)
+        ])
     }
     
     required init?(coder: NSCoder) { fatalError() }
     
-    func configure(level: Int) {
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        dayLabel.text = nil
+    }
+
+    func configure(day: Int?, level: Int) {
+        if let day = day {
+            dayLabel.text = "\(day)"
+        } else {
+            dayLabel.text = ""
+        }
+        dayLabel.textAlignment = .center
+        dayLabel.adjustsFontSizeToFitWidth = true
+
         // 0 = DARK GREY (future dates after today)
         // 1 = WHITE (0 activities completed) 
         // 2 = MILD GREEN (1-2 activities completed)
         // 3 = FULL PRIMARY GREEN (3-5 activities - all completed)
         switch level {
         case 0:
-            box.backgroundColor = UIColor(hex: "#4A4A4A") // Dark grey for future dates (much darker)
+            box.backgroundColor = UIColor(hex: "#1F1F1F") // Dark grey for future dates (higher contrast)
+            box.layer.borderColor = UIColor(hex: "#353535").cgColor
+            dayLabel.textColor = UIColor(hex: "#7B7B7B")
         case 1:
-            box.backgroundColor = UIColor(hex: "#FFFFFF") // White for nothing completed
+            box.backgroundColor = UIColor(hex: "#F2F2F2") // Soft white for nothing completed
+            box.layer.borderColor = UIColor(hex: "#C8C8C8").cgColor
+            dayLabel.textColor = UIColor(hex: "#202020")
         case 2:
-            box.backgroundColor = UIColor(hex: "#D3FE74") // Mild green for 1-2 activities
+            box.backgroundColor = UIColor(hex: "#D8FF7C") // Light primary green for 1-2 activities
+            box.layer.borderColor = UIColor(hex: "#9ACF35").cgColor
+            dayLabel.textColor = UIColor(hex: "#314400")
         case 3:
-            box.backgroundColor = UIColor(hex: "#AEFE14") // Full primary green for 3-5 activities (all)
+            box.backgroundColor = UIColor(hex: "#AEFE14") // Primary green for 3-5 activities
+            box.layer.borderColor = UIColor(hex: "#6EBE00").cgColor
+            dayLabel.textColor = UIColor(hex: "#2F3B00")
         default:
-            box.backgroundColor = UIColor(hex: "#4A4A4A") // Dark grey default
+            box.backgroundColor = UIColor(hex: "#1F1F1F") // Dark grey default
+            box.layer.borderColor = UIColor(hex: "#353535").cgColor
+            dayLabel.textColor = UIColor(hex: "#7B7B7B")
         }
     }
 }
