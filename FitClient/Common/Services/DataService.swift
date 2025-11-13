@@ -160,6 +160,24 @@ class DataService {
         }
     }
     
+    // MARK: - Diets
+    
+    func loadDiets(completion: @escaping (Result<[Diet], Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "dietsData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("dietsData.json")))
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let dietsData = try decoder.decode(DietsData.self, from: data)
+            completion(.success(dietsData.diets))
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
+    
     // MARK: - Client Dashboard
     
     func loadClientDashboard(completion: @escaping (Result<ClientDashboard, Error>) -> Void) {

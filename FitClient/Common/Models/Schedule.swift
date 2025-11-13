@@ -177,12 +177,25 @@ struct ClientSchedule: Codable {
 }
 
 // MARK: - JSON Models
+
+// Helper struct for encoding/decoding diet items
+struct DietItem: Codable {
+    let dietId: String
+    let quantity: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case dietId = "diet_id"
+        case quantity
+    }
+}
+
 struct DayScheduleData: Codable {
     let isActive: Bool
     let sleepHours: Double
     let waterIntake: Double
     let cardioNotes: String
     let selectedWorkoutIds: [String]
+    let selectedDietItems: [(dietId: String, quantity: Int)]
     
     enum CodingKeys: String, CodingKey {
         case isActive = "is_active"
@@ -190,6 +203,45 @@ struct DayScheduleData: Codable {
         case waterIntake = "water_intake"
         case cardioNotes = "cardio_notes"
         case selectedWorkoutIds = "selected_workout_ids"
+        case selectedDietItems = "selected_diet_items"
+    }
+    
+    init(isActive: Bool, sleepHours: Double, waterIntake: Double, cardioNotes: String, selectedWorkoutIds: [String], selectedDietItems: [(dietId: String, quantity: Int)] = []) {
+        self.isActive = isActive
+        self.sleepHours = sleepHours
+        self.waterIntake = waterIntake
+        self.cardioNotes = cardioNotes
+        self.selectedWorkoutIds = selectedWorkoutIds
+        self.selectedDietItems = selectedDietItems
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        isActive = try container.decodeIfPresent(Bool.self, forKey: .isActive) ?? true
+        sleepHours = try container.decodeIfPresent(Double.self, forKey: .sleepHours) ?? 7.0
+        waterIntake = try container.decodeIfPresent(Double.self, forKey: .waterIntake) ?? 2.0
+        cardioNotes = try container.decodeIfPresent(String.self, forKey: .cardioNotes) ?? ""
+        selectedWorkoutIds = try container.decodeIfPresent([String].self, forKey: .selectedWorkoutIds) ?? []
+        
+        // Decode diet items using helper struct
+        if let dietItems = try? container.decode([DietItem].self, forKey: .selectedDietItems) {
+            selectedDietItems = dietItems.map { ($0.dietId, $0.quantity) }
+        } else {
+            selectedDietItems = []
+        }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(isActive, forKey: .isActive)
+        try container.encode(sleepHours, forKey: .sleepHours)
+        try container.encode(waterIntake, forKey: .waterIntake)
+        try container.encode(cardioNotes, forKey: .cardioNotes)
+        try container.encode(selectedWorkoutIds, forKey: .selectedWorkoutIds)
+        
+        // Encode diet items using helper struct
+        let dietItems = selectedDietItems.map { DietItem(dietId: $0.dietId, quantity: $0.quantity) }
+        try container.encode(dietItems, forKey: .selectedDietItems)
     }
 }
 

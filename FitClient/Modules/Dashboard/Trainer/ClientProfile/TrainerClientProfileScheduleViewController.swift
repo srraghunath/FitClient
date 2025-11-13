@@ -253,7 +253,8 @@ class TrainerClientProfileScheduleViewController: UIViewController {
             sleepHours: 0,
             waterIntake: 0,
             cardioNotes: "",
-            selectedWorkoutIds: []
+            selectedWorkoutIds: [],
+            selectedDietItems: []
         )
         
         clientScheduleData = updatedSchedule
@@ -542,6 +543,29 @@ extension TrainerClientProfileScheduleViewController: UITableViewDelegate {
         logDebug("Presenting workout modal with \(modal.initialSelectedIds.count) pre-selected workouts")
     }
     
+    private func showDietModal() {
+        let modal = DietModalViewController(nibName: "DietModalViewController", bundle: nil)
+        modal.initialSelectedDiets = currentDayData?.selectedDietItems ?? []
+        
+        // Handle save callback
+        modal.onSave = { [weak self] selectedDietItems in
+            self?.updateSelectedDiets(selectedDietItems)
+        }
+        
+        // Handle modal dismissal to reset card arrow
+        modal.presentationController?.delegate = self
+        
+        modal.modalPresentationStyle = .pageSheet
+        if let sheet = modal.sheetPresentationController {
+            sheet.detents = [.large()]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 10
+        }
+        
+        present(modal, animated: true)
+        logDebug("Presenting diet modal with \(modal.initialSelectedDiets.count) pre-selected diet items")
+    }
+    
     private func updateSelectedWorkouts(_ selectedIds: [String]) {
         guard var scheduleData = clientScheduleData, let dayData = currentDayData else { return }
         let dayName = getDayName(from: selectedDay)
@@ -552,7 +576,8 @@ extension TrainerClientProfileScheduleViewController: UITableViewDelegate {
             sleepHours: dayData.sleepHours,
             waterIntake: dayData.waterIntake,
             cardioNotes: dayData.cardioNotes,
-            selectedWorkoutIds: selectedIds
+            selectedWorkoutIds: selectedIds,
+            selectedDietItems: dayData.selectedDietItems
         )
         
         scheduleData.weekSchedule[dayName] = updatedDayData
@@ -562,6 +587,29 @@ extension TrainerClientProfileScheduleViewController: UITableViewDelegate {
         scheduleTableView.reloadData()
         persistSchedule()
         logDebug("Updated workouts for \(dayName): \(selectedIds.count) workouts selected")
+    }
+    
+    private func updateSelectedDiets(_ selectedDietItems: [(dietId: String, quantity: Int)]) {
+        guard var scheduleData = clientScheduleData, let dayData = currentDayData else { return }
+        let dayName = getDayName(from: selectedDay)
+        
+        // Update the day data with new diet selections
+        let updatedDayData = DayScheduleData(
+            isActive: dayData.isActive,
+            sleepHours: dayData.sleepHours,
+            waterIntake: dayData.waterIntake,
+            cardioNotes: dayData.cardioNotes,
+            selectedWorkoutIds: dayData.selectedWorkoutIds,
+            selectedDietItems: selectedDietItems
+        )
+        
+        scheduleData.weekSchedule[dayName] = updatedDayData
+        clientScheduleData = scheduleData
+        currentDayData = updatedDayData
+        
+        scheduleTableView.reloadData()
+        persistSchedule()
+        logDebug("Updated diet items for \(dayName): \(selectedDietItems.count) diet items selected")
     }
 }
 
@@ -574,7 +622,8 @@ extension TrainerClientProfileScheduleViewController: ScheduleCardCellDelegate {
             // Workout card tapped
             showWorkoutModal()
         } else if item.id == "2" {
-            // Diet card tapped - TODO: implement diet modal later
+            // Diet card tapped
+            showDietModal()
         }
         
         persistSchedule()
@@ -595,7 +644,8 @@ extension TrainerClientProfileScheduleViewController: SliderCardCellDelegate {
                 sleepHours: value,
                 waterIntake: dayData.waterIntake,
                 cardioNotes: dayData.cardioNotes,
-                selectedWorkoutIds: dayData.selectedWorkoutIds
+                selectedWorkoutIds: dayData.selectedWorkoutIds,
+                selectedDietItems: dayData.selectedDietItems
             )
         } else if sliderItem.id == "water" {
             dayData = DayScheduleData(
@@ -603,7 +653,8 @@ extension TrainerClientProfileScheduleViewController: SliderCardCellDelegate {
                 sleepHours: dayData.sleepHours,
                 waterIntake: value,
                 cardioNotes: dayData.cardioNotes,
-                selectedWorkoutIds: dayData.selectedWorkoutIds
+                selectedWorkoutIds: dayData.selectedWorkoutIds,
+                selectedDietItems: dayData.selectedDietItems
             )
         }
         
@@ -630,7 +681,8 @@ extension TrainerClientProfileScheduleViewController: CardioInputCellDelegate {
             sleepHours: dayData.sleepHours,
             waterIntake: dayData.waterIntake,
             cardioNotes: text,
-            selectedWorkoutIds: dayData.selectedWorkoutIds
+            selectedWorkoutIds: dayData.selectedWorkoutIds,
+            selectedDietItems: dayData.selectedDietItems
         )
         
         // Update schedule data

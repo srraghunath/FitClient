@@ -8,35 +8,60 @@
           "sleep_hours": 8.0,
           "water_intake": 3.5,
           "cardio_notes": "30 min morning run, 5km",
-          "selected_workout_ids": ["workout_001", "workout_002", "workout_003"]
+          "selected_workout_ids": ["workout_001", "workout_002", "workout_003"],
+          "selected_diet_items": [
+            {"diet_id": "bf_veg_1", "quantity": 2},
+            {"diet_id": "ln_veg_1", "quantity": 1},
+            {"diet_id": "dn_veg_1", "quantity": 1}
+          ]
         },
         "Tuesday": {
           "is_active": true,
           "sleep_hours": 7.0,
           "water_intake": 4.0,
           "cardio_notes": "Evening cycling, 45 min",
-          "selected_workout_ids": ["workout_002", "workout_004", "workout_006"]
+          "selected_workout_ids": ["workout_002", "workout_004", "workout_006"],
+          "selected_diet_items": [
+            {"diet_id": "bf_veg_2", "quantity": 1},
+            {"diet_id": "ln_nonveg_1", "quantity": 2},
+            {"diet_id": "dn_veg_2", "quantity": 1}
+          ]
         },
         "Wednesday": {
           "is_active": true,
           "sleep_hours": 8.5,
           "water_intake": 3.0,
           "cardio_notes": "Swimming, 30 min",
-          "selected_workout_ids": ["workout_001", "workout_003"]
+          "selected_workout_ids": ["workout_001", "workout_003"],
+          "selected_diet_items": [
+            {"diet_id": "bf_vegan_1", "quantity": 3},
+            {"diet_id": "ln_veg_2", "quantity": 1},
+            {"diet_id": "dn_nonveg_1", "quantity": 2}
+          ]
         },
         "Thursday": {
           "is_active": true,
           "sleep_hours": 7.5,
           "water_intake": 4.5,
           "cardio_notes": "HIIT training, 25 min",
-          "selected_workout_ids": ["workout_004", "workout_005", "workout_006"]
+          "selected_workout_ids": ["workout_004", "workout_005", "workout_006"],
+          "selected_diet_items": [
+            {"diet_id": "bf_veg_3", "quantity": 2},
+            {"diet_id": "ln_vegan_1", "quantity": 1},
+            {"diet_id": "dn_veg_3", "quantity": 1}
+          ]
         },
         "Friday": {
           "is_active": true,
           "sleep_hours": 9.0,
           "water_intake": 3.5,
           "cardio_notes": "Light jog, 20 min",
-          "selected_workout_ids": ["workout_001", "workout_002"]
+          "selected_workout_ids": ["workout_001", "workout_002"],
+          "selected_diet_items": [
+            {"diet_id": "bf_veg_4", "quantity": 1},
+            {"diet_id": "ln_nonveg_2", "quantity": 2},
+            {"diet_id": "dn_vegan_1", "quantity": 1}
+          ]
         },
         "Saturday": {
           "is_active": false,
