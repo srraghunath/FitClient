@@ -177,6 +177,34 @@ class DataService {
             completion(.failure(DataServiceError.decodingFailed(error)))
         }
     }
+    
+    func loadWorkoutsForDate(_ date: Date, completion: @escaping (Result<[TodayWorkout], Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "clientDashboardData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("clientDashboardData.json")))
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let dashboardData = try decoder.decode(ClientDashboardData.self, from: data)
+            
+            // Format date as "yyyy-MM-dd"
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let dateString = dateFormatter.string(from: date)
+            
+            // Get workouts for the specific date
+            if let workouts = dashboardData.workoutsByDate[dateString] {
+                completion(.success(workouts))
+            } else {
+                // Return empty array if no workouts for this date
+                completion(.success([]))
+            }
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
 }
 
 // MARK: - Custom Errors

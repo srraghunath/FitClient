@@ -1,4 +1,116 @@
 {
+  "workoutsByDate": {
+    "2025-11-13": [
+      {
+        "id": "w1",
+        "name": "Push-ups",
+        "reps": "3 sets of 15 reps",
+        "imageUrl": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop"
+      },
+      {
+        "id": "w2",
+        "name": "Bench Press",
+        "reps": "4 sets of 12 reps",
+        "imageUrl": "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=400&h=300&fit=crop"
+      },
+      {
+        "id": "w3",
+        "name": "Pull-ups",
+        "reps": "3 sets of 10 reps",
+        "imageUrl": "https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=400&h=300&fit=crop"
+      }
+    ],
+    "2025-11-14": [
+      {
+        "id": "w4",
+        "name": "Squats",
+        "reps": "4 sets of 15 reps",
+        "imageUrl": "https://images.unsplash.com/photo-1574680096145-d05b474e2155"
+      },
+      {
+        "id": "w5",
+        "name": "Deadlifts",
+        "reps": "3 sets of 8 reps",
+        "imageUrl": "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5"
+      }
+    ],
+    "2025-11-15": [
+      {
+        "id": "w6",
+        "name": "Running",
+        "reps": "30 minutes",
+        "imageUrl": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b"
+      },
+      {
+        "id": "w7",
+        "name": "Cycling",
+        "reps": "45 minutes",
+        "imageUrl": "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5"
+      },
+      {
+        "id": "w8",
+        "name": "Jump Rope",
+        "reps": "15 minutes",
+        "imageUrl": "https://images.unsplash.com/photo-1574680096145-d05b474e2155"
+      }
+    ],
+    "2025-11-16": [
+      {
+        "id": "w9",
+        "name": "Shoulder Press",
+        "reps": "3 sets of 12 reps",
+        "imageUrl": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b"
+      },
+      {
+        "id": "w10",
+        "name": "Lateral Raises",
+        "reps": "3 sets of 15 reps",
+        "imageUrl": "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5"
+      }
+    ],
+    "2025-11-17": [
+      {
+        "id": "w11",
+        "name": "Plank",
+        "reps": "3 sets of 60 seconds",
+        "imageUrl": "https://images.unsplash.com/photo-1574680096145-d05b474e2155"
+      },
+      {
+        "id": "w12",
+        "name": "Crunches",
+        "reps": "3 sets of 20 reps",
+        "imageUrl": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b"
+      },
+      {
+        "id": "w13",
+        "name": "Russian Twists",
+        "reps": "3 sets of 30 reps",
+        "imageUrl": "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5"
+      }
+    ],
+    "2025-11-18": [
+      {
+        "id": "w14",
+        "name": "Leg Press",
+        "reps": "4 sets of 12 reps",
+        "imageUrl": "https://images.unsplash.com/photo-1574680096145-d05b474e2155"
+      },
+      {
+        "id": "w15",
+        "name": "Lunges",
+        "reps": "3 sets of 12 reps per leg",
+        "imageUrl": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b"
+      }
+    ],
+    "2025-11-19": [
+      {
+        "id": "w16",
+        "name": "Rest Day",
+        "reps": "Active recovery",
+        "imageUrl": "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5"
+      }
+    ]
+  },
   "dashboard": {
     "userName": "Alex",
     "greeting": "Good Morning",

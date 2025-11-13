@@ -29,8 +29,10 @@ class DashboardViewController: UIViewController {
     @IBOutlet weak var dayTrackerTableHeight: NSLayoutConstraint!
     @IBOutlet weak var scheduledWorkoutsTableHeight: NSLayoutConstraint!
     
+    private var datePicker: UIDatePicker!
     private var navBarDateLabel: UILabel!
     private var calendarButton: UIButton!
+    private var selectedDate: Date = Date()
     
     private var dayTrackerItems: [DayTrackerItem] = []
     private var scheduledWorkouts: [TodayWorkout] = []
@@ -48,6 +50,14 @@ class DashboardViewController: UIViewController {
         navigationController?.navigationBar.isTranslucent = false
         navigationController?.navigationBar.barTintColor = UIColor(red: 0/255, green: 1/255, blue: 1/255, alpha: 1.0) // #000101
         navigationController?.navigationBar.shadowImage = UIImage()
+        
+        // Initialize date picker
+        datePicker = UIDatePicker()
+        datePicker.preferredDatePickerStyle = .inline
+        datePicker.datePickerMode = .date
+        datePicker.tintColor = .primaryGreen
+        datePicker.backgroundColor = UIColor(red: 0.11, green: 0.11, blue: 0.11, alpha: 1.0)
+        datePicker.overrideUserInterfaceStyle = .dark
         
         // Create custom title view with date
         let titleView = UIView(frame: CGRect(x: 0, y: 0, width: 220, height: 44))
@@ -75,14 +85,72 @@ class DashboardViewController: UIViewController {
     }
     
     @objc private func calendarButtonTapped() {
-        // Handle calendar button tap - show date picker or calendar view
-        print("Calendar button tapped")
+        showDatePickerModal()
+    }
+    
+    private func showDatePickerModal() {
+        // Create a custom view controller for the date picker
+        let containerVC = UIViewController()
+        containerVC.modalPresentationStyle = .pageSheet
+        
+        if let sheet = containerVC.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+        }
+        
+        // Setup the view
+        let containerView = UIView()
+        containerView.backgroundColor = UIColor(red: 0.11, green: 0.11, blue: 0.11, alpha: 1.0)
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        containerVC.view.addSubview(containerView)
+        
+        // Configure date picker
+        datePicker.date = selectedDate
+        datePicker.translatesAutoresizingMaskIntoConstraints = false
+        datePicker.backgroundColor = .clear
+        containerView.addSubview(datePicker)
+        
+        // Create Select button
+        let selectButton = UIButton(type: .system)
+        selectButton.setTitle("Select Date", for: .normal)
+        selectButton.backgroundColor = .primaryGreen
+        selectButton.setTitleColor(.black, for: .normal)
+        selectButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        selectButton.layer.cornerRadius = 28
+        selectButton.translatesAutoresizingMaskIntoConstraints = false
+        selectButton.addTarget(self, action: #selector(selectDateTapped), for: .touchUpInside)
+        containerView.addSubview(selectButton)
+        
+        // Layout constraints
+        NSLayoutConstraint.activate([
+            containerView.leadingAnchor.constraint(equalTo: containerVC.view.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: containerVC.view.trailingAnchor),
+            containerView.topAnchor.constraint(equalTo: containerVC.view.topAnchor),
+            containerView.bottomAnchor.constraint(equalTo: containerVC.view.bottomAnchor),
+            
+            datePicker.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40),
+            datePicker.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            
+            selectButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            selectButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+            selectButton.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            selectButton.heightAnchor.constraint(equalToConstant: 56)
+        ])
+        
+        present(containerVC, animated: true)
+    }
+    
+    @objc private func selectDateTapped() {
+        selectedDate = datePicker.date
+        updateNavigationDate()
+        loadDataForDate(selectedDate)
+        dismiss(animated: true)
     }
     
     private func updateNavigationDate() {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "EEE , dd MMM yyyy"
-        navBarDateLabel.text = dateFormatter.string(from: Date())
+        navBarDateLabel.text = dateFormatter.string(from: selectedDate)
     }
     
     func setupUI() {
@@ -130,10 +198,26 @@ class DashboardViewController: UIViewController {
         scheduledWorkoutsTableView.backgroundColor = .clear
         scheduledWorkoutsTableView.separatorStyle = .none
         scheduledWorkoutsTableView.isScrollEnabled = false
-        scheduledWorkoutsTableView.register(UITableViewCell.self, forCellReuseIdentifier: "ScheduledWorkoutCell")
+        
+        // Register custom WorkoutCardCell
+        let nib = UINib(nibName: "WorkoutCardCell", bundle: nil)
+        scheduledWorkoutsTableView.register(nib, forCellReuseIdentifier: "WorkoutCardCell")
     }
     
     func loadData() {
+        loadDataForDate(selectedDate)
+    }
+    
+    func loadDataForDate(_ date: Date) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let dateString = dateFormatter.string(from: date)
+        
+        let logPath = "/tmp/dashboard_debug.log"
+        let log = "📅 [Dashboard] Loading data for date: \(dateString)\n"
+        try? log.write(toFile: logPath, atomically: true, encoding: .utf8)
+        print(log)
+        
         // Set stat values
         totalActiveDaysValueLabel.text = "12 Days"
         consecutiveDaysValueLabel.text = "7 Days"
@@ -147,16 +231,34 @@ class DashboardViewController: UIViewController {
             DayTrackerItem(icon: "🌙", title: "Sleep Cycle", subtitle: "8 hours", isCompleted: true)
         ]
         
-        // Load scheduled workouts
-        DataService.shared.loadClientDashboard { [weak self] result in
+        // Load scheduled workouts for the selected date
+        DataService.shared.loadWorkoutsForDate(date) { [weak self] result in
             switch result {
-            case .success(let dashboard):
-                self?.scheduledWorkouts = dashboard.todayWorkouts
+            case .success(let workouts):
+                var logMsg = "✅ [Dashboard] Loaded \(workouts.count) workouts for \(dateString)\n"
+                workouts.forEach { workout in
+                    logMsg += "   - \(workout.name): \(workout.imageUrl)\n"
+                }
+                if let existingLog = try? String(contentsOfFile: logPath) {
+                    try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
+                }
+                print(logMsg)
+                
+                self?.scheduledWorkouts = workouts
                 DispatchQueue.main.async {
                     self?.updateUI()
                 }
             case .failure(let error):
-                print("Error loading dashboard: \(error)")
+                let errMsg = "❌ [Dashboard] Error loading workouts: \(error)\n"
+                if let existingLog = try? String(contentsOfFile: logPath) {
+                    try? (existingLog + errMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
+                }
+                print(errMsg)
+                
+                DispatchQueue.main.async {
+                    self?.scheduledWorkouts = []
+                    self?.updateUI()
+                }
             }
         }
     }
@@ -165,9 +267,13 @@ class DashboardViewController: UIViewController {
         dayTrackerTableView.reloadData()
         scheduledWorkoutsTableView.reloadData()
         
-        // Update table heights
+        // Update table heights - 72pt + 8pt spacing per cell
         dayTrackerTableHeight.constant = CGFloat(dayTrackerItems.count) * 80
-        scheduledWorkoutsTableHeight.constant = CGFloat(scheduledWorkouts.count) * 80
+        scheduledWorkoutsTableHeight.constant = CGFloat(scheduledWorkouts.count) * 72
+        
+        // Log for debugging
+        print("📊 [Dashboard] Day tracker items: \(dayTrackerItems.count), height: \(dayTrackerTableHeight.constant)")
+        print("📊 [Dashboard] Scheduled workouts: \(scheduledWorkouts.count), height: \(scheduledWorkoutsTableHeight.constant)")
         
         view.layoutIfNeeded()
     }
@@ -187,30 +293,39 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tableView == dayTrackerTableView {
             let cell = tableView.dequeueReusableCell(withIdentifier: "DayTrackerCell", for: indexPath)
-            cell.backgroundColor = UIColor(white: 0.15, alpha: 1.0)
-            cell.selectionStyle = .none
-            cell.layer.cornerRadius = 12
-            cell.clipsToBounds = true
             
-            let item = dayTrackerItems[indexPath.row]
+            // Create a container view for spacing
+            let containerView = UIView()
+            containerView.backgroundColor = UIColor(red: 0.19, green: 0.19, blue: 0.19, alpha: 1.0)
+            containerView.layer.cornerRadius = 24
+            containerView.clipsToBounds = true
+            containerView.translatesAutoresizingMaskIntoConstraints = false
+            
+            cell.backgroundColor = .clear
+            cell.contentView.backgroundColor = .clear
+            cell.selectionStyle = .none
             
             // Remove all subviews first
             cell.contentView.subviews.forEach { $0.removeFromSuperview() }
+            
+            cell.contentView.addSubview(containerView)
+            
+            let item = dayTrackerItems[indexPath.row]
             
             // Icon label
             let iconLabel = UILabel()
             iconLabel.text = item.icon
             iconLabel.font = .systemFont(ofSize: 24)
             iconLabel.translatesAutoresizingMaskIntoConstraints = false
-            cell.contentView.addSubview(iconLabel)
+            containerView.addSubview(iconLabel)
             
             // Title label
             let titleLabel = UILabel()
             titleLabel.text = item.title
             titleLabel.textColor = .white
-            titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+            titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
             titleLabel.translatesAutoresizingMaskIntoConstraints = false
-            cell.contentView.addSubview(titleLabel)
+            containerView.addSubview(titleLabel)
             
             // Subtitle label
             let subtitleLabel = UILabel()
@@ -218,22 +333,22 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
             subtitleLabel.textColor = .textSecondary
             subtitleLabel.font = .systemFont(ofSize: 14, weight: .regular)
             subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
-            cell.contentView.addSubview(subtitleLabel)
+            containerView.addSubview(subtitleLabel)
             
             // Checkbox
             let checkbox = UIView()
             checkbox.backgroundColor = item.isCompleted ? .primaryGreen : .clear
-            checkbox.layer.cornerRadius = 8
+            checkbox.layer.cornerRadius = 9
             checkbox.layer.borderWidth = 2
             checkbox.layer.borderColor = item.isCompleted ? UIColor.primaryGreen.cgColor : UIColor.textSecondary.cgColor
             checkbox.translatesAutoresizingMaskIntoConstraints = false
-            cell.contentView.addSubview(checkbox)
+            containerView.addSubview(checkbox)
             
             if item.isCompleted {
                 let checkmark = UILabel()
                 checkmark.text = "✓"
                 checkmark.textColor = .black
-                checkmark.font = .systemFont(ofSize: 16, weight: .bold)
+                checkmark.font = .systemFont(ofSize: 14, weight: .bold)
                 checkmark.textAlignment = .center
                 checkmark.translatesAutoresizingMaskIntoConstraints = false
                 checkbox.addSubview(checkmark)
@@ -245,49 +360,44 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
             }
             
             NSLayoutConstraint.activate([
-                iconLabel.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 16),
-                iconLabel.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
+                containerView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 4),
+                containerView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor),
+                containerView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor),
+                containerView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -4),
+                
+                iconLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
+                iconLabel.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+                iconLabel.widthAnchor.constraint(equalToConstant: 24),
                 
                 titleLabel.leadingAnchor.constraint(equalTo: iconLabel.trailingAnchor, constant: 16),
-                titleLabel.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 20),
+                titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
                 
                 subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-                subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+                subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 2),
                 
-                checkbox.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -16),
-                checkbox.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
-                checkbox.widthAnchor.constraint(equalToConstant: 32),
-                checkbox.heightAnchor.constraint(equalToConstant: 32)
+                checkbox.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+                checkbox.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+                checkbox.widthAnchor.constraint(equalToConstant: 24),
+                checkbox.heightAnchor.constraint(equalToConstant: 24)
             ])
             
             return cell
             
         } else {
-            // Scheduled Workouts - create custom cells
-            let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "ScheduledWorkoutCell")
-            cell.backgroundColor = UIColor(white: 0.15, alpha: 1.0)
-            cell.selectionStyle = .none
-            cell.layer.cornerRadius = 12
-            cell.clipsToBounds = true
-            
+            // Scheduled Workouts - use WorkoutCardCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "WorkoutCardCell", for: indexPath) as! WorkoutCardCell
             let todayWorkout = scheduledWorkouts[indexPath.row]
-            
-            cell.textLabel?.text = todayWorkout.name
-            cell.textLabel?.textColor = .white
-            cell.textLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-            
-            cell.detailTextLabel?.text = todayWorkout.reps
-            cell.detailTextLabel?.textColor = .textSecondary
-            cell.detailTextLabel?.font = .systemFont(ofSize: 14, weight: .regular)
-            
-            // TODO: Add image from imageUrl if needed
-            
+            cell.configure(with: todayWorkout, showCheckbox: false)
             return cell
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 80
+        if tableView == dayTrackerTableView {
+            return 72
+        } else {
+            return 72 // Match Schedule Workout modal height
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

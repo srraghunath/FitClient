@@ -139,10 +139,10 @@
                                 
                                 <!-- Day Tracker Table View -->
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="dayTrackerTableView">
-                                    <rect key="frame" x="16" y="237" width="361" height="400"/>
+                                    <rect key="frame" x="16" y="237" width="361" height="320"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" constant="400" id="dayTrackerTableHeight"/>
+                                        <constraint firstAttribute="height" constant="320" priority="750" id="dayTrackerTableHeight"/>
                                     </constraints>
                                 </tableView>
                                 
@@ -159,10 +159,10 @@
                                 
                                 <!-- Scheduled Workouts Table View -->
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="scheduledWorkoutsTableView">
-                                    <rect key="frame" x="16" y="693" width="361" height="240"/>
+                                    <rect key="frame" x="16" y="693" width="361" height="216"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" constant="240" id="scheduledWorkoutsTableHeight"/>
+                                        <constraint firstAttribute="height" constant="216" priority="750" id="scheduledWorkoutsTableHeight"/>
                                     </constraints>
                                 </tableView>
                             </subviews>
@@ -185,11 +185,11 @@
                                 <constraint firstAttribute="trailing" secondItem="dayTrackerTableView" secondAttribute="trailing" constant="16" id="dayTrackerTableViewTrailing"/>
                                 
                                 <constraint firstItem="scheduledWorkoutsHeader" firstAttribute="leading" secondItem="contentView" secondAttribute="leading" constant="16" id="scheduledWorkoutsHeaderLeading"/>
-                                <constraint firstItem="scheduledWorkoutsHeader" firstAttribute="top" secondItem="dayTrackerTableView" secondAttribute="bottom" constant="16" id="scheduledWorkoutsHeaderTop"/>
+                                <constraint firstItem="scheduledWorkoutsHeader" firstAttribute="top" secondItem="dayTrackerTableView" secondAttribute="bottom" constant="24" id="scheduledWorkoutsHeaderTop"/>
                                 <constraint firstAttribute="trailing" secondItem="scheduledWorkoutsHeader" secondAttribute="trailing" constant="16" id="scheduledWorkoutsHeaderTrailing"/>
                                 
                                 <constraint firstItem="scheduledWorkoutsTableView" firstAttribute="leading" secondItem="contentView" secondAttribute="leading" constant="16" id="scheduledWorkoutsTableViewLeading"/>
-                                <constraint firstItem="scheduledWorkoutsTableView" firstAttribute="top" secondItem="scheduledWorkoutsHeader" secondAttribute="bottom" constant="16" id="scheduledWorkoutsTableViewTop"/>
+                                <constraint firstItem="scheduledWorkoutsTableView" firstAttribute="top" secondItem="scheduledWorkoutsHeader" secondAttribute="bottom" constant="8" id="scheduledWorkoutsTableViewTop"/>
                                 <constraint firstAttribute="trailing" secondItem="scheduledWorkoutsTableView" secondAttribute="trailing" constant="16" id="scheduledWorkoutsTableViewTrailing"/>
                                 <constraint firstAttribute="bottom" secondItem="scheduledWorkoutsTableView" secondAttribute="bottom" constant="40" id="scheduledWorkoutsTableViewBottom"/>
                                 

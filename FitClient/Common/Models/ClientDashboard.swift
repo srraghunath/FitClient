@@ -8,6 +8,7 @@
 import Foundation
 
 struct ClientDashboardData: Codable {
+    let workoutsByDate: [String: [TodayWorkout]]
     let dashboard: ClientDashboard
 }
 
