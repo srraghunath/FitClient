@@ -113,13 +113,18 @@ extension ClientSettingsViewController: UITableViewDataSource, UITableViewDelega
         
         switch indexPath.row {
         case 0:
-            print("Profile tapped")
+            let editVC = ClientSettingsEditProfileViewController(nibName: "ClientSettingsEditProfileViewController", bundle: nil)
+            navigationController?.pushViewController(editVC, animated: true)
         case 1:
-            print("Notifications tapped")
+            let notificationVC = ClientNotificationViewController(nibName: "ClientNotificationViewController", bundle: nil)
+            navigationController?.pushViewController(notificationVC, animated: true)
         case 2:
-            print("Help & Support tapped")
+            let helpVC = ClientHelpViewController(nibName: "ClientHelpViewController", bundle: nil)
+            navigationController?.pushViewController(helpVC, animated: true)
         case 3:
-            print("Report a Bug tapped")
+            // Reuse Help screen's Submit a Request section
+            let helpVC = ClientHelpViewController(nibName: "ClientHelpViewController", bundle: nil)
+            navigationController?.pushViewController(helpVC, animated: true)
         case 4:
             print("Logout tapped")
             handleLogout()
