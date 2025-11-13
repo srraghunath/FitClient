@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="dark"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ClientchatViewController" customModule="FitClient" customModuleProvider="target">
+            <connections>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+                <outlet property="messagesTableView" destination="messagesTableView" id="table-outlet"/>
+                <outlet property="messageInputTextField" destination="messageInputTextField" id="input-outlet"/>
+                <outlet property="sendButton" destination="sendButton" id="send-outlet"/>
+                <outlet property="inputContainerView" destination="inputContainerView" id="inputContainer-outlet"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <!-- Status Bar Background -->
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="statusBarBg">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="62"/>
+                    <color key="backgroundColor" red="0" green="0" blue="0.00392156862745098" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="62" id="statusBar-height"/>
+                    </constraints>
+                </view>
+                <!-- Navbar -->
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="navbarView">
+                    <rect key="frame" x="0.0" y="62" width="393" height="46"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Chat" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="chatTitle">
+                            <rect key="frame" x="76.5" y="11" width="220" height="24"/>
+                            <fontDescription key="fontDescription" name="SFProDisplay-Medium" family="SF Pro Display" pointSize="16"/>
+                            <color key="textColor" red="0.96078431372549" green="0.96078431372549" blue="0.96078431372549" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" red="0" green="0.00392156862745098" blue="0.00392156862745098" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="46" id="navbar-height"/>
+                        <constraint firstItem="chatTitle" firstAttribute="centerX" secondItem="navbarView" secondAttribute="centerX" id="title-centerX"/>
+                        <constraint firstItem="chatTitle" firstAttribute="centerY" secondItem="navbarView" secondAttribute="centerY" id="title-centerY"/>
+                    </constraints>
+                </view>
+                <!-- Messages TableView -->
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="80" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="messagesTableView">
+                    <rect key="frame" x="0.0" y="108" width="393" height="580"/>
+                    <color key="backgroundColor" red="0" green="0" blue="0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                </tableView>
+                <!-- Input Container -->
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="inputContainerView">
+                    <rect key="frame" x="0.0" y="688" width="393" height="82"/>
+                    <subviews>
+                        <!-- Message Input Stack -->
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="inputStack">
+                            <rect key="frame" x="16" y="12" width="361" height="48"/>
+                            <subviews>
+                                <!-- TextField -->
+                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Write a message" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="messageInputTextField">
+                                    <rect key="frame" x="0.0" y="0.0" width="313" height="48"/>
+                                    <color key="backgroundColor" red="0.18823529411764706" green="0.19215686274509802" blue="0.19215686274509802" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="textColor" red="0.96078431372549" green="0.96078431372549" blue="0.96078431372549" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                    <textInputTraits key="textInputTraits" returnKeyType="send"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="12"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                </textField>
+                                <!-- Send Button -->
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sendButton">
+                                    <rect key="frame" x="321" y="8" width="40" height="32"/>
+                                    <color key="backgroundColor" red="0.18823529411764706" green="0.19215686274509802" blue="0.19215686274509802" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="40" id="send-width"/>
+                                        <constraint firstAttribute="height" constant="32" id="send-height"/>
+                                    </constraints>
+                                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="paperplane.fill" catalog="system"/>
+                                    <color key="tintColor" red="0.84705882352941" green="0.80000000000000" blue="0.78431372549019" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="12"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                </button>
+                            </subviews>
+                            <color key="backgroundColor" red="0" green="0" blue="0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <constraints>
+                                <constraint firstItem="messageInputTextField" firstAttribute="leading" secondItem="inputStack" secondAttribute="leading" constant="0" id="textfield-leading"/>
+                                <constraint firstItem="messageInputTextField" firstAttribute="top" secondItem="inputStack" secondAttribute="top" constant="0" id="textfield-top"/>
+                                <constraint firstItem="messageInputTextField" firstAttribute="height" constant="48" id="input-height"/>
+                                <constraint firstItem="sendButton" firstAttribute="leading" secondItem="messageInputTextField" secondAttribute="trailing" constant="8" id="send-leading"/>
+                                <constraint firstItem="sendButton" firstAttribute="centerY" secondItem="inputStack" secondAttribute="centerY" id="send-centerY"/>
+                                <constraint firstItem="sendButton" firstAttribute="trailing" secondItem="inputStack" secondAttribute="trailing" constant="0" id="send-trailing"/>
+                                <constraint firstAttribute="height" constant="48" id="stack-height"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" red="0" green="0" blue="0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstItem="inputStack" firstAttribute="leading" secondItem="inputContainerView" secondAttribute="leading" constant="16" id="stack-leading"/>
+                        <constraint firstItem="inputStack" firstAttribute="top" secondItem="inputContainerView" secondAttribute="top" constant="12" id="stack-top"/>
+                        <constraint firstItem="inputStack" firstAttribute="trailing" secondItem="inputContainerView" secondAttribute="trailing" constant="-16" id="stack-trailing"/>
+                        <constraint firstAttribute="height" constant="82" id="inputContainer-height"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" red="0" green="0" blue="0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="statusBarBg" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="statusBar-leading"/>
+                <constraint firstItem="statusBarBg" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="statusBar-top"/>
+                <constraint firstItem="statusBarBg" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="statusBar-trailing"/>
+                <constraint firstItem="navbarView" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="navbar-leading"/>
+                <constraint firstItem="navbarView" firstAttribute="top" secondItem="statusBarBg" secondAttribute="bottom" id="navbar-top"/>
+                <constraint firstItem="navbarView" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="navbar-trailing"/>
+                <constraint firstItem="messagesTableView" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="table-leading"/>
+                <constraint firstItem="messagesTableView" firstAttribute="top" secondItem="navbarView" secondAttribute="bottom" id="table-top"/>
+                <constraint firstItem="messagesTableView" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="table-trailing"/>
+                <constraint firstItem="inputContainerView" firstAttribute="top" secondItem="messagesTableView" secondAttribute="bottom" id="container-top"/>
+                <constraint firstItem="inputContainerView" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="container-leading"/>
+                <constraint firstItem="inputContainerView" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="input-trailing"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="inputContainerView" secondAttribute="bottom" id="input-bottom"/>
+            </constraints>
+            <point key="canvasLocation" x="0.0" y="0.0"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="paperplane.fill" catalog="system" width="128" height="120"/>
+    </resources>
+</document>
