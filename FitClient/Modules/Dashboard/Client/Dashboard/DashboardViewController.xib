@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23089" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23077"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -32,9 +31,8 @@
                     <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="contentView">
-                            <rect key="frame" x="0.0" y="0.0" width="393" height="1200"/>
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="1000"/>
                             <subviews>
-                                <!-- Activity Summary Header -->
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Activity Summary" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="activitySummaryLabel">
                                     <rect key="frame" x="16" y="11" width="361" height="24"/>
                                     <constraints>
@@ -44,27 +42,25 @@
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                
-                                <!-- Stat Cards Container -->
-                                <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" distribution="fillEqually" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="statsStackView">
+                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="statsStackView">
                                     <rect key="frame" x="16" y="47" width="361" height="134"/>
                                     <subviews>
-                                        <!-- Total Active Days Card -->
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="totalActiveDaysCard">
+                                            <rect key="frame" x="0.0" y="0.0" width="172.66666666666666" height="134"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Total Active Days" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="totalActiveDaysLabel">
-                                                    <rect key="frame" x="24" y="24" width="125" height="24"/>
+                                                    <rect key="frame" x="24.000000000000007" y="24" width="124.66666666666669" height="48"/>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="12 Days" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="totalActiveDaysValueLabel">
-                                                    <rect key="frame" x="24" y="56" width="125" height="30"/>
+                                                    <rect key="frame" x="24.000000000000007" y="80" width="124.66666666666669" height="30"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="30" id="totalActiveDaysValueHeight"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
-                                                    <color key="textColor" red="0.68235" green="0.99608" blue="0.07843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="textColor" red="0.68235000000000001" green="0.99607999999999997" blue="0.07843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
@@ -73,10 +69,10 @@
                                                 <constraint firstItem="totalActiveDaysLabel" firstAttribute="leading" secondItem="totalActiveDaysCard" secondAttribute="leading" constant="24" id="totalActiveDaysLabelLeading"/>
                                                 <constraint firstItem="totalActiveDaysLabel" firstAttribute="top" secondItem="totalActiveDaysCard" secondAttribute="top" constant="24" id="totalActiveDaysLabelTop"/>
                                                 <constraint firstAttribute="trailing" secondItem="totalActiveDaysLabel" secondAttribute="trailing" constant="24" id="totalActiveDaysLabelTrailing"/>
+                                                <constraint firstAttribute="bottom" secondItem="totalActiveDaysValueLabel" secondAttribute="bottom" constant="24" id="totalActiveDaysValueLabelBottom"/>
                                                 <constraint firstItem="totalActiveDaysValueLabel" firstAttribute="leading" secondItem="totalActiveDaysCard" secondAttribute="leading" constant="24" id="totalActiveDaysValueLabelLeading"/>
                                                 <constraint firstItem="totalActiveDaysValueLabel" firstAttribute="top" secondItem="totalActiveDaysLabel" secondAttribute="bottom" constant="8" id="totalActiveDaysValueLabelTop"/>
                                                 <constraint firstAttribute="trailing" secondItem="totalActiveDaysValueLabel" secondAttribute="trailing" constant="24" id="totalActiveDaysValueLabelTrailing"/>
-                                                <constraint firstAttribute="bottom" secondItem="totalActiveDaysValueLabel" secondAttribute="bottom" constant="24" id="totalActiveDaysValueLabelBottom"/>
                                             </constraints>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -84,23 +80,22 @@
                                                 </userDefinedRuntimeAttribute>
                                             </userDefinedRuntimeAttributes>
                                         </view>
-                                        
-                                        <!-- Consecutive Active Days Card -->
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="consecutiveDaysCard">
+                                            <rect key="frame" x="188.66666666666663" y="0.0" width="172.33333333333337" height="134"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Consecutive Active Days" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="consecutiveDaysLabel">
-                                                    <rect key="frame" x="24" y="24" width="125" height="24"/>
+                                                    <rect key="frame" x="23.999999999999993" y="24" width="124.33333333333331" height="48"/>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7 Days" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="consecutiveDaysValueLabel">
-                                                    <rect key="frame" x="24" y="56" width="125" height="30"/>
+                                                    <rect key="frame" x="23.999999999999993" y="80" width="124.33333333333331" height="30"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="30" id="consecutiveDaysValueHeight"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
-                                                    <color key="textColor" red="0.68235" green="0.99608" blue="0.07843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="textColor" red="0.68235000000000001" green="0.99607999999999997" blue="0.07843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
@@ -109,10 +104,10 @@
                                                 <constraint firstItem="consecutiveDaysLabel" firstAttribute="leading" secondItem="consecutiveDaysCard" secondAttribute="leading" constant="24" id="consecutiveDaysLabelLeading"/>
                                                 <constraint firstItem="consecutiveDaysLabel" firstAttribute="top" secondItem="consecutiveDaysCard" secondAttribute="top" constant="24" id="consecutiveDaysLabelTop"/>
                                                 <constraint firstAttribute="trailing" secondItem="consecutiveDaysLabel" secondAttribute="trailing" constant="24" id="consecutiveDaysLabelTrailing"/>
+                                                <constraint firstAttribute="bottom" secondItem="consecutiveDaysValueLabel" secondAttribute="bottom" constant="24" id="consecutiveDaysValueLabelBottom"/>
                                                 <constraint firstItem="consecutiveDaysValueLabel" firstAttribute="leading" secondItem="consecutiveDaysCard" secondAttribute="leading" constant="24" id="consecutiveDaysValueLabelLeading"/>
                                                 <constraint firstItem="consecutiveDaysValueLabel" firstAttribute="top" secondItem="consecutiveDaysLabel" secondAttribute="bottom" constant="8" id="consecutiveDaysValueLabelTop"/>
                                                 <constraint firstAttribute="trailing" secondItem="consecutiveDaysValueLabel" secondAttribute="trailing" constant="24" id="consecutiveDaysValueLabelTrailing"/>
-                                                <constraint firstAttribute="bottom" secondItem="consecutiveDaysValueLabel" secondAttribute="bottom" constant="24" id="consecutiveDaysValueLabelBottom"/>
                                             </constraints>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -125,8 +120,6 @@
                                         <constraint firstAttribute="height" constant="134" id="statsStackViewHeight"/>
                                     </constraints>
                                 </stackView>
-                                
-                                <!-- Day Tracker Header -->
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Day Tracker" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dayTrackerHeader">
                                     <rect key="frame" x="16" y="197" width="361" height="24"/>
                                     <constraints>
@@ -136,17 +129,13 @@
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                
-                                <!-- Day Tracker Table View -->
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="dayTrackerTableView">
                                     <rect key="frame" x="16" y="237" width="361" height="320"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" constant="320" priority="750" id="dayTrackerTableHeight"/>
+                                        <constraint firstAttribute="height" constant="320" id="dayTrackerTableHeight"/>
                                     </constraints>
                                 </tableView>
-                                
-                                <!-- Scheduled Workouts Header -->
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Scheduled Workouts" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="scheduledWorkoutsHeader">
                                     <rect key="frame" x="16" y="653" width="361" height="24"/>
                                     <constraints>
@@ -156,13 +145,11 @@
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                
-                                <!-- Scheduled Workouts Table View -->
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="scheduledWorkoutsTableView">
                                     <rect key="frame" x="16" y="693" width="361" height="216"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" constant="216" priority="750" id="scheduledWorkoutsTableHeight"/>
+                                        <constraint firstAttribute="height" constant="216" id="scheduledWorkoutsTableHeight"/>
                                     </constraints>
                                 </tableView>
                             </subviews>
@@ -172,47 +159,42 @@
                                 <constraint firstItem="activitySummaryLabel" firstAttribute="top" secondItem="contentView" secondAttribute="top" constant="11" id="activitySummaryLabelTop"/>
                                 <constraint firstAttribute="trailing" secondItem="activitySummaryLabel" secondAttribute="trailing" constant="16" id="activitySummaryLabelTrailing"/>
                                 
-                                <constraint firstItem="statsStackView" firstAttribute="leading" secondItem="contentView" secondAttribute="leading" constant="16" id="statsStackViewLeading"/>
-                                <constraint firstItem="statsStackView" firstAttribute="top" secondItem="activitySummaryLabel" secondAttribute="bottom" constant="12" id="statsStackViewTop"/>
-                                <constraint firstAttribute="trailing" secondItem="statsStackView" secondAttribute="trailing" constant="16" id="statsStackViewTrailing"/>
-                                
                                 <constraint firstItem="dayTrackerHeader" firstAttribute="leading" secondItem="contentView" secondAttribute="leading" constant="16" id="dayTrackerHeaderLeading"/>
                                 <constraint firstItem="dayTrackerHeader" firstAttribute="top" secondItem="statsStackView" secondAttribute="bottom" constant="16" id="dayTrackerHeaderTop"/>
                                 <constraint firstAttribute="trailing" secondItem="dayTrackerHeader" secondAttribute="trailing" constant="16" id="dayTrackerHeaderTrailing"/>
-                                
                                 <constraint firstItem="dayTrackerTableView" firstAttribute="leading" secondItem="contentView" secondAttribute="leading" constant="16" id="dayTrackerTableViewLeading"/>
                                 <constraint firstItem="dayTrackerTableView" firstAttribute="top" secondItem="dayTrackerHeader" secondAttribute="bottom" constant="16" id="dayTrackerTableViewTop"/>
                                 <constraint firstAttribute="trailing" secondItem="dayTrackerTableView" secondAttribute="trailing" constant="16" id="dayTrackerTableViewTrailing"/>
-                                
                                 <constraint firstItem="scheduledWorkoutsHeader" firstAttribute="leading" secondItem="contentView" secondAttribute="leading" constant="16" id="scheduledWorkoutsHeaderLeading"/>
                                 <constraint firstItem="scheduledWorkoutsHeader" firstAttribute="top" secondItem="dayTrackerTableView" secondAttribute="bottom" constant="24" id="scheduledWorkoutsHeaderTop"/>
                                 <constraint firstAttribute="trailing" secondItem="scheduledWorkoutsHeader" secondAttribute="trailing" constant="16" id="scheduledWorkoutsHeaderTrailing"/>
-                                
+                                <constraint firstAttribute="bottom" secondItem="scheduledWorkoutsTableView" secondAttribute="bottom" constant="40" id="scheduledWorkoutsTableViewBottom"/>
                                 <constraint firstItem="scheduledWorkoutsTableView" firstAttribute="leading" secondItem="contentView" secondAttribute="leading" constant="16" id="scheduledWorkoutsTableViewLeading"/>
                                 <constraint firstItem="scheduledWorkoutsTableView" firstAttribute="top" secondItem="scheduledWorkoutsHeader" secondAttribute="bottom" constant="8" id="scheduledWorkoutsTableViewTop"/>
                                 <constraint firstAttribute="trailing" secondItem="scheduledWorkoutsTableView" secondAttribute="trailing" constant="16" id="scheduledWorkoutsTableViewTrailing"/>
-                                <constraint firstAttribute="bottom" secondItem="scheduledWorkoutsTableView" secondAttribute="bottom" constant="40" id="scheduledWorkoutsTableViewBottom"/>
-                                
-                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="1000" id="contentViewMinHeight"/>
+                                <constraint firstItem="statsStackView" firstAttribute="leading" secondItem="contentView" secondAttribute="leading" constant="16" id="statsStackViewLeading"/>
+                                <constraint firstItem="statsStackView" firstAttribute="top" secondItem="activitySummaryLabel" secondAttribute="bottom" constant="12" id="statsStackViewTop"/>
+                                <constraint firstAttribute="trailing" secondItem="statsStackView" secondAttribute="trailing" constant="16" id="statsStackViewTrailing"/>
                             </constraints>
                         </view>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="contentView" firstAttribute="width" secondItem="scrollView" secondAttribute="width" id="contentViewWidth"/>
+                        <constraint firstAttribute="bottom" secondItem="contentView" secondAttribute="bottom" id="contentViewBottom"/>
                         <constraint firstItem="contentView" firstAttribute="leading" secondItem="scrollView" secondAttribute="leading" id="contentViewLeading"/>
                         <constraint firstItem="contentView" firstAttribute="top" secondItem="scrollView" secondAttribute="top" id="contentViewTop"/>
-                        <constraint firstAttribute="bottom" secondItem="contentView" secondAttribute="bottom" id="contentViewBottom"/>
                         <constraint firstAttribute="trailing" secondItem="contentView" secondAttribute="trailing" id="contentViewTrailing"/>
+                        <constraint firstItem="contentView" firstAttribute="width" secondItem="scrollView" secondAttribute="width" id="contentViewWidth"/>
                     </constraints>
                 </scrollView>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
+                <constraint firstAttribute="bottom" secondItem="scrollView" secondAttribute="bottom" id="scrollViewBottom"/>
                 <constraint firstItem="scrollView" firstAttribute="leading" secondItem="view" secondAttribute="leading" id="scrollViewLeading"/>
                 <constraint firstItem="scrollView" firstAttribute="top" secondItem="view" secondAttribute="top" id="scrollViewTop"/>
                 <constraint firstAttribute="trailing" secondItem="scrollView" secondAttribute="trailing" id="scrollViewTrailing"/>
-                <constraint firstAttribute="bottom" secondItem="scrollView" secondAttribute="bottom" id="scrollViewBottom"/>
             </constraints>
+            <point key="canvasLocation" x="19" y="15"/>
         </view>
     </objects>
 </document>
