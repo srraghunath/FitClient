@@ -28,6 +28,9 @@ class DashboardViewController: UIViewController {
     @IBOutlet weak var scheduledWorkoutsTableView: UITableView!
     @IBOutlet weak var dayTrackerTableHeight: NSLayoutConstraint!
     @IBOutlet weak var scheduledWorkoutsTableHeight: NSLayoutConstraint!
+    @IBOutlet weak var dietHeaderLabel: UILabel!
+    @IBOutlet weak var dietTableView: UITableView!
+    @IBOutlet weak var dietTableHeight: NSLayoutConstraint!
     
     private var datePicker: UIDatePicker!
     private var navBarDateLabel: UILabel!
@@ -36,6 +39,8 @@ class DashboardViewController: UIViewController {
     
     private var dayTrackerItems: [DayTrackerItem] = []
     private var scheduledWorkouts: [TodayWorkout] = []
+    private var todayDiet: [TodayMeal] = []
+    private var todayDietDetails: [Diet] = [] // mapped Diet models to render with DietCell
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -202,6 +207,15 @@ class DashboardViewController: UIViewController {
         // Register custom WorkoutCardCell
         let nib = UINib(nibName: "WorkoutCardCell", bundle: nil)
         scheduledWorkoutsTableView.register(nib, forCellReuseIdentifier: "WorkoutCardCell")
+
+        // Diet Table View
+        dietTableView.delegate = self
+        dietTableView.dataSource = self
+        dietTableView.backgroundColor = .clear
+        dietTableView.separatorStyle = .none
+        dietTableView.isScrollEnabled = false
+    let dietNib = UINib(nibName: "DietCell", bundle: nil)
+    dietTableView.register(dietNib, forCellReuseIdentifier: "DietCell")
     }
     
     func loadData() {
@@ -222,16 +236,39 @@ class DashboardViewController: UIViewController {
         totalActiveDaysValueLabel.text = "12 Days"
         consecutiveDaysValueLabel.text = "7 Days"
         
-        // Load day tracker items from Figma
-        dayTrackerItems = [
-            DayTrackerItem(icon: "🏋️", title: "Workout", subtitle: "Full body", isCompleted: true),
-            DayTrackerItem(icon: "❤️", title: "Cardio", subtitle: "Running, 30 minutes", isCompleted: false),
-            DayTrackerItem(icon: "💧", title: "Water Intake", subtitle: "8 litres", isCompleted: false),
-            DayTrackerItem(icon: "🍽", title: "Diet Plan", subtitle: "Balanced", isCompleted: true),
-            DayTrackerItem(icon: "🌙", title: "Sleep Cycle", subtitle: "8 hours", isCompleted: true)
-        ]
+        // Prefill Day Tracker from data service (existing data if any)
+        DataService.shared.loadDayActivityForDate(date) { [weak self] result in
+            switch result {
+            case .success(let activity):
+                var logMsg = "✅ [Dashboard] Day activity for \(dateString): workout=\(activity.workout), cardio=\(activity.cardio), water=\(activity.waterIntake), diet=\(activity.diet), sleep=\(activity.sleep)\n"
+                if let existingLog = try? String(contentsOfFile: logPath) {
+                    try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
+                }
+                print(logMsg)
+
+                // Map to items; keep the same order/UI and texts
+                let items: [DayTrackerItem] = [
+                    DayTrackerItem(icon: "🏋️", title: "Workout", subtitle: "Full body", isCompleted: activity.workout),
+                    DayTrackerItem(icon: "❤️", title: "Cardio", subtitle: "Running, 30 minutes", isCompleted: activity.cardio),
+                    DayTrackerItem(icon: "💧", title: "Water Intake", subtitle: "8 litres", isCompleted: activity.waterIntake),
+                    DayTrackerItem(icon: "🍽", title: "Diet Plan", subtitle: "Balanced", isCompleted: activity.diet),
+                    DayTrackerItem(icon: "🌙", title: "Sleep Cycle", subtitle: "8 hours", isCompleted: activity.sleep)
+                ]
+
+                DispatchQueue.main.async {
+                    self?.dayTrackerItems = items
+                    self?.updateUI()
+                }
+            case .failure(let error):
+                let errMsg = "❌ [Dashboard] Error loading day activity: \(error)\n"
+                if let existingLog = try? String(contentsOfFile: logPath) {
+                    try? (existingLog + errMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
+                }
+                print(errMsg)
+            }
+        }
         
-        // Load scheduled workouts for the selected date
+    // Load scheduled workouts for the selected date
         DataService.shared.loadWorkoutsForDate(date) { [weak self] result in
             switch result {
             case .success(let workouts):
@@ -261,19 +298,93 @@ class DashboardViewController: UIViewController {
                 }
             }
         }
+
+        // Load diet for the selected date (dashboard todayDiet)
+        DataService.shared.loadDietForDate(date) { [weak self] result in
+            switch result {
+            case .success(let meals):
+                var logMsg = "✅ [Dashboard] Loaded \(meals.count) diet items for \(dateString)\n"
+                meals.forEach { meal in
+                    logMsg += "   - \(meal.mealType): \(meal.name) @ \(meal.time)\n"
+                }
+                if let existingLog = try? String(contentsOfFile: logPath) {
+                    try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
+                }
+                print(logMsg)
+                self?.todayDiet = meals
+
+                // Now load full diet details to render with DietCell (for macros, grams, image sizing)
+                DataService.shared.loadDiets { dietsResult in
+                    switch dietsResult {
+                    case .success(let allDiets):
+                        // Map TodayMeal list to Diets by id; default selection/quantity for dashboard view
+                        let dict = Dictionary(uniqueKeysWithValues: allDiets.map { ($0.id, $0) })
+                        let mapped: [Diet] = meals.compactMap { meal in
+                            if var diet = dict[meal.id] {
+                                // Display-only on client; do not mark selected or show stepper
+                                diet.isSelected = false
+                                if diet.quantity <= 0 { diet.quantity = 1 }
+                                return diet
+                            } else {
+                                // Fallback minimal Diet using TodayMeal info if not found
+                                return Diet(
+                                    id: meal.id,
+                                    name: meal.name,
+                                    grams: 0,
+                                    protein: 0,
+                                    carbs: 0,
+                                    fat: 0,
+                                    calories: Int(meal.calories.filter({ $0.isNumber })) ?? 0,
+                                    imageUrl: meal.imageUrl,
+                                    mealType: MealType(rawValue: meal.mealType.lowercased()) ?? .breakfast,
+                                    dietType: .veg,
+                                    quantity: 1,
+                                    isSelected: false
+                                )
+                            }
+                        }
+                        DispatchQueue.main.async {
+                            self?.todayDietDetails = mapped
+                            self?.updateUI()
+                        }
+                    case .failure:
+                        DispatchQueue.main.async {
+                            self?.todayDietDetails = []
+                            self?.updateUI()
+                        }
+                    }
+                }
+            case .failure(let error):
+                let errMsg = "❌ [Dashboard] Error loading diet: \(error)\n"
+                if let existingLog = try? String(contentsOfFile: logPath) {
+                    try? (existingLog + errMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
+                }
+                print(errMsg)
+
+                DispatchQueue.main.async {
+                    self?.todayDiet = []
+                    self?.todayDietDetails = []
+                    self?.updateUI()
+                }
+            }
+        }
     }
     
     func updateUI() {
         dayTrackerTableView.reloadData()
-        scheduledWorkoutsTableView.reloadData()
+    scheduledWorkoutsTableView.reloadData()
+    dietTableView.reloadData()
         
         // Update table heights - 72pt + 8pt spacing per cell
         dayTrackerTableHeight.constant = CGFloat(dayTrackerItems.count) * 80
-        scheduledWorkoutsTableHeight.constant = CGFloat(scheduledWorkouts.count) * 72
+    scheduledWorkoutsTableHeight.constant = CGFloat(scheduledWorkouts.count) * 72
+    // Diet cells match DietCell.xib height (96)
+    dietTableHeight.constant = CGFloat(todayDietDetails.count) * 96
         
         // Log for debugging
         print("📊 [Dashboard] Day tracker items: \(dayTrackerItems.count), height: \(dayTrackerTableHeight.constant)")
-        print("📊 [Dashboard] Scheduled workouts: \(scheduledWorkouts.count), height: \(scheduledWorkoutsTableHeight.constant)")
+    print("📊 [Dashboard] Scheduled workouts: \(scheduledWorkouts.count), height: \(scheduledWorkoutsTableHeight.constant)")
+    print("🥗 [Dashboard] Diet items: \(todayDietDetails.count), height: \(dietTableHeight.constant)")
         
         view.layoutIfNeeded()
     }
@@ -285,8 +396,10 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tableView == dayTrackerTableView {
             return dayTrackerItems.count
-        } else {
+        } else if tableView == scheduledWorkoutsTableView {
             return scheduledWorkouts.count
+        } else {
+            return todayDietDetails.count
         }
     }
     
@@ -383,11 +496,17 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
             
             return cell
             
-        } else {
+        } else if tableView == scheduledWorkoutsTableView {
             // Scheduled Workouts - use WorkoutCardCell
             let cell = tableView.dequeueReusableCell(withIdentifier: "WorkoutCardCell", for: indexPath) as! WorkoutCardCell
             let todayWorkout = scheduledWorkouts[indexPath.row]
             cell.configure(with: todayWorkout, showCheckbox: false)
+            return cell
+        } else {
+            // Diet - use DietCell (display-only; no stepper/selection in client)
+            let cell = tableView.dequeueReusableCell(withIdentifier: "DietCell", for: indexPath) as! DietCell
+            let diet = todayDietDetails[indexPath.row]
+            cell.configureDisplayOnly(with: diet)
             return cell
         }
     }
@@ -395,8 +514,10 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if tableView == dayTrackerTableView {
             return 72
-        } else {
+        } else if tableView == scheduledWorkoutsTableView {
             return 72 // Match Schedule Workout modal height
+        } else {
+            return 96
         }
     }
     
@@ -404,6 +525,8 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
         if tableView == dayTrackerTableView {
             dayTrackerItems[indexPath.row].isCompleted.toggle()
             tableView.reloadRows(at: [indexPath], with: .automatic)
+        } else if tableView == dietTableView {
+            // No selection behavior for diet in this screen
         }
     }
 }

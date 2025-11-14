@@ -37,9 +37,14 @@ class TrainerSettingsViewController: UIViewController {
     
     private func loadProfileImage() {
         profileImageView.clipsToBounds = true
-        profileImageView.layer.cornerRadius = 30
         profileImageView.layer.borderWidth = 2
         profileImageView.layer.borderColor = UIColor.primaryGreen.cgColor
+        
+        // Set cornerRadius in layoutSubviews and after image loads
+        DispatchQueue.main.async {
+            let size = min(self.profileImageView.bounds.width, self.profileImageView.bounds.height)
+            self.profileImageView.layer.cornerRadius = size / 2.0
+        }
         
         // Load trainer data and profile image
         DataService.shared.loadTrainer { [weak self] result in
@@ -52,6 +57,11 @@ class TrainerSettingsViewController: UIViewController {
                             if let data = data, let image = UIImage(data: data) {
                                 DispatchQueue.main.async {
                                     self?.profileImageView.image = image
+                                    // Set cornerRadius after image loads
+                                    if let imageView = self?.profileImageView {
+                                        let size = min(imageView.bounds.width, imageView.bounds.height)
+                                        imageView.layer.cornerRadius = size / 2.0
+                                    }
                                 }
                             }
                         }.resume()
@@ -85,5 +95,18 @@ class TrainerSettingsViewController: UIViewController {
     @IBAction func editProfileTapped(_ sender: Any) {
         let editProfileVC = TrainerSettingsEditProfileViewController(nibName: "TrainerSettingsEditProfileViewController", bundle: nil)
         navigationController?.pushViewController(editProfileVC, animated: true)
+    }
+
+    @IBAction func logoutTapped(_ sender: Any) {
+        // Clear user defaults
+        UserDefaults.standard.set(false, forKey: "isClient")
+        UserDefaults.standard.removeObject(forKey: "userEmail")
+
+        // Navigate back to the initial screen
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = scene.windows.first {
+            window.rootViewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+            window.makeKeyAndVisible()
+        }
     }
 }

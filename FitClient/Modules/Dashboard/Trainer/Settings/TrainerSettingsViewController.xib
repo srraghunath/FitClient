@@ -28,14 +28,15 @@
                                     <rect key="frame" x="0.0" y="0.0" width="393" height="72"/>
                                     <subviews>
                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="QbZ-Kl-6ff" userLabel="Profile Image">
-                                            <rect key="frame" x="16" y="10" width="60" height="60"/>
+                                            <rect key="frame" x="16" y="12" width="48" height="48"/>
                                             <constraints>
-                                                <constraint firstAttribute="width" constant="60" id="kJH-mN-KZl"/>
+                                                <constraint firstAttribute="width" constant="56" id="kJH-mN-KZl"/>
+                                                <constraint firstAttribute="height" constant="56" id="height-constraint"/>
                                                 <constraint firstAttribute="width" secondItem="QbZ-Kl-6ff" secondAttribute="height" multiplier="1:1" id="zHJ-0T-gQy"/>
                                             </constraints>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                    <integer key="value" value="30"/>
+                                                    <integer key="value" value="28"/>
                                                 </userDefinedRuntimeAttribute>
                                                 <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
@@ -69,10 +70,10 @@
                                     <constraints>
                                         <constraint firstItem="BeU-cv-ZqT" firstAttribute="leading" secondItem="QbZ-Kl-6ff" secondAttribute="trailing" constant="16" id="2Kg-nj-VNT"/>
                                         <constraint firstItem="QbZ-Kl-6ff" firstAttribute="centerY" secondItem="Fhq-bM-eiC" secondAttribute="centerY" id="4rY-nU-fch"/>
-                                        <constraint firstItem="QcD-Af-VUW" firstAttribute="top" secondItem="BeU-cv-ZqT" secondAttribute="bottom" constant="2" id="8ZS-dq-ViM"/>
-                                        <constraint firstItem="BeU-cv-ZqT" firstAttribute="top" secondItem="Fhq-bM-eiC" secondAttribute="top" constant="20" id="HCY-DX-F6g"/>
+                                        <constraint firstItem="QcD-Af-VUW" firstAttribute="top" secondItem="BeU-cv-ZqT" secondAttribute="bottom" constant="4" id="8ZS-dq-ViM"/>
+                                        <constraint firstItem="BeU-cv-ZqT" firstAttribute="centerY" secondItem="Fhq-bM-eiC" secondAttribute="centerY" constant="-8" id="HCY-DX-F6g"/>
                                         <constraint firstItem="QbZ-Kl-6ff" firstAttribute="leading" secondItem="Fhq-bM-eiC" secondAttribute="leading" constant="16" id="Qca-3g-hA0"/>
-                                        <constraint firstAttribute="height" constant="80" id="RWC-Wr-fdY"/>
+                                        <constraint firstAttribute="height" constant="72" id="RWC-Wr-fdY"/>
                                         <constraint firstItem="QcD-Af-VUW" firstAttribute="leading" secondItem="QbZ-Kl-6ff" secondAttribute="trailing" constant="16" id="kXk-Bi-GhF"/>
                                         <constraint firstItem="profile-button" firstAttribute="bottom" secondItem="Fhq-bM-eiC" secondAttribute="bottom" id="profile-btn-bottom"/>
                                         <constraint firstItem="profile-button" firstAttribute="leading" secondItem="Fhq-bM-eiC" secondAttribute="leading" id="profile-btn-leading"/>
@@ -300,6 +301,12 @@
                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="logout-button">
+                                            <rect key="frame" x="0.0" y="0.0" width="393" height="72"/>
+                                            <connections>
+                                                <action selector="logoutTapped:" destination="-1" eventType="touchUpInside" id="logout-action"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
@@ -308,6 +315,10 @@
                                         <constraint firstAttribute="height" constant="72" id="Aog-GK-IEl"/>
                                         <constraint firstItem="Aee-Lw-ozq" firstAttribute="leading" secondItem="MsG-4S-bPb" secondAttribute="trailing" constant="16" id="Fci-Ea-4IU"/>
                                         <constraint firstItem="MsG-4S-bPb" firstAttribute="leading" secondItem="uXz-nE-vUt" secondAttribute="leading" constant="16" id="pYZ-rN-Vv6"/>
+                                        <constraint firstAttribute="bottom" secondItem="logout-button" secondAttribute="bottom" id="logout-button-bottom"/>
+                                        <constraint firstItem="logout-button" firstAttribute="leading" secondItem="uXz-nE-vUt" secondAttribute="leading" id="logout-button-leading"/>
+                                        <constraint firstItem="logout-button" firstAttribute="top" secondItem="uXz-nE-vUt" secondAttribute="top" id="logout-button-top"/>
+                                        <constraint firstAttribute="trailing" secondItem="logout-button" secondAttribute="trailing" id="logout-button-trailing"/>
                                     </constraints>
                                 </view>
                             </subviews>
