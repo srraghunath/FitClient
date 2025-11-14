@@ -20,7 +20,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="weekday-container">
-                    <rect key="frame" x="0.0" y="0.0" width="393" height="60"/>
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="160"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="weekday-stack">
                             <rect key="frame" x="16" y="8" width="361" height="44"/>
@@ -28,18 +28,28 @@
                                 <constraint firstAttribute="height" constant="44" id="stack-height"/>
                             </constraints>
                         </stackView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="legend-description">
+                            <rect key="frame" x="16" y="52" width="361" height="40"/>
+                            <string key="text">🟢 Assigned (All 5 Tasks Done)  •  🔘 Not Assigned (Missing Tasks)  •  🔵 Selected (Current Day)</string>
+                            <fontDescription key="fontDescription" name="WorkSans-Regular" family="Work Sans" pointSize="11"/>
+                            <color key="textColor" white="0.8" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                     </subviews>
                     <color key="backgroundColor" white="0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="weekday-stack" firstAttribute="leading" secondItem="weekday-container" secondAttribute="leading" constant="16" id="stack-leading"/>
                         <constraint firstAttribute="trailing" secondItem="weekday-stack" secondAttribute="trailing" constant="16" id="stack-trailing"/>
                         <constraint firstItem="weekday-stack" firstAttribute="top" secondItem="weekday-container" secondAttribute="top" constant="8" id="stack-top"/>
-                        <constraint firstAttribute="bottom" secondItem="weekday-stack" secondAttribute="bottom" constant="8" id="stack-bottom"/>
-                        <constraint firstAttribute="height" constant="60" id="weekday-height"/>
+                        <constraint firstItem="legend-description" firstAttribute="leading" secondItem="weekday-container" secondAttribute="leading" constant="16" id="legend-desc-leading"/>
+                        <constraint firstAttribute="trailing" secondItem="legend-description" secondAttribute="trailing" constant="16" id="legend-desc-trailing"/>
+                        <constraint firstItem="legend-description" firstAttribute="top" secondItem="weekday-stack" secondAttribute="bottom" constant="0" id="legend-desc-top"/>
+                        <constraint firstAttribute="bottom" secondItem="legend-description" secondAttribute="bottom" constant="8" id="legend-desc-bottom"/>
+                        <constraint firstAttribute="height" constant="100" id="weekday-height"/>
                     </constraints>
                 </view>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="table-view">
-                    <rect key="frame" x="0.0" y="60" width="393" height="792"/>
+                    <rect key="frame" x="0.0" y="100" width="393" height="752"/>
                     <color key="backgroundColor" white="0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </tableView>
             </subviews>

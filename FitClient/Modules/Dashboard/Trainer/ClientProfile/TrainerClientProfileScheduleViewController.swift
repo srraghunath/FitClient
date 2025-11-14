@@ -74,7 +74,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         // Circle button
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.layer.cornerRadius = 12
+        button.layer.cornerRadius = 20
         button.clipsToBounds = true
         button.tag = weekday.index
         
@@ -88,36 +88,17 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         // Add button to container
         container.addSubview(button)
         
-        // Button constraints
+        // Button constraints - larger circle
         NSLayoutConstraint.activate([
-            button.widthAnchor.constraint(equalToConstant: 24),
-            button.heightAnchor.constraint(equalToConstant: 24),
+            button.widthAnchor.constraint(equalToConstant: 40),
+            button.heightAnchor.constraint(equalToConstant: 40),
             button.topAnchor.constraint(equalTo: container.topAnchor),
             button.centerXAnchor.constraint(equalTo: container.centerXAnchor)
         ])
         
-        // Label below button
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = weekday.rawValue
-        label.font = UIFont.systemFont(ofSize: 10, weight: .medium)
-        label.textColor = .white
-        label.textAlignment = .center
-        label.numberOfLines = 1
-        
-        container.addSubview(label)
-        
-        // Label constraints
-        NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: button.bottomAnchor, constant: 6),
-            label.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-            label.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-            label.widthAnchor.constraint(equalToConstant: 20)
-        ])
-        
         // Container size
-        container.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        container.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        container.widthAnchor.constraint(equalToConstant: 44).isActive = true
+        container.heightAnchor.constraint(equalToConstant: 44).isActive = true
         
         // Store button reference for later updates
         weekdayButtons.append(button)
@@ -130,12 +111,12 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         
         // Set background color based on data availability
         if hasData {
-            button.backgroundColor = UIColor(hex: "#aefe14")  // Green for has data
+            button.backgroundColor = UIColor(hex: "#aefe14")  // Green for all 5 tasks completed (ASSIGNED)
         } else {
-            button.backgroundColor = UIColor(hex: "#fe1414")  // Red for no data
+            button.backgroundColor = UIColor(hex: "#666666")  // Grey for incomplete (NOT ASSIGNED)
         }
         
-        // Add selection border
+        // Add selection border - SELECTED BUT NOT ASSIGNED
         if isSelected {
             button.layer.borderWidth = 3
             button.layer.borderColor = UIColor.blue.cgColor
@@ -143,20 +124,31 @@ class TrainerClientProfileScheduleViewController: UIViewController {
             button.layer.borderWidth = 0
         }
         
-        // Inner circle
-        let innerView = UIView()
-        innerView.backgroundColor = .black
-        innerView.layer.cornerRadius = 7
-        innerView.clipsToBounds = true
-        innerView.isUserInteractionEnabled = false
-        button.addSubview(innerView)
+        // Get day abbreviation
+        let dayAbbr: String
+        switch Weekday.allCases.first(where: { $0.index == button.tag }) {
+        case .monday: dayAbbr = "M"
+        case .tuesday: dayAbbr = "T"
+        case .wednesday: dayAbbr = "W"
+        case .thursday: dayAbbr = "T"
+        case .friday: dayAbbr = "F"
+        case .saturday: dayAbbr = "S"
+        case .sunday: dayAbbr = "S"
+        case .none: dayAbbr = "?"
+        }
         
-        innerView.translatesAutoresizingMaskIntoConstraints = false
+        // Add text label with day abbreviation inside the circle
+        let label = UILabel()
+        label.text = dayAbbr
+        label.textColor = .black
+        label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        button.addSubview(label)
+        
         NSLayoutConstraint.activate([
-            innerView.widthAnchor.constraint(equalToConstant: 14),
-            innerView.heightAnchor.constraint(equalToConstant: 14),
-            innerView.centerXAnchor.constraint(equalTo: button.centerXAnchor),
-            innerView.centerYAnchor.constraint(equalTo: button.centerYAnchor)
+            label.centerXAnchor.constraint(equalTo: button.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: button.centerYAnchor)
         ])
     }
     
@@ -168,7 +160,18 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         guard let dayData = scheduleData.weekSchedule[dayName] else { 
             return false 
         }
-        return dayData.isActive
+        
+        // Check if day is active AND all 5 required fields are filled
+        guard dayData.isActive else { return false }
+        
+        let hasWorkouts = !dayData.selectedWorkoutIds.isEmpty
+        let hasSleep = dayData.sleepHours > 0
+        let hasWater = dayData.waterIntake > 0
+        let hasDiet = !dayData.selectedDietItems.isEmpty
+        let hasCardio = !dayData.cardioNotes.isEmpty
+        
+        // All 5 tasks must be completed for green
+        return hasWorkouts && hasSleep && hasWater && hasDiet && hasCardio
     }
     
     private func getDayName(from weekday: Weekday) -> String {
