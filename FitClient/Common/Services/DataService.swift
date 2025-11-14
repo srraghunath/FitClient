@@ -294,6 +294,23 @@ class DataService {
             completion(.failure(DataServiceError.decodingFailed(error)))
         }
     }
+
+    func loadDietForDate(_ date: Date, completion: @escaping (Result<[TodayMeal], Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "clientDashboardData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("clientDashboardData.json")))
+            return
+        }
+
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let dashboardData = try decoder.decode(ClientDashboardData.self, from: data)
+            // For now, return the dashboard.todayDiet irrespective of date
+            completion(.success(dashboardData.dashboard.todayDiet))
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
 }
 
 // MARK: - Custom Errors

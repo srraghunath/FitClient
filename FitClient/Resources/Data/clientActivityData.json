@@ -66,7 +66,7 @@
       {"date": "2025-10-30", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true},
       {"date": "2025-10-31", "workout": true, "diet": true, "sleep": true, "waterIntake": true, "cardio": true}
     ],
-    "2025-11": [
+  "2025-11": [
     {
       "date": "2025-11-01",
       "workout": false,
@@ -149,6 +149,22 @@
     },
     {
       "date": "2025-11-11",
+      "workout": true,
+      "diet": true,
+      "sleep": true,
+      "waterIntake": true,
+      "cardio": true
+    },
+    {
+      "date": "2025-11-12",
+      "workout": true,
+      "diet": true,
+      "sleep": true,
+      "waterIntake": true,
+      "cardio": true
+    },
+    {
+      "date": "2025-11-13",
       "workout": true,
       "diet": true,
       "sleep": true,

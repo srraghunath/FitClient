@@ -300,6 +300,12 @@
                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="logout-button">
+                                            <rect key="frame" x="0.0" y="0.0" width="393" height="72"/>
+                                            <connections>
+                                                <action selector="logoutTapped:" destination="-1" eventType="touchUpInside" id="logout-action"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
@@ -308,6 +314,10 @@
                                         <constraint firstAttribute="height" constant="72" id="Aog-GK-IEl"/>
                                         <constraint firstItem="Aee-Lw-ozq" firstAttribute="leading" secondItem="MsG-4S-bPb" secondAttribute="trailing" constant="16" id="Fci-Ea-4IU"/>
                                         <constraint firstItem="MsG-4S-bPb" firstAttribute="leading" secondItem="uXz-nE-vUt" secondAttribute="leading" constant="16" id="pYZ-rN-Vv6"/>
+                                        <constraint firstAttribute="bottom" secondItem="logout-button" secondAttribute="bottom" id="logout-button-bottom"/>
+                                        <constraint firstItem="logout-button" firstAttribute="leading" secondItem="uXz-nE-vUt" secondAttribute="leading" id="logout-button-leading"/>
+                                        <constraint firstItem="logout-button" firstAttribute="top" secondItem="uXz-nE-vUt" secondAttribute="top" id="logout-button-top"/>
+                                        <constraint firstAttribute="trailing" secondItem="logout-button" secondAttribute="trailing" id="logout-button-trailing"/>
                                     </constraints>
                                 </view>
                             </subviews>

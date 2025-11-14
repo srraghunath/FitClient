@@ -90,6 +90,24 @@ class DietCell: UITableViewCell {
         // Load image
         loadImage(from: diet.imageUrl, dietId: diet.id)
     }
+
+    // Display-only configuration for client dashboard (no selection/stepper UI)
+    func configureDisplayOnly(with diet: Diet) {
+        currentDietId = diet.id
+        onQuantityChanged = nil
+
+        nameLabel.text = diet.name
+        nutritionLabel.text = "\(diet.grams)g | P: \(String(format: "%.1f", diet.protein))g | C: \(String(format: "%.1f", diet.carbs))g | F: \(String(format: "%.1f", diet.fat))g | \(diet.calories) cal"
+
+    // Always plain card for client; hide stepper but SHOW quantity value
+        containerView.backgroundColor = UIColor(hex: "#1a1a1a")
+        containerView.layer.borderWidth = 0
+    quantityStepper.isHidden = true
+    quantityLabel.isHidden = false
+    quantityLabel.text = "\(diet.quantity)"
+
+        loadImage(from: diet.imageUrl, dietId: diet.id)
+    }
     
     @objc private func stepperValueChanged() {
         let newQuantity = Int(quantityStepper.value)

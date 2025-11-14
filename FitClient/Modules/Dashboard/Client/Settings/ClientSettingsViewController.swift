@@ -34,12 +34,6 @@ class ClientSettingsViewController: UIViewController {
             iconBackgroundColor: UIColor(red: 0.68235294117647, green: 0.99607843137255, blue: 0.07843137254902, alpha: 1.0)
         ),
         SettingsItem(
-            title: "Report a Bug",
-            subtitle: "Help us fix it",
-            icon: "ant.fill",
-            iconBackgroundColor: UIColor(red: 0.68235294117647, green: 0.99607843137255, blue: 0.07843137254902, alpha: 1.0)
-        ),
-        SettingsItem(
             title: "Logout",
             subtitle: nil,
             icon: "arrow.right.square.fill",
@@ -56,7 +50,7 @@ class ClientSettingsViewController: UIViewController {
     
     private func loadUserProfile() {
         // Get logged-in user ID from UserDefaults
-        if let userEmail = UserDefaults.standard.string(forKey: "userEmail") {
+        if UserDefaults.standard.string(forKey: "userEmail") != nil {
             let clientId = "client_001" // This would normally come from auth
             
             // Use DataService to load profile
@@ -109,7 +103,7 @@ extension ClientSettingsViewController: UITableViewDataSource, UITableViewDelega
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let selectedItem = settings[indexPath.row]
+    _ = settings[indexPath.row]
         
         switch indexPath.row {
         case 0:
@@ -122,10 +116,6 @@ extension ClientSettingsViewController: UITableViewDataSource, UITableViewDelega
             let helpVC = ClientHelpViewController(nibName: "ClientHelpViewController", bundle: nil)
             navigationController?.pushViewController(helpVC, animated: true)
         case 3:
-            // Reuse Help screen's Submit a Request section
-            let helpVC = ClientHelpViewController(nibName: "ClientHelpViewController", bundle: nil)
-            navigationController?.pushViewController(helpVC, animated: true)
-        case 4:
             print("Logout tapped")
             handleLogout()
         default:

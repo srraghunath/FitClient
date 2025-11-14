@@ -17,6 +17,9 @@
                 <outlet property="scheduledWorkoutsTableHeight" destination="scheduledWorkoutsTableHeight" id="scheduledWorkoutsTableHeightOutlet"/>
                 <outlet property="scheduledWorkoutsTableView" destination="scheduledWorkoutsTableView" id="scheduledWorkoutsTableViewOutlet"/>
                 <outlet property="scrollView" destination="scrollView" id="scrollViewOutlet"/>
+                <outlet property="dietHeaderLabel" destination="dietHeader" id="dietHeaderOutlet"/>
+                <outlet property="dietTableHeight" destination="dietTableHeight" id="dietTableHeightOutlet"/>
+                <outlet property="dietTableView" destination="dietTableView" id="dietTableViewOutlet"/>
                 <outlet property="totalActiveDaysLabel" destination="totalActiveDaysLabel" id="totalActiveDaysLabelOutlet"/>
                 <outlet property="totalActiveDaysValueLabel" destination="totalActiveDaysValueLabel" id="totalActiveDaysValueLabelOutlet"/>
                 <outlet property="view" destination="view" id="viewOutlet"/>
@@ -152,6 +155,22 @@
                                         <constraint firstAttribute="height" constant="216" id="scheduledWorkoutsTableHeight"/>
                                     </constraints>
                                 </tableView>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Diet Plan" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dietHeader">
+                                    <rect key="frame" x="16" y="917" width="361" height="24"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="24" id="dietHeaderHeight"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="dietTableView">
+                                    <rect key="frame" x="16" y="949" width="361" height="216"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="216" id="dietTableHeight"/>
+                                    </constraints>
+                                </tableView>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
@@ -168,10 +187,16 @@
                                 <constraint firstItem="scheduledWorkoutsHeader" firstAttribute="leading" secondItem="contentView" secondAttribute="leading" constant="16" id="scheduledWorkoutsHeaderLeading"/>
                                 <constraint firstItem="scheduledWorkoutsHeader" firstAttribute="top" secondItem="dayTrackerTableView" secondAttribute="bottom" constant="24" id="scheduledWorkoutsHeaderTop"/>
                                 <constraint firstAttribute="trailing" secondItem="scheduledWorkoutsHeader" secondAttribute="trailing" constant="16" id="scheduledWorkoutsHeaderTrailing"/>
-                                <constraint firstAttribute="bottom" secondItem="scheduledWorkoutsTableView" secondAttribute="bottom" constant="40" id="scheduledWorkoutsTableViewBottom"/>
                                 <constraint firstItem="scheduledWorkoutsTableView" firstAttribute="leading" secondItem="contentView" secondAttribute="leading" constant="16" id="scheduledWorkoutsTableViewLeading"/>
                                 <constraint firstItem="scheduledWorkoutsTableView" firstAttribute="top" secondItem="scheduledWorkoutsHeader" secondAttribute="bottom" constant="8" id="scheduledWorkoutsTableViewTop"/>
                                 <constraint firstAttribute="trailing" secondItem="scheduledWorkoutsTableView" secondAttribute="trailing" constant="16" id="scheduledWorkoutsTableViewTrailing"/>
+                                <constraint firstItem="dietHeader" firstAttribute="leading" secondItem="contentView" secondAttribute="leading" constant="16" id="dietHeaderLeading"/>
+                                <constraint firstItem="dietHeader" firstAttribute="top" secondItem="scheduledWorkoutsTableView" secondAttribute="bottom" constant="24" id="dietHeaderTop"/>
+                                <constraint firstAttribute="trailing" secondItem="dietHeader" secondAttribute="trailing" constant="16" id="dietHeaderTrailing"/>
+                                <constraint firstItem="dietTableView" firstAttribute="leading" secondItem="contentView" secondAttribute="leading" constant="16" id="dietTableViewLeading"/>
+                                <constraint firstItem="dietTableView" firstAttribute="top" secondItem="dietHeader" secondAttribute="bottom" constant="8" id="dietTableViewTop"/>
+                                <constraint firstAttribute="trailing" secondItem="dietTableView" secondAttribute="trailing" constant="16" id="dietTableViewTrailing"/>
+                                <constraint firstAttribute="bottom" secondItem="dietTableView" secondAttribute="bottom" constant="40" id="dietTableViewBottom"/>
                                 <constraint firstItem="statsStackView" firstAttribute="leading" secondItem="contentView" secondAttribute="leading" constant="16" id="statsStackViewLeading"/>
                                 <constraint firstItem="statsStackView" firstAttribute="top" secondItem="activitySummaryLabel" secondAttribute="bottom" constant="12" id="statsStackViewTop"/>
                                 <constraint firstAttribute="trailing" secondItem="statsStackView" secondAttribute="trailing" constant="16" id="statsStackViewTrailing"/>
