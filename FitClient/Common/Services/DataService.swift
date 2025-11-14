@@ -257,6 +257,43 @@ class DataService {
             completion(.failure(DataServiceError.decodingFailed(error)))
         }
     }
+
+    // MARK: - Day Activity (Day Tracker)
+
+    /// Loads the day tracker completion flags for a specific date from clientActivityData.json
+    /// - Parameter date: The date to fetch completion for
+    /// - Returns: Completion with a DayActivityCompletion if present, otherwise defaults to all false
+    func loadDayActivityForDate(_ date: Date, completion: @escaping (Result<DayActivityCompletion, Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "clientActivityData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("clientActivityData.json")))
+            return
+        }
+
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let activityData = try decoder.decode(ClientMonthlyActivityData.self, from: data)
+
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            let monthFormatter = DateFormatter()
+            monthFormatter.dateFormat = "yyyy-MM"
+
+            let targetDateString = formatter.string(from: date)
+            let monthKey = monthFormatter.string(from: date)
+
+            if let monthDays = activityData.monthlyData[monthKey],
+               let day = monthDays.first(where: { $0.date == targetDateString }) {
+                completion(.success(day))
+            } else {
+                // Default all false if no entry
+                let empty = DayActivityCompletion(date: targetDateString, workout: false, diet: false, sleep: false, waterIntake: false, cardio: false)
+                completion(.success(empty))
+            }
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
 }
 
 // MARK: - Custom Errors

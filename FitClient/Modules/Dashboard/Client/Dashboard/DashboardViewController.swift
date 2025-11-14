@@ -222,14 +222,37 @@ class DashboardViewController: UIViewController {
         totalActiveDaysValueLabel.text = "12 Days"
         consecutiveDaysValueLabel.text = "7 Days"
         
-        // Load day tracker items from Figma
-        dayTrackerItems = [
-            DayTrackerItem(icon: "🏋️", title: "Workout", subtitle: "Full body", isCompleted: true),
-            DayTrackerItem(icon: "❤️", title: "Cardio", subtitle: "Running, 30 minutes", isCompleted: false),
-            DayTrackerItem(icon: "💧", title: "Water Intake", subtitle: "8 litres", isCompleted: false),
-            DayTrackerItem(icon: "🍽", title: "Diet Plan", subtitle: "Balanced", isCompleted: true),
-            DayTrackerItem(icon: "🌙", title: "Sleep Cycle", subtitle: "8 hours", isCompleted: true)
-        ]
+        // Prefill Day Tracker from data service (existing data if any)
+        DataService.shared.loadDayActivityForDate(date) { [weak self] result in
+            switch result {
+            case .success(let activity):
+                var logMsg = "✅ [Dashboard] Day activity for \(dateString): workout=\(activity.workout), cardio=\(activity.cardio), water=\(activity.waterIntake), diet=\(activity.diet), sleep=\(activity.sleep)\n"
+                if let existingLog = try? String(contentsOfFile: logPath) {
+                    try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
+                }
+                print(logMsg)
+
+                // Map to items; keep the same order/UI and texts
+                let items: [DayTrackerItem] = [
+                    DayTrackerItem(icon: "🏋️", title: "Workout", subtitle: "Full body", isCompleted: activity.workout),
+                    DayTrackerItem(icon: "❤️", title: "Cardio", subtitle: "Running, 30 minutes", isCompleted: activity.cardio),
+                    DayTrackerItem(icon: "💧", title: "Water Intake", subtitle: "8 litres", isCompleted: activity.waterIntake),
+                    DayTrackerItem(icon: "🍽", title: "Diet Plan", subtitle: "Balanced", isCompleted: activity.diet),
+                    DayTrackerItem(icon: "🌙", title: "Sleep Cycle", subtitle: "8 hours", isCompleted: activity.sleep)
+                ]
+
+                DispatchQueue.main.async {
+                    self?.dayTrackerItems = items
+                    self?.updateUI()
+                }
+            case .failure(let error):
+                let errMsg = "❌ [Dashboard] Error loading day activity: \(error)\n"
+                if let existingLog = try? String(contentsOfFile: logPath) {
+                    try? (existingLog + errMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
+                }
+                print(errMsg)
+            }
+        }
         
         // Load scheduled workouts for the selected date
         DataService.shared.loadWorkoutsForDate(date) { [weak self] result in
