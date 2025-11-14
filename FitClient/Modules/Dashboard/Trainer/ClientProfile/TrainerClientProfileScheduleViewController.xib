@@ -9,6 +9,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TrainerClientProfileScheduleViewController" customModule="FitClient" customModuleProvider="target">
             <connections>
+                <outlet property="legendStackView" destination="legend-stack" id="legend-outlet"/>
                 <outlet property="scheduleTableView" destination="table-view" id="table-outlet"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
                 <outlet property="weekdayStackView" destination="weekday-stack" id="weekday-outlet"/>
@@ -28,24 +29,19 @@
                                 <constraint firstAttribute="height" constant="44" id="stack-height"/>
                             </constraints>
                         </stackView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="legend-description">
-                            <rect key="frame" x="16" y="52" width="361" height="40"/>
-                            <string key="text">🟢 Assigned (All 5 Tasks Done)  •  🔘 Not Assigned (Missing Tasks)  •  🔵 Selected (Current Day)</string>
-                            <fontDescription key="fontDescription" name="WorkSans-Regular" family="Work Sans" pointSize="11"/>
-                            <color key="textColor" white="0.8" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <nil key="highlightedColor"/>
-                        </label>
+                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fill" alignment="leading" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="legend-stack">
+                            <rect key="frame" x="16" y="60" width="361" height="32"/>
+                        </stackView>
                     </subviews>
                     <color key="backgroundColor" white="0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="weekday-stack" firstAttribute="leading" secondItem="weekday-container" secondAttribute="leading" constant="16" id="stack-leading"/>
                         <constraint firstAttribute="trailing" secondItem="weekday-stack" secondAttribute="trailing" constant="16" id="stack-trailing"/>
                         <constraint firstItem="weekday-stack" firstAttribute="top" secondItem="weekday-container" secondAttribute="top" constant="8" id="stack-top"/>
-                        <constraint firstItem="legend-description" firstAttribute="leading" secondItem="weekday-container" secondAttribute="leading" constant="16" id="legend-desc-leading"/>
-                        <constraint firstAttribute="trailing" secondItem="legend-description" secondAttribute="trailing" constant="16" id="legend-desc-trailing"/>
-                        <constraint firstItem="legend-description" firstAttribute="top" secondItem="weekday-stack" secondAttribute="bottom" constant="0" id="legend-desc-top"/>
-                        <constraint firstAttribute="bottom" secondItem="legend-description" secondAttribute="bottom" constant="8" id="legend-desc-bottom"/>
-                        <constraint firstAttribute="height" constant="100" id="weekday-height"/>
+                        <constraint firstItem="legend-stack" firstAttribute="leading" secondItem="weekday-container" secondAttribute="leading" constant="18" id="legend-desc-leading"/>
+                        <constraint firstItem="legend-stack" firstAttribute="top" secondItem="weekday-stack" secondAttribute="bottom" constant="12" id="legend-desc-top"/>
+                        <constraint firstAttribute="bottom" secondItem="legend-stack" secondAttribute="bottom" constant="8" id="legend-desc-bottom"/>
+                        <constraint firstItem="legend-stack" firstAttribute="trailing" secondItem="weekday-container" secondAttribute="trailing" constant="16" id="legend-desc-trailing"/>
                     </constraints>
                 </view>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="table-view">

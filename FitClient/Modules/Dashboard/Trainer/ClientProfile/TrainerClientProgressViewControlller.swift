@@ -108,6 +108,7 @@ class TrainerClientProgressViewControlller: UIViewController {
         
         // Setup Weekday Headers
         setupWeekdayHeaders()
+        applyHeatmapLegend()
         
         // Setup Legend
         setupLegend()
@@ -144,6 +145,39 @@ class TrainerClientProgressViewControlller: UIViewController {
             label.textAlignment = .center
             weekdayHeaderStackView.addArrangedSubview(label)
         }
+    }
+    
+    private func applyHeatmapLegend() {
+        let entries: [(UIColor, String)] = [
+            (.primaryGreen, "All 5 Done"),
+            (.primaryGreenSoft, "1-2 Done"),
+            (UIColor(hex: "#E0E0E0"), "None Done"),
+            (UIColor(hex: "#1A1A1A"), "Upcoming")
+        ]
+        let font = heatmapSubtitleLabel.font ?? UIFont.systemFont(ofSize: 12, weight: .semibold)
+        let textColor = heatmapSubtitleLabel.textColor ?? UIColor(hex: "#F5F5F5")
+        let bullet = "●"
+        let attributed = NSMutableAttributedString()
+        for (index, entry) in entries.enumerated() {
+            if index > 0 {
+                let spacer = NSAttributedString(string: "     ", attributes: [
+                    .font: font,
+                    .foregroundColor: textColor
+                ])
+                attributed.append(spacer)
+            }
+            let bulletAttr = NSAttributedString(string: bullet, attributes: [
+                .font: font,
+                .foregroundColor: entry.0
+            ])
+            let labelAttr = NSAttributedString(string: " \(entry.1)", attributes: [
+                .font: font,
+                .foregroundColor: textColor
+            ])
+            attributed.append(bulletAttr)
+            attributed.append(labelAttr)
+        }
+        heatmapSubtitleLabel.attributedText = attributed
     }
     
     private func setupLegend() {

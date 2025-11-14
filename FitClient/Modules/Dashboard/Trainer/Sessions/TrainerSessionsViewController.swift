@@ -10,7 +10,6 @@ class TrainerSessionsViewController: UIViewController {
     private var dateLabel: UILabel!
     private var calendarButton: UIButton!
     private let calendarOutlineImage = UIImage(systemName: "calendar")
-    private let calendarFilledImage = UIImage(systemName: "calendar.circle.fill")
     private weak var datePickerSheetController: UIViewController?
     private var selectedDate: Date = Date()
     private var allSessions: [Session] = []
@@ -53,13 +52,13 @@ class TrainerSessionsViewController: UIViewController {
         
         // Create calendar button as right bar button item
         let calendarButton = UIButton(type: .system)
-        calendarButton.setImage(calendarOutlineImage, for: .normal)
-        calendarButton.setImage(calendarFilledImage, for: .selected)
+    calendarButton.setImage(calendarOutlineImage, for: .normal)
         calendarButton.tintColor = .white
         calendarButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
         calendarButton.setPreferredSymbolConfiguration(symbolConfig, forImageIn: .normal)
-        calendarButton.setPreferredSymbolConfiguration(symbolConfig, forImageIn: .selected)
+    calendarButton.adjustsImageWhenHighlighted = false
+    calendarButton.adjustsImageWhenDisabled = false
         calendarButton.addTarget(self, action: #selector(calendarButtonTapped), for: .touchUpInside)
         self.calendarButton = calendarButton
         
@@ -69,7 +68,6 @@ class TrainerSessionsViewController: UIViewController {
     
     @objc private func calendarButtonTapped() {
         guard datePickerSheetController?.presentingViewController == nil else { return }
-        calendarButton?.isSelected = true
         calendarButton?.tintColor = .primaryGreen
         showDatePickerModal()
     }
@@ -93,6 +91,7 @@ class TrainerSessionsViewController: UIViewController {
         
         // Configure date picker
         datePicker.date = selectedDate
+    datePicker.tintColor = .primaryGreen
         datePicker.translatesAutoresizingMaskIntoConstraints = false
         datePicker.backgroundColor = .clear
         containerView.addSubview(datePicker)
@@ -154,7 +153,6 @@ class TrainerSessionsViewController: UIViewController {
     }
     
     fileprivate func resetCalendarButtonAppearance() {
-        calendarButton?.isSelected = false
         calendarButton?.tintColor = .white
         datePickerSheetController = nil
     }

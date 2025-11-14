@@ -12,6 +12,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
     // MARK: - Outlets
     @IBOutlet private weak var weekdayStackView: UIStackView!
     @IBOutlet private weak var scheduleTableView: UITableView!
+    @IBOutlet private weak var legendStackView: UIStackView!
     
     // MARK: - Properties
     var clientId: String?
@@ -53,6 +54,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .black
         setupWeekdayCircles()
+        applyLegendDescription()
     }
     
     private func setupWeekdayCircles() {
@@ -110,22 +112,20 @@ class TrainerClientProfileScheduleViewController: UIViewController {
     
     private func updateWeekdayButton(_ button: UIButton, hasData: Bool, isSelected: Bool) {
         button.subviews.forEach { $0.removeFromSuperview() }
-        
-        // Set background color based on data availability
-        if hasData {
-            button.backgroundColor = UIColor(hex: "#aefe14")  // Green for all 5 tasks completed (ASSIGNED)
-        } else {
-            button.backgroundColor = UIColor(hex: "#666666")  // Grey for incomplete (NOT ASSIGNED)
-        }
-        
-        // Add selection border - SELECTED BUT NOT ASSIGNED
+
+        let assignedColor = UIColor.primaryGreen
+        let missingColor = UIColor(hex: "#666666")
+        let baseColor = hasData ? assignedColor : missingColor
+
         if isSelected {
+            button.backgroundColor = .clear
             button.layer.borderWidth = 3
-            button.layer.borderColor = UIColor.blue.cgColor
+            button.layer.borderColor = UIColor.systemBlue.cgColor
         } else {
+            button.backgroundColor = baseColor
             button.layer.borderWidth = 0
         }
-        
+
         // Get day abbreviation
         let dayAbbr: String
         switch Weekday.allCases.first(where: { $0.index == button.tag }) {
@@ -142,7 +142,11 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         // Add text label with day abbreviation inside the circle
         let label = UILabel()
         label.text = dayAbbr
-        label.textColor = .black
+        if isSelected {
+            label.textColor = hasData ? assignedColor : missingColor
+        } else {
+            label.textColor = .black
+        }
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -152,6 +156,92 @@ class TrainerClientProfileScheduleViewController: UIViewController {
             label.centerXAnchor.constraint(equalTo: button.centerXAnchor),
             label.centerYAnchor.constraint(equalTo: button.centerYAnchor)
         ])
+    }
+
+    private func applyLegendDescription() {
+        guard let legendStackView = legendStackView else { return }
+        legendStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        legendStackView.axis = .vertical
+        legendStackView.alignment = .leading
+        legendStackView.spacing = 12
+
+        let textColor = UIColor(white: 0.8, alpha: 1.0)
+        let font = UIFont(name: "WorkSans-Regular", size: 11) ?? UIFont.systemFont(ofSize: 11)
+
+        let legendRows: [[(UIImage, String)]] = [
+            [
+                (legendCircleImage(fillColor: .primaryGreen), "Assigned (All 5 Tasks Done)"),
+                (legendCircleImage(fillColor: UIColor(hex: "#666666")), "Not Assigned (Missing Tasks)")
+            ],
+            [
+                (legendCircleImage(fillColor: nil, borderColor: UIColor.systemBlue, borderWidth: 2), "Selected (Current Day)")
+            ]
+        ]
+
+        for row in legendRows {
+            let rowStack = UIStackView()
+            rowStack.axis = .horizontal
+            rowStack.alignment = .top
+            rowStack.spacing = row.count > 1 ? 12 : 0
+            rowStack.distribution = .fill
+
+            for (image, text) in row {
+                rowStack.addArrangedSubview(makeLegendItemView(image: image, text: text, textColor: textColor, font: font))
+            }
+
+            legendStackView.addArrangedSubview(rowStack)
+        }
+    }
+
+    private func makeLegendItemView(image: UIImage, text: String, textColor: UIColor, font: UIFont) -> UIStackView {
+        let iconView = UIImageView(image: image)
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        iconView.contentMode = .scaleAspectFit
+        iconView.widthAnchor.constraint(equalToConstant: image.size.width).isActive = true
+        iconView.heightAnchor.constraint(equalToConstant: image.size.height).isActive = true
+
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = text
+        label.font = font
+        label.textColor = textColor
+    label.numberOfLines = 0
+    label.lineBreakMode = .byWordWrapping
+    label.setContentCompressionResistancePriority(.required, for: .horizontal)
+    label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+
+        let stack = UIStackView(arrangedSubviews: [iconView, label])
+        stack.axis = .horizontal
+        stack.alignment = .top
+        stack.spacing = 6
+        stack.setContentCompressionResistancePriority(.required, for: .horizontal)
+        stack.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        return stack
+    }
+
+    private func legendCircleImage(fillColor: UIColor?, borderColor: UIColor? = nil, borderWidth: CGFloat = 0) -> UIImage {
+        let dimension: CGFloat = 14
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: dimension, height: dimension))
+        return renderer.image { context in
+            let rect = CGRect(origin: .zero, size: CGSize(width: dimension, height: dimension))
+            if let borderColor = borderColor, borderWidth > 0 {
+                let inset = borderWidth / 2
+                let circleRect = rect.insetBy(dx: inset, dy: inset)
+                if let fillColor = fillColor {
+                    context.cgContext.setFillColor(fillColor.cgColor)
+                    context.cgContext.addEllipse(in: circleRect)
+                    context.cgContext.drawPath(using: .fill)
+                }
+                context.cgContext.setStrokeColor(borderColor.cgColor)
+                context.cgContext.setLineWidth(borderWidth)
+                context.cgContext.addEllipse(in: circleRect)
+                context.cgContext.strokePath()
+            } else if let fillColor = fillColor {
+                context.cgContext.setFillColor(fillColor.cgColor)
+                context.cgContext.addEllipse(in: rect)
+                context.cgContext.drawPath(using: .fill)
+            }
+        }
     }
     
     private func hasScheduleData(for weekday: Weekday) -> Bool {

@@ -24,6 +24,7 @@ class TrainerClientProfileViewController: UIViewController {
     var client: Client?
     private var clientProfile: ClientProfile?
     private var currentChildViewController: UIViewController?
+    private let activityTableMaxHeight: CGFloat = 360
     
     // MARK: - View Lifecycle
     override func viewDidLoad() {
@@ -109,6 +110,10 @@ class TrainerClientProfileViewController: UIViewController {
         recentActivitiesTableView.dataSource = self
         recentActivitiesTableView.backgroundColor = .black
         recentActivitiesTableView.separatorStyle = .none
+        recentActivitiesTableView.rowHeight = UITableView.automaticDimension
+        recentActivitiesTableView.estimatedRowHeight = 88
+        recentActivitiesTableView.isScrollEnabled = false
+        recentActivitiesTableView.showsVerticalScrollIndicator = false
     }
     
     private func loadClientProfile() {
@@ -137,10 +142,16 @@ class TrainerClientProfileViewController: UIViewController {
     }
     
     private func updateTableHeight() {
-        let rowCount = clientProfile?.recentActivities.count ?? 0
-        let rowHeight: CGFloat = 72
-        let calculatedHeight = CGFloat(rowCount) * rowHeight
-        tableHeightConstraint.constant = max(calculatedHeight, 200)
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.recentActivitiesTableView.layoutIfNeeded()
+            let contentHeight = self.recentActivitiesTableView.contentSize.height
+            let targetHeight = min(contentHeight, self.activityTableMaxHeight)
+            self.tableHeightConstraint.constant = targetHeight
+            let shouldScroll = contentHeight > self.activityTableMaxHeight
+            self.recentActivitiesTableView.isScrollEnabled = shouldScroll
+            self.recentActivitiesTableView.alwaysBounceVertical = shouldScroll
+        }
     }
     
     private func updateProfileUI() {
@@ -263,6 +274,6 @@ extension TrainerClientProfileViewController: UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 72
+        return UITableView.automaticDimension
     }
 }

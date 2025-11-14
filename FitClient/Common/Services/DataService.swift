@@ -160,6 +160,22 @@ class DataService {
         }
     }
     
+    func loadWorkoutTargetPresets(completion: @escaping (Result<[WorkoutTargetPreset], Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "workoutTargetsSample", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("workoutTargetsSample.json")))
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let presetsData = try decoder.decode(WorkoutTargetPresetsData.self, from: data)
+            completion(.success(presetsData.targets))
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
+    
     // MARK: - Diets
     
     func loadDiets(completion: @escaping (Result<[Diet], Error>) -> Void) {

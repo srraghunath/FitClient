@@ -191,26 +191,26 @@ struct DietItem: Codable {
 
 struct WorkoutScheduleDetail: Codable {
     let workoutId: String
+    var targetSets: Int?
     var targetReps: Int?
-    var targetWeight: Double?
     var hasTargets: Bool {
-        targetReps != nil || targetWeight != nil
+        targetSets != nil || targetReps != nil
     }
     
     enum CodingKeys: String, CodingKey {
         case workoutId = "workout_id"
+        case targetSets = "target_sets"
         case targetReps = "target_reps"
-        case targetWeight = "target_weight"
     }
     
     var shortSummary: String {
-        switch (targetReps, targetWeight) {
-        case let (reps?, weight?):
-            return "\(reps) reps @ \(weight.fc_cleanString) kg"
-        case let (reps?, nil):
+        switch (targetSets, targetReps) {
+        case let (sets?, reps?):
+            return "\(sets) sets x \(reps) reps"
+        case let (sets?, nil):
+            return "\(sets) sets"
+        case let (nil, reps?):
             return "\(reps) reps"
-        case let (nil, weight?):
-            return "\(weight.fc_cleanString) kg"
         default:
             return "No targets set"
         }
@@ -293,8 +293,3 @@ struct ClientSchedulesResponse: Codable {
     var schedules: [ClientScheduleData]
 }
 
-private extension Double {
-    var fc_cleanString: String {
-        truncatingRemainder(dividingBy: 1) == 0 ? String(format: "%.0f", self) : String(format: "%.1f", self)
-    }
-}

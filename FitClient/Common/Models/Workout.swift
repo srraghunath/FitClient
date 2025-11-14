@@ -12,8 +12,8 @@ struct Workout: Codable {
     let imageUrl: String
     let category: WorkoutCategory
     var isSelected: Bool
+    var targetSets: Int? = nil
     var targetReps: Int? = nil
-    var targetWeight: Double? = nil
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -22,8 +22,8 @@ struct Workout: Codable {
         case imageUrl = "image_url"
         case category
         case isSelected = "is_selected"
+        case targetSets = "target_sets"
         case targetReps = "target_reps"
-        case targetWeight = "target_weight"
     }
 }
 
@@ -39,21 +39,31 @@ struct WorkoutsData: Codable {
 
 extension Workout {
     var targetSummary: String? {
-        switch (targetReps, targetWeight) {
-        case let (reps?, weight?):
-            return "Target: \(reps) reps @ \(weight.cleanString) kg"
-        case let (reps?, nil):
+        switch (targetSets, targetReps) {
+        case let (sets?, reps?):
+            return "Target: \(sets) sets x \(reps) reps"
+        case let (sets?, nil):
+            return "Target: \(sets) sets"
+        case let (nil, reps?):
             return "Target: \(reps) reps"
-        case let (nil, weight?):
-            return "Target: \(weight.cleanString) kg"
         default:
             return nil
         }
     }
 }
 
-private extension Double {
-    var cleanString: String {
-        truncatingRemainder(dividingBy: 1) == 0 ? String(format: "%.0f", self) : String(format: "%.1f", self)
+struct WorkoutTargetPreset: Codable {
+    let workoutId: String
+    let defaultSets: Int?
+    let defaultReps: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case workoutId = "workout_id"
+        case defaultSets = "default_sets"
+        case defaultReps = "default_reps"
     }
+}
+
+struct WorkoutTargetPresetsData: Codable {
+    let targets: [WorkoutTargetPreset]
 }

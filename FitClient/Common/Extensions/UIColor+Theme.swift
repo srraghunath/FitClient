@@ -6,6 +6,8 @@ extension UIColor {
     // Primary Colors
     static let primaryGreen = UIColor(red: 174/255, green: 254/255, blue: 20/255, alpha: 1.0)
     static let accentGreen = UIColor(red: 0.682, green: 0.996, blue: 0.078, alpha: 1.0)
+    static let primaryGreenSoft = UIColor(red: 214/255, green: 254/255, blue: 137/255, alpha: 1.0)
+    static let primaryMildYellow = UIColor(red: 255/255, green: 215/255, blue: 77/255, alpha: 1.0)
     
     // Background Colors
     static let backgroundBlack = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 1.0)
