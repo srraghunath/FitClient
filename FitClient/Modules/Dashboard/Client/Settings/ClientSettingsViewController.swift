@@ -78,8 +78,7 @@ class ClientSettingsViewController: UIViewController {
         settingsTableView.dataSource = self
         settingsTableView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
         settingsTableView.separatorStyle = .none
-        settingsTableView.estimatedRowHeight = 72
-        settingsTableView.rowHeight = UITableView.automaticDimension
+        settingsTableView.rowHeight = 72
         
         settingsTableView.register(SettingsCell.self, forCellReuseIdentifier: "SettingsCell")
     }
@@ -164,6 +163,15 @@ class SettingsCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // Set corner radius after layout - profile image should be circle
+        if !profileImageView.isHidden {
+            let profileSize = min(profileImageView.bounds.width, profileImageView.bounds.height)
+            profileImageView.layer.cornerRadius = profileSize / 2.0
+        }
+    }
+    
     private func setupUI() {
         backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
         selectionStyle = .none
@@ -186,7 +194,6 @@ class SettingsCell: UITableViewCell {
         
         // Profile Image View
         profileImageView.contentMode = .scaleAspectFill
-        profileImageView.layer.cornerRadius = 28
         profileImageView.clipsToBounds = true
         profileImageView.backgroundColor = UIColor(red: 0.18823529411764706, green: 0.19215686274509802, blue: 0.19215686274509802, alpha: 1.0)
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -234,13 +241,13 @@ class SettingsCell: UITableViewCell {
             profileImageView.heightAnchor.constraint(equalToConstant: 56),
             
             // Title Label
-            titleLabel.leadingAnchor.constraint(equalTo: iconContainer.trailingAnchor, constant: 16),
+            titleLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
             titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
             titleLabel.heightAnchor.constraint(equalToConstant: 24),
             
             // Subtitle Label
-            subtitleLabel.leadingAnchor.constraint(equalTo: iconContainer.trailingAnchor, constant: 16),
+            subtitleLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 16),
             subtitleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
             subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
             subtitleLabel.heightAnchor.constraint(equalToConstant: 21)
@@ -257,14 +264,22 @@ class SettingsCell: UITableViewCell {
             profileImageView.isHidden = false
             iconContainer.isHidden = true
             
+            // Ensure circle shape is applied
+            DispatchQueue.main.async {
+                let size = min(self.profileImageView.bounds.width, self.profileImageView.bounds.height)
+                self.profileImageView.layer.cornerRadius = size / 2.0
+            }
+            
             // Try to load profile image from assets
             if let profileImageName = UserDefaults.standard.string(forKey: "userProfileImage"),
                let profileImage = UIImage(named: profileImageName) {
                 profileImageView.image = profileImage
                 profileImageView.contentMode = .scaleAspectFill
+                profileImageView.backgroundColor = .clear
             } else if let profileImage = UIImage(named: "profile1") {
                 profileImageView.image = profileImage
                 profileImageView.contentMode = .scaleAspectFill
+                profileImageView.backgroundColor = .clear
             } else {
                 // Fallback: Create placeholder with initials
                 profileImageView.backgroundColor = UIColor(red: 0.68235294117647, green: 0.99607843137255, blue: 0.07843137254902, alpha: 1.0)

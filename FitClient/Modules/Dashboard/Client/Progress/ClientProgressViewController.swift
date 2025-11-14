@@ -78,9 +78,10 @@ final class ClientProgressViewController: UIViewController {
         heatmapCollectionView.register(HeatmapCell.self, forCellWithReuseIdentifier: HeatmapCell.id)
         
         let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 3
-        layout.minimumLineSpacing = 3
+        layout.minimumInteritemSpacing = 3  // 3px spacing between items
+        layout.minimumLineSpacing = 3        // 3px spacing between rows
         layout.scrollDirection = .vertical
+        layout.sectionInset = .zero         // No padding on sides - crucial for square calculation
         heatmapCollectionView.collectionViewLayout = layout
         
         setupWeekdayHeaders()
@@ -387,10 +388,16 @@ extension ClientProgressViewController: UICollectionViewDataSource, UICollection
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let totalSpacing: CGFloat = 6 * 3.0
-        let availableWidth = collectionView.bounds.width - totalSpacing
-        let cellWidth = floor(availableWidth / 7.0)
-        return CGSize(width: cellWidth, height: cellWidth)
+        // FORCE 7 columns EXACTLY - ALL CELLS MUST BE PERFECT SQUARES
+        let layout = collectionViewLayout as! UICollectionViewFlowLayout
+        let totalSpacing: CGFloat = 6 * layout.minimumInteritemSpacing // 6 gaps × 3px spacing
+        let availableWidth = collectionView.bounds.width - layout.sectionInset.left - layout.sectionInset.right - totalSpacing
+        let cellSize = floor(availableWidth / 7.0) // Divide by exactly 7 columns
+        
+        // CRITICAL: Return square size (width == height) to ensure circles
+        let squareSize = CGSize(width: cellSize, height: cellSize)
+        
+        return squareSize
     }
 }
 

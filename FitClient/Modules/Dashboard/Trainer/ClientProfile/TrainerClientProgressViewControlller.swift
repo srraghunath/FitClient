@@ -96,9 +96,10 @@ class TrainerClientProgressViewControlller: UIViewController {
         heatmapCollectionView.register(HeatmapCell.self, forCellWithReuseIdentifier: HeatmapCell.id)
         
         let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 3  // Reduced to 3px for tighter spacing
-        layout.minimumLineSpacing = 3        // Reduced to 3px for tighter spacing
+        layout.minimumInteritemSpacing = 3  // 3px spacing between items
+        layout.minimumLineSpacing = 3        // 3px spacing between rows
         layout.scrollDirection = .vertical
+        layout.sectionInset = .zero         // No padding on sides - crucial for square calculation
         heatmapCollectionView.collectionViewLayout = layout
         
         // Calendar Button
@@ -499,92 +500,24 @@ extension TrainerClientProgressViewControlller: UICollectionViewDataSource, UICo
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        // FORCE 7 columns EXACTLY with SMALLER boxes (3px spacing)
-        let totalSpacing: CGFloat = 6 * 3.0 // 6 gaps between 7 items at 3px each
-        let availableWidth = collectionView.bounds.width - totalSpacing
-        let cellWidth = floor(availableWidth / 7.0) // EXACTLY 7 columns
+        // FORCE 7 columns EXACTLY - ALL CELLS MUST BE PERFECT SQUARES
+        let layout = collectionViewLayout as! UICollectionViewFlowLayout
+        let totalSpacing: CGFloat = 6 * layout.minimumInteritemSpacing // 6 gaps × 3px spacing
+        let availableWidth = collectionView.bounds.width - layout.sectionInset.left - layout.sectionInset.right - totalSpacing
+        let cellSize = floor(availableWidth / 7.0) // Divide by exactly 7 columns
         
-        print("Cell size: \(cellWidth) x \(cellWidth) for 7 columns (total width: \(collectionView.bounds.width))")
+        // CRITICAL: Return square size (width == height) to ensure circles
+        let squareSize = CGSize(width: cellSize, height: cellSize)
         
-        return CGSize(width: cellWidth, height: cellWidth)
+        if indexPath.item < 3 {
+            print("Cell \(indexPath.item): size \(cellSize)x\(cellSize) (perfect square for circles)")
+        }
+        
+        return squareSize
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // Touch on heatmap boxes should do nothing - removed functionality
-    }
-}
-
-// MARK: - Heatmap Cell
-class HeatmapCell: UICollectionViewCell {
-    static let id = "HeatmapCell"
-    private let box = UIView()
-    private let dayLabel = UILabel()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        box.layer.cornerRadius = 6
-        box.layer.masksToBounds = true
-        box.layer.borderWidth = 1
-        box.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(box)
-        NSLayoutConstraint.activate([
-            box.topAnchor.constraint(equalTo: contentView.topAnchor),
-            box.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            box.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            box.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-        ])
-
-        dayLabel.font = .systemFont(ofSize: 13, weight: .semibold)
-        dayLabel.translatesAutoresizingMaskIntoConstraints = false
-        box.addSubview(dayLabel)
-        NSLayoutConstraint.activate([
-            dayLabel.centerXAnchor.constraint(equalTo: box.centerXAnchor),
-            dayLabel.centerYAnchor.constraint(equalTo: box.centerYAnchor)
-        ])
-    }
-    
-    required init?(coder: NSCoder) { fatalError() }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        dayLabel.text = nil
-    }
-
-    func configure(day: Int?, level: Int) {
-        if let day = day {
-            dayLabel.text = "\(day)"
-        } else {
-            dayLabel.text = ""
-        }
-        dayLabel.textAlignment = .center
-        dayLabel.adjustsFontSizeToFitWidth = true
-
-        // 0 = DARK GREY (future dates after today)
-        // 1 = WHITE (0 activities completed) 
-        // 2 = MILD GREEN (1-2 activities completed)
-        // 3 = FULL PRIMARY GREEN (3-5 activities - all completed)
-        switch level {
-        case 0:
-            box.backgroundColor = UIColor(hex: "#1F1F1F") // Dark grey for future dates (higher contrast)
-            box.layer.borderColor = UIColor(hex: "#353535").cgColor
-            dayLabel.textColor = UIColor(hex: "#7B7B7B")
-        case 1:
-            box.backgroundColor = UIColor(hex: "#F2F2F2") // Soft white for nothing completed
-            box.layer.borderColor = UIColor(hex: "#C8C8C8").cgColor
-            dayLabel.textColor = UIColor(hex: "#202020")
-        case 2:
-            box.backgroundColor = UIColor(hex: "#D8FF7C") // Light primary green for 1-2 activities
-            box.layer.borderColor = UIColor(hex: "#9ACF35").cgColor
-            dayLabel.textColor = UIColor(hex: "#314400")
-        case 3:
-            box.backgroundColor = UIColor(hex: "#AEFE14") // Primary green for 3-5 activities
-            box.layer.borderColor = UIColor(hex: "#6EBE00").cgColor
-            dayLabel.textColor = UIColor(hex: "#2F3B00")
-        default:
-            box.backgroundColor = UIColor(hex: "#1F1F1F") // Dark grey default
-            box.layer.borderColor = UIColor(hex: "#353535").cgColor
-            dayLabel.textColor = UIColor(hex: "#7B7B7B")
-        }
     }
 }
 
