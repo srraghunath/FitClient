@@ -55,6 +55,7 @@ class WorkoutCell: UITableViewCell {
         
         descriptionLabel.textColor = UIColor(hex: "#d7ccc8")
         descriptionLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        descriptionLabel.numberOfLines = 2
         
         // Configure native iOS checkbox button
         checkboxButton.isUserInteractionEnabled = false  // Cell tap handles selection
@@ -64,7 +65,11 @@ class WorkoutCell: UITableViewCell {
     func configure(with workout: Workout) {
         currentWorkoutId = workout.id
         nameLabel.text = workout.name
-        descriptionLabel.text = workout.description
+        if let summary = workout.targetSummary, workout.isSelected {
+            descriptionLabel.text = summary
+        } else {
+            descriptionLabel.text = workout.description
+        }
         
         // Configure checkbox with proper SF Symbol and color
         if workout.isSelected {

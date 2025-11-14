@@ -51,6 +51,7 @@ class ScheduleCardCell: UITableViewCell {
         
         descriptionLabel.font = UIFont.systemFont(ofSize: 12)
         descriptionLabel.textColor = UIColor.white.withAlphaComponent(0.6)
+        descriptionLabel.numberOfLines = 2
         
         // Arrow styling
         expandArrowImageView.tintColor = .white

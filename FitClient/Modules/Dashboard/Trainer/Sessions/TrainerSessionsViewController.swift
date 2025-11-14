@@ -9,6 +9,9 @@ class TrainerSessionsViewController: UIViewController {
     private var datePicker: UIDatePicker!
     private var dateLabel: UILabel!
     private var calendarButton: UIButton!
+    private let calendarOutlineImage = UIImage(systemName: "calendar")
+    private let calendarFilledImage = UIImage(systemName: "calendar.circle.fill")
+    private weak var datePickerSheetController: UIViewController?
     private var selectedDate: Date = Date()
     private var allSessions: [Session] = []
     private var todaySessions: [Session] = []
@@ -50,16 +53,24 @@ class TrainerSessionsViewController: UIViewController {
         
         // Create calendar button as right bar button item
         let calendarButton = UIButton(type: .system)
-        calendarButton.setImage(UIImage(systemName: "calendar"), for: .normal)
+        calendarButton.setImage(calendarOutlineImage, for: .normal)
+        calendarButton.setImage(calendarFilledImage, for: .selected)
         calendarButton.tintColor = .white
         calendarButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+        calendarButton.setPreferredSymbolConfiguration(symbolConfig, forImageIn: .normal)
+        calendarButton.setPreferredSymbolConfiguration(symbolConfig, forImageIn: .selected)
         calendarButton.addTarget(self, action: #selector(calendarButtonTapped), for: .touchUpInside)
+        self.calendarButton = calendarButton
         
         let calendarBarButton = UIBarButtonItem(customView: calendarButton)
         navigationItem.rightBarButtonItem = calendarBarButton
     }
     
     @objc private func calendarButtonTapped() {
+        guard datePickerSheetController?.presentingViewController == nil else { return }
+        calendarButton?.isSelected = true
+        calendarButton?.tintColor = .primaryGreen
         showDatePickerModal()
     }
     
@@ -67,6 +78,7 @@ class TrainerSessionsViewController: UIViewController {
         // Create a custom view controller for the date picker
         let containerVC = UIViewController()
         containerVC.modalPresentationStyle = .pageSheet
+        datePickerSheetController = containerVC
         
         if let sheet = containerVC.sheetPresentationController {
             sheet.detents = [.medium()]
@@ -112,12 +124,17 @@ class TrainerSessionsViewController: UIViewController {
             selectButton.heightAnchor.constraint(equalToConstant: 56)
         ])
         
-        present(containerVC, animated: true)
+        present(containerVC, animated: true) { [weak self, weak containerVC] in
+            guard let self = self else { return }
+            containerVC?.presentationController?.delegate = self
+        }
     }
     
     @objc private func selectDateTapped() {
         dateChanged()
-        dismiss(animated: true)
+        dismiss(animated: true) { [weak self] in
+            self?.resetCalendarButtonAppearance()
+        }
     }
     
     private func updateDateLabel() {
@@ -134,6 +151,12 @@ class TrainerSessionsViewController: UIViewController {
     
     private func setupUI() {
         view.backgroundColor = UIColor.black
+    }
+    
+    fileprivate func resetCalendarButtonAppearance() {
+        calendarButton?.isSelected = false
+        calendarButton?.tintColor = .white
+        datePickerSheetController = nil
     }
     
     private func setupTableView() {
@@ -200,6 +223,13 @@ class TrainerSessionsViewController: UIViewController {
         }
         
         sessionsTableView.reloadData()
+    }
+}
+
+// MARK: - UIAdaptivePresentationControllerDelegate
+extension TrainerSessionsViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        resetCalendarButtonAppearance()
     }
 }
 

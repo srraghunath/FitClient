@@ -16,19 +16,29 @@ class WorkoutModalViewController: UIViewController {
     private var searchBar: UISearchBar!
     private var allWorkouts: [Workout] = []
     private var displayedWorkouts: [Workout] = []
-    private var filteredWorkouts: [Workout] = []
-    private var selectedWorkoutIds: Set<String> = []
+    private var selectedWorkoutSet: Set<String> = []
+    private var selectedWorkoutOrder: [String] = []
+    private var workoutDetails: [String: WorkoutScheduleDetail] = [:]
     private var searchText: String = ""
     
     var initialSelectedIds: [String] = []
-    var onSave: (([String]) -> Void)?
+    var initialWorkoutDetails: [WorkoutScheduleDetail] = []
+    var onSave: ((_ selectedIds: [String], _ workoutDetails: [WorkoutScheduleDetail]) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Set selected IDs FIRST before loading workouts
-        selectedWorkoutIds = Set(initialSelectedIds)
-        logDebug("Modal initialized with \(initialSelectedIds.count) pre-selected workout IDs: \(initialSelectedIds)")
+        selectedWorkoutSet = Set(initialSelectedIds)
+        selectedWorkoutOrder = initialSelectedIds
+        workoutDetails = initialWorkoutDetails.reduce(into: [:]) { result, detail in
+            result[detail.workoutId] = detail
+        }
+        for detail in initialWorkoutDetails where !selectedWorkoutSet.contains(detail.workoutId) {
+            selectedWorkoutSet.insert(detail.workoutId)
+            selectedWorkoutOrder.append(detail.workoutId)
+        }
+        logDebug("Modal initialized with \(selectedWorkoutSet.count) pre-selected workout IDs: \(selectedWorkoutOrder)")
         
         setupUI()
         setupTableView()
@@ -154,7 +164,8 @@ class WorkoutModalViewController: UIViewController {
             category = .upperBody
         }
         
-        logDebug("Filtering for category: \(category.rawValue), selectedWorkoutIds has \(selectedWorkoutIds.count) items: \(Array(selectedWorkoutIds)), searchText: '\(searchText)'")
+    let activeOrder = selectedWorkoutOrder.filter { selectedWorkoutSet.contains($0) }
+    logDebug("Filtering for category: \(category.rawValue), selectedWorkoutIds has \(selectedWorkoutSet.count) items: \(activeOrder), searchText: '\(searchText)'")
         
         // Filter by category first
         var workouts = allWorkouts.filter { $0.category == category }
@@ -171,8 +182,12 @@ class WorkoutModalViewController: UIViewController {
         // Apply selection state
         displayedWorkouts = workouts.map { workout in
             var mutableWorkout = workout
-            let isSelected = selectedWorkoutIds.contains(workout.id)
+            let isSelected = selectedWorkoutSet.contains(workout.id)
             mutableWorkout.isSelected = isSelected
+            if let detail = workoutDetails[workout.id] {
+                mutableWorkout.targetReps = detail.targetReps
+                mutableWorkout.targetWeight = detail.targetWeight
+            }
             if isSelected {
                 logDebug("  -> Workout \(workout.id) (\(workout.name)) IS SELECTED")
             }
@@ -199,10 +214,144 @@ class WorkoutModalViewController: UIViewController {
     }
     
     @IBAction func saveButtonTapped(_ sender: UIButton) {
-        let selectedIds = Array(selectedWorkoutIds)
-        onSave?(selectedIds)
-        logDebug("Saving \(selectedIds.count) selected workouts: \(selectedIds)")
+        let orderedIds = selectedWorkoutOrder.filter { selectedWorkoutSet.contains($0) }
+        let details = orderedIds.map { workoutDetails[$0] ?? WorkoutScheduleDetail(workoutId: $0, targetReps: nil, targetWeight: nil) }
+        onSave?(orderedIds, details)
+        logDebug("Saving \(orderedIds.count) selected workouts: \(orderedIds) with details: \(details.map { $0.shortSummary })")
         dismiss(animated: true)
+    }
+    
+    private func ensureSelection(for workout: Workout) {
+        if !selectedWorkoutSet.contains(workout.id) {
+            selectedWorkoutSet.insert(workout.id)
+            selectedWorkoutOrder.append(workout.id)
+            logDebug("Selected workout: \(workout.name)")
+        }
+    }
+    
+    private func removeSelection(for workout: Workout) {
+        if selectedWorkoutSet.remove(workout.id) != nil {
+            logDebug("Deselected workout: \(workout.name)")
+        }
+        selectedWorkoutOrder.removeAll { $0 == workout.id }
+        workoutDetails[workout.id] = nil
+        refreshRow(for: workout.id)
+    }
+    
+    private func refreshRow(for workoutId: String) {
+        guard let index = displayedWorkouts.firstIndex(where: { $0.id == workoutId }) else { return }
+        displayedWorkouts[index].isSelected = selectedWorkoutSet.contains(workoutId)
+        displayedWorkouts[index].targetReps = workoutDetails[workoutId]?.targetReps
+        displayedWorkouts[index].targetWeight = workoutDetails[workoutId]?.targetWeight
+        tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+    }
+    
+    private func presentDetailInput(for workout: Workout, isNewSelection: Bool) {
+        let alert = UIAlertController(
+            title: workout.name,
+            message: "Set target reps and weight (optional).",
+            preferredStyle: .alert
+        )
+        let existingDetail = workoutDetails[workout.id]
+        alert.addTextField { textField in
+            textField.placeholder = "Reps"
+            textField.keyboardType = .numberPad
+            if let reps = existingDetail?.targetReps {
+                textField.text = String(reps)
+            }
+        }
+        alert.addTextField { [weak self] textField in
+            textField.placeholder = "Weight (kg)"
+            textField.keyboardType = .decimalPad
+            if let weight = existingDetail?.targetWeight, let formatted = self?.weightModalFormattedString(weight) {
+                textField.text = formatted
+            }
+        }
+        
+        let saveAction = UIAlertAction(title: "Save", style: .default) { [weak self] _ in
+            guard let self else { return }
+            let reps = self.parseInt(from: alert.textFields?.first?.text)
+            let weight = self.parseDouble(from: alert.textFields?.last?.text)
+            let detail = WorkoutScheduleDetail(workoutId: workout.id, targetReps: reps, targetWeight: weight)
+            self.ensureSelection(for: workout)
+            self.workoutDetails[workout.id] = detail
+            self.refreshRow(for: workout.id)
+        }
+        alert.addAction(saveAction)
+        
+        if isNewSelection {
+            let skipAction = UIAlertAction(title: "Skip", style: .default) { [weak self] _ in
+                guard let self else { return }
+                self.ensureSelection(for: workout)
+                if self.workoutDetails[workout.id] == nil {
+                    self.workoutDetails[workout.id] = WorkoutScheduleDetail(workoutId: workout.id, targetReps: nil, targetWeight: nil)
+                }
+                self.refreshRow(for: workout.id)
+            }
+            alert.addAction(skipAction)
+        } else {
+            let clearAction = UIAlertAction(title: "Clear Targets", style: .default) { [weak self] _ in
+                guard let self else { return }
+                self.ensureSelection(for: workout)
+                self.workoutDetails[workout.id] = WorkoutScheduleDetail(workoutId: workout.id, targetReps: nil, targetWeight: nil)
+                self.refreshRow(for: workout.id)
+            }
+            alert.addAction(clearAction)
+        }
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
+    }
+    
+    private func presentSelectionOptions(for workout: Workout, at indexPath: IndexPath) {
+        let message: String
+        if let detail = workoutDetails[workout.id], detail.hasTargets {
+            message = "Current target: \(detail.shortSummary)"
+        } else {
+            message = "No targets set."
+        }
+        let actionSheet = UIAlertController(title: workout.name, message: message, preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: "Edit Targets", style: .default) { [weak self] _ in
+            self?.presentDetailInput(for: workout, isNewSelection: false)
+        })
+        if let detail = workoutDetails[workout.id], detail.hasTargets {
+            actionSheet.addAction(UIAlertAction(title: "Clear Targets", style: .default) { [weak self] _ in
+                guard let self else { return }
+                self.ensureSelection(for: workout)
+                self.workoutDetails[workout.id] = WorkoutScheduleDetail(workoutId: workout.id, targetReps: nil, targetWeight: nil)
+                self.refreshRow(for: workout.id)
+            })
+        }
+        actionSheet.addAction(UIAlertAction(title: "Remove Workout", style: .destructive) { [weak self] _ in
+            self?.removeSelection(for: workout)
+        })
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        if let popover = actionSheet.popoverPresentationController {
+            if let cell = tableView.cellForRow(at: indexPath) {
+                popover.sourceView = cell
+                popover.sourceRect = cell.bounds
+            } else {
+                popover.sourceView = tableView
+                popover.sourceRect = CGRect(x: tableView.bounds.midX, y: tableView.bounds.midY, width: 1, height: 1)
+            }
+        }
+        present(actionSheet, animated: true)
+    }
+    
+    private func parseInt(from text: String?) -> Int? {
+        guard let raw = text?.trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else { return nil }
+        return Int(raw)
+    }
+    
+    private func parseDouble(from text: String?) -> Double? {
+        guard let raw = text?.trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else { return nil }
+        let sanitized = raw.replacingOccurrences(of: ",", with: ".")
+        return Double(sanitized)
+    }
+    
+    private func weightModalFormattedString(_ value: Double) -> String {
+        value.truncatingRemainder(dividingBy: 1) == 0 ? String(format: "%.0f", value) : String(format: "%.1f", value)
     }
     
     private func logDebug(_ message: String) {
@@ -237,24 +386,17 @@ extension WorkoutModalViewController: UITableViewDataSource, UITableViewDelegate
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 72
+        return 80
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
         let workout = displayedWorkouts[indexPath.row]
-        
-        if selectedWorkoutIds.contains(workout.id) {
-            selectedWorkoutIds.remove(workout.id)
-            logDebug("Deselected workout: \(workout.name)")
+        if selectedWorkoutSet.contains(workout.id) {
+            presentSelectionOptions(for: workout, at: indexPath)
         } else {
-            selectedWorkoutIds.insert(workout.id)
-            logDebug("Selected workout: \(workout.name)")
+            presentDetailInput(for: workout, isNewSelection: true)
         }
-        
-        displayedWorkouts[indexPath.row].isSelected.toggle()
-        tableView.reloadRows(at: [indexPath], with: .none)
     }
 }
 

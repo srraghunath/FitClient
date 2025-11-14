@@ -20,6 +20,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
     private var weekdayButtons: [UIButton] = []
     private var expandedIndexPaths: Set<IndexPath> = []
     private var currentDayData: DayScheduleData?
+    private var workoutCatalog: [String: Workout] = [:]
     
     // DEBUG: when true, automatically open workout modal once on viewDidAppear (temporary)
     // Set to false for production / normal behavior so the modal only opens on explicit user tap.
@@ -32,6 +33,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         setupUI()
         setupTableView()
         loadScheduleData()
+    loadWorkoutCatalog()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -212,6 +214,22 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         }
     }
     
+    private func loadWorkoutCatalog() {
+        DataService.shared.loadWorkouts { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let workouts):
+                    var lookup: [String: Workout] = [:]
+                    workouts.forEach { lookup[$0.id] = $0 }
+                    self?.workoutCatalog = lookup
+                    self?.scheduleTableView.reloadSections(IndexSet(integer: 0), with: .none)
+                case .failure(let error):
+                    self?.logDebug("Failed to load workout catalog: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
     private func loadDayData(for weekday: Weekday) {
         guard let scheduleData = clientScheduleData else { return }
         let dayName = getDayName(from: weekday)
@@ -226,6 +244,37 @@ class TrainerClientProfileScheduleViewController: UIViewController {
             let isSelected = (weekday == selectedDay)
             updateWeekdayButton(button, hasData: hasData, isSelected: isSelected)
         }
+    }
+    
+    private func workoutCardDescription() -> String {
+        guard let dayData = currentDayData else {
+            return "Tap to add workouts"
+        }
+        let selectedCount = dayData.selectedWorkoutIds.count
+        if selectedCount == 0 {
+            return "Tap to add workouts"
+        }
+        if workoutCatalog.isEmpty {
+            return "\(selectedCount) workouts selected"
+        }
+    var detailLookup: [String: WorkoutScheduleDetail] = [:]
+    dayData.workoutDetails.forEach { detailLookup[$0.workoutId] = $0 }
+        let summaries: [String] = dayData.selectedWorkoutIds.compactMap { workoutId in
+            guard let workout = workoutCatalog[workoutId] else { return nil }
+            if let detail = detailLookup[workoutId], detail.hasTargets {
+                return "\(workout.name): \(detail.shortSummary)"
+            } else {
+                return workout.name
+            }
+        }
+        if summaries.isEmpty {
+            return "\(selectedCount) workouts selected"
+        }
+        let preview = summaries.prefix(2).joined(separator: " • ")
+        if summaries.count > 2 {
+            return preview + " • +\(summaries.count - 2) more"
+        }
+        return preview
     }
     
     // MARK: - Actions
@@ -254,6 +303,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
             waterIntake: 0,
             cardioNotes: "",
             selectedWorkoutIds: [],
+            workoutDetails: [],
             selectedDietItems: []
         )
         
@@ -392,7 +442,7 @@ extension TrainerClientProfileScheduleViewController: UITableViewDataSource {
             }
             
             if indexPath.row == 0 {
-                let item = ScheduleItem(id: "1", title: "Workout", description: "Tap to view details", type: .collapsible)
+                let item = ScheduleItem(id: "1", title: "Workout", description: workoutCardDescription(), type: .collapsible)
                 cell.configure(with: item)
             } else {
                 let item = ScheduleItem(id: "2", title: "Diet Plan", description: "Tap to view details", type: .collapsible)
@@ -523,10 +573,11 @@ extension TrainerClientProfileScheduleViewController: UITableViewDelegate {
     private func showWorkoutModal() {
         let modal = WorkoutModalViewController(nibName: "WorkoutModalViewController", bundle: nil)
         modal.initialSelectedIds = currentDayData?.selectedWorkoutIds ?? []
+        modal.initialWorkoutDetails = currentDayData?.workoutDetails ?? []
         
         // Handle save callback
-        modal.onSave = { [weak self] selectedIds in
-            self?.updateSelectedWorkouts(selectedIds)
+        modal.onSave = { [weak self] selectedIds, details in
+            self?.updateSelectedWorkouts(selectedIds: selectedIds, details: details)
         }
         
         // Handle modal dismissal to reset card arrow
@@ -566,9 +617,10 @@ extension TrainerClientProfileScheduleViewController: UITableViewDelegate {
         logDebug("Presenting diet modal with \(modal.initialSelectedDiets.count) pre-selected diet items")
     }
     
-    private func updateSelectedWorkouts(_ selectedIds: [String]) {
+    private func updateSelectedWorkouts(selectedIds: [String], details: [WorkoutScheduleDetail]) {
         guard var scheduleData = clientScheduleData, let dayData = currentDayData else { return }
         let dayName = getDayName(from: selectedDay)
+        let filteredDetails = details.filter { selectedIds.contains($0.workoutId) }
         
         // Update the day data with new workout selections
         let updatedDayData = DayScheduleData(
@@ -577,6 +629,7 @@ extension TrainerClientProfileScheduleViewController: UITableViewDelegate {
             waterIntake: dayData.waterIntake,
             cardioNotes: dayData.cardioNotes,
             selectedWorkoutIds: selectedIds,
+            workoutDetails: filteredDetails,
             selectedDietItems: dayData.selectedDietItems
         )
         
@@ -586,7 +639,7 @@ extension TrainerClientProfileScheduleViewController: UITableViewDelegate {
         
         scheduleTableView.reloadData()
         persistSchedule()
-        logDebug("Updated workouts for \(dayName): \(selectedIds.count) workouts selected")
+        logDebug("Updated workouts for \(dayName): \(selectedIds.count) workouts selected, details: \(filteredDetails.count)")
     }
     
     private func updateSelectedDiets(_ selectedDietItems: [(dietId: String, quantity: Int)]) {
@@ -600,6 +653,7 @@ extension TrainerClientProfileScheduleViewController: UITableViewDelegate {
             waterIntake: dayData.waterIntake,
             cardioNotes: dayData.cardioNotes,
             selectedWorkoutIds: dayData.selectedWorkoutIds,
+            workoutDetails: dayData.workoutDetails,
             selectedDietItems: selectedDietItems
         )
         
@@ -645,6 +699,7 @@ extension TrainerClientProfileScheduleViewController: SliderCardCellDelegate {
                 waterIntake: dayData.waterIntake,
                 cardioNotes: dayData.cardioNotes,
                 selectedWorkoutIds: dayData.selectedWorkoutIds,
+                workoutDetails: dayData.workoutDetails,
                 selectedDietItems: dayData.selectedDietItems
             )
         } else if sliderItem.id == "water" {
@@ -654,6 +709,7 @@ extension TrainerClientProfileScheduleViewController: SliderCardCellDelegate {
                 waterIntake: value,
                 cardioNotes: dayData.cardioNotes,
                 selectedWorkoutIds: dayData.selectedWorkoutIds,
+                workoutDetails: dayData.workoutDetails,
                 selectedDietItems: dayData.selectedDietItems
             )
         }
@@ -682,6 +738,7 @@ extension TrainerClientProfileScheduleViewController: CardioInputCellDelegate {
             waterIntake: dayData.waterIntake,
             cardioNotes: text,
             selectedWorkoutIds: dayData.selectedWorkoutIds,
+            workoutDetails: dayData.workoutDetails,
             selectedDietItems: dayData.selectedDietItems
         )
         

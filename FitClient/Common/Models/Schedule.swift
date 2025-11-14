@@ -189,12 +189,41 @@ struct DietItem: Codable {
     }
 }
 
+struct WorkoutScheduleDetail: Codable {
+    let workoutId: String
+    var targetReps: Int?
+    var targetWeight: Double?
+    var hasTargets: Bool {
+        targetReps != nil || targetWeight != nil
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case workoutId = "workout_id"
+        case targetReps = "target_reps"
+        case targetWeight = "target_weight"
+    }
+    
+    var shortSummary: String {
+        switch (targetReps, targetWeight) {
+        case let (reps?, weight?):
+            return "\(reps) reps @ \(weight.fc_cleanString) kg"
+        case let (reps?, nil):
+            return "\(reps) reps"
+        case let (nil, weight?):
+            return "\(weight.fc_cleanString) kg"
+        default:
+            return "No targets set"
+        }
+    }
+}
+
 struct DayScheduleData: Codable {
     let isActive: Bool
     let sleepHours: Double
     let waterIntake: Double
     let cardioNotes: String
     let selectedWorkoutIds: [String]
+    let workoutDetails: [WorkoutScheduleDetail]
     let selectedDietItems: [(dietId: String, quantity: Int)]
     
     enum CodingKeys: String, CodingKey {
@@ -203,15 +232,23 @@ struct DayScheduleData: Codable {
         case waterIntake = "water_intake"
         case cardioNotes = "cardio_notes"
         case selectedWorkoutIds = "selected_workout_ids"
+        case workoutDetails = "workout_details"
         case selectedDietItems = "selected_diet_items"
     }
     
-    init(isActive: Bool, sleepHours: Double, waterIntake: Double, cardioNotes: String, selectedWorkoutIds: [String], selectedDietItems: [(dietId: String, quantity: Int)] = []) {
+    init(isActive: Bool,
+         sleepHours: Double,
+         waterIntake: Double,
+         cardioNotes: String,
+         selectedWorkoutIds: [String],
+         workoutDetails: [WorkoutScheduleDetail] = [],
+         selectedDietItems: [(dietId: String, quantity: Int)] = []) {
         self.isActive = isActive
         self.sleepHours = sleepHours
         self.waterIntake = waterIntake
         self.cardioNotes = cardioNotes
         self.selectedWorkoutIds = selectedWorkoutIds
+        self.workoutDetails = workoutDetails
         self.selectedDietItems = selectedDietItems
     }
     
@@ -222,6 +259,7 @@ struct DayScheduleData: Codable {
         waterIntake = try container.decodeIfPresent(Double.self, forKey: .waterIntake) ?? 2.0
         cardioNotes = try container.decodeIfPresent(String.self, forKey: .cardioNotes) ?? ""
         selectedWorkoutIds = try container.decodeIfPresent([String].self, forKey: .selectedWorkoutIds) ?? []
+        workoutDetails = try container.decodeIfPresent([WorkoutScheduleDetail].self, forKey: .workoutDetails) ?? []
         
         // Decode diet items using helper struct
         if let dietItems = try? container.decode([DietItem].self, forKey: .selectedDietItems) {
@@ -238,6 +276,7 @@ struct DayScheduleData: Codable {
         try container.encode(waterIntake, forKey: .waterIntake)
         try container.encode(cardioNotes, forKey: .cardioNotes)
         try container.encode(selectedWorkoutIds, forKey: .selectedWorkoutIds)
+        try container.encode(workoutDetails, forKey: .workoutDetails)
         
         // Encode diet items using helper struct
         let dietItems = selectedDietItems.map { DietItem(dietId: $0.dietId, quantity: $0.quantity) }
@@ -252,4 +291,10 @@ struct ClientScheduleData: Codable {
 
 struct ClientSchedulesResponse: Codable {
     var schedules: [ClientScheduleData]
+}
+
+private extension Double {
+    var fc_cleanString: String {
+        truncatingRemainder(dividingBy: 1) == 0 ? String(format: "%.0f", self) : String(format: "%.1f", self)
+    }
 }
