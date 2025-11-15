@@ -28,14 +28,27 @@ final class ClientProgressViewController: UIViewController {
     private var segments: [ProgressSegment] = []
     private let calendar = Calendar.current
     private var clientActivityData: ClientActivityData?
+    private var uiLabels: UILabelsData?
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         configureNavigationBar()
         setupUI()
+        loadUILabels()
         loadData()
         updateUI()
+    }
+    
+    private func loadUILabels() {
+        DataService.shared.loadUILabels { [weak self] result in
+            switch result {
+            case .success(let labels):
+                self?.uiLabels = labels
+            case .failure(let error):
+                print("Failed to load UI labels: \(error)")
+            }
+        }
     }
     
     // MARK: - Setup
@@ -101,7 +114,7 @@ final class ClientProgressViewController: UIViewController {
         
         guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentMonth)) else { return }
         let firstWeekday = calendar.component(.weekday, from: startOfMonth)
-        let allWeekdays = ["S", "M", "T", "W", "T", "F", "S"]
+        let allWeekdays = uiLabels?.weekdays.short ?? ["S", "M", "T", "W", "T", "F", "S"]
         let firstDayIndex = (firstWeekday - 1) % 7
         var rotated: [String] = []
         for i in 0..<7 {
@@ -445,7 +458,7 @@ extension ClientProgressViewController: UIPickerViewDataSource, UIPickerViewDele
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if component == 0 {
-            let months = ["January", "February", "March", "April", "May", "June",
+            let months = uiLabels?.months.full ?? ["January", "February", "March", "April", "May", "June",
                           "July", "August", "September", "October", "November", "December"]
             return months[row]
         }

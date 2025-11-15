@@ -12,12 +12,27 @@ class SignUpViewController: UIViewController {
     @IBOutlet weak var createAccountButton: UIButton!
     
     let genderPicker = UIPickerView()
-    let genderOptions = ["Male", "Female", "Other", "Prefer not to say"]
+    var genderOptions: [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadSignupOptions()
         setupUI()
         setupGenderPicker()
+    }
+    
+    func loadSignupOptions() {
+        DataService.shared.loadSignupOptions { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let options):
+                    self?.genderOptions = options.genderOptions
+                    self?.genderPicker.reloadAllComponents()
+                case .failure(let error):
+                    print("Failed to load signup options: \(error)")
+                }
+            }
+        }
     }
     
     func setupUI() {

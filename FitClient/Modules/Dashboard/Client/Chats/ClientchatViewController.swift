@@ -141,39 +141,39 @@ class ClientchatViewController: UIViewController {
     }
     
     private func simulateTrainerResponse() {
-        let responses = [
-            "That's great!",
-            "Keep it up!",
-            "Well done!",
-            "I'm impressed!",
-            "Let's continue this momentum",
-            "You're doing amazing!",
-            "How are you feeling?",
-            "Ready for the next workout?",
-            "Let me know if you need help",
-            "Your progress is wonderful!"
-        ]
-        
-        let randomResponse = responses.randomElement() ?? "Great work!"
-        
-        let trainerMessage = ChatMessage(
-            id: "msg_\(UUID().uuidString.prefix(8))",
-            senderId: "trainer_001",
-            senderName: "DINESH",
-            senderImage: "https://via.placeholder.com/40x40?text=Trainer",
-            message: randomResponse,
-            timestamp: ISO8601DateFormatter().string(from: Date()),
-            isClient: false
-        )
-        
-        messages.append(trainerMessage)
-        
-        messagesTableView.beginUpdates()
-        let indexPath = IndexPath(row: messages.count - 1, section: 0)
-        messagesTableView.insertRows(at: [indexPath], with: .automatic)
-        messagesTableView.endUpdates()
-        
-        scrollToBottom()
+        DataService.shared.loadChatResponses { [weak self] result in
+            guard let self = self else { return }
+            
+            let randomResponse: String
+            switch result {
+            case .success(let responsesData):
+                randomResponse = responsesData.trainerResponses.randomElement() ?? "Great work!"
+            case .failure(let error):
+                print("Failed to load chat responses: \(error)")
+                randomResponse = "Great work!"
+            }
+            
+            let trainerMessage = ChatMessage(
+                id: "msg_\(UUID().uuidString.prefix(8))",
+                senderId: "trainer_001",
+                senderName: "DINESH",
+                senderImage: "https://via.placeholder.com/40x40?text=Trainer",
+                message: randomResponse,
+                timestamp: ISO8601DateFormatter().string(from: Date()),
+                isClient: false
+            )
+            
+            DispatchQueue.main.async {
+                self.messages.append(trainerMessage)
+                
+                self.messagesTableView.beginUpdates()
+                let indexPath = IndexPath(row: self.messages.count - 1, section: 0)
+                self.messagesTableView.insertRows(at: [indexPath], with: .automatic)
+                self.messagesTableView.endUpdates()
+                
+                self.scrollToBottom()
+            }
+        }
     }
     
     private func scrollToBottom() {

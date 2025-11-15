@@ -61,18 +61,32 @@ class TrainerClientProgressViewControlller: UIViewController {
     @IBOutlet private weak var legendStackView: UIStackView!
     
     // MARK: - Properties
+    var clientId: String?
     private var currentMonth = Date()
     private var activities: [DayActivity] = []
     private var segments: [ProgressSegment] = []
     private var selectedDate = Date()
     private let calendar = Calendar.current
     private var clientActivityData: ClientActivityData?
+    private var uiLabels: UILabelsData?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadUILabels()
         setupUI()
         loadData()
         updateUI()
+    }
+    
+    private func loadUILabels() {
+        DataService.shared.loadUILabels { [weak self] result in
+            switch result {
+            case .success(let labels):
+                self?.uiLabels = labels
+            case .failure(let error):
+                print("Failed to load UI labels: \(error)")
+            }
+        }
     }
     
     // MARK: - Setup
@@ -129,7 +143,7 @@ class TrainerClientProgressViewControlller: UIViewController {
         let firstWeekday = calendar.component(.weekday, from: startOfMonth) // 1=Sun ... 7=Sat
 
         // Base order starting from Sunday so we can rotate depending on the month
-        let allWeekdays = ["S", "M", "T", "W", "T", "F", "S"]
+        let allWeekdays = uiLabels?.weekdays.short ?? ["S", "M", "T", "W", "T", "F", "S"]
         let firstDayIndex = (firstWeekday - 1) % 7
 
         var rotated: [String] = []

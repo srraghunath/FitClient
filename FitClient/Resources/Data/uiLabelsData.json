@@ -1,0 +1,39 @@
+{
+  "weekdays": {
+    "short": ["S", "M", "T", "W", "T", "F", "S"],
+    "full": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  },
+  "months": {
+    "short": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    "full": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  },
+  "dayTracker": {
+    "items": [
+      {
+        "id": "workout",
+        "title": "Workout",
+        "icon": "figure.strengthtraining.traditional"
+      },
+      {
+        "id": "cardio",
+        "title": "Cardio",
+        "icon": "figure.run"
+      },
+      {
+        "id": "waterIntake",
+        "title": "Water Intake",
+        "icon": "drop.fill"
+      },
+      {
+        "id": "diet",
+        "title": "Diet",
+        "icon": "fork.knife"
+      },
+      {
+        "id": "sleep",
+        "title": "Sleep",
+        "icon": "moon.fill"
+      }
+    ]
+  }
+}

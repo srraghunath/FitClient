@@ -1,0 +1,65 @@
+{
+  "clientSettings": [
+    {
+      "id": "profile",
+      "title": "Profile",
+      "subtitle": "View and edit your profile",
+      "icon": "user.fill",
+      "iconBackgroundColor": "#00000000",
+      "isProfileItem": true
+    },
+    {
+      "id": "notifications",
+      "title": "Notifications",
+      "subtitle": "Manage your notification preferences",
+      "icon": "bell.fill",
+      "iconBackgroundColor": "#AEFD14"
+    },
+    {
+      "id": "help",
+      "title": "Help & Support",
+      "subtitle": "Get help and support",
+      "icon": "questionmark.circle.fill",
+      "iconBackgroundColor": "#AEFD14"
+    },
+    {
+      "id": "logout",
+      "title": "Logout",
+      "subtitle": null,
+      "icon": "arrow.right.square.fill",
+      "iconBackgroundColor": "#AEFD14"
+    }
+  ],
+  "trainerSettings": [
+    {
+      "id": "profile",
+      "title": "Edit Profile",
+      "icon": "person.circle.fill",
+      "iconBackgroundColor": "#AEFD14"
+    },
+    {
+      "id": "subscription",
+      "title": "Subscription",
+      "icon": "creditcard.fill",
+      "iconBackgroundColor": "#AEFD14"
+    },
+    {
+      "id": "notifications",
+      "title": "Notifications",
+      "icon": "bell.fill",
+      "iconBackgroundColor": "#AEFD14"
+    },
+    {
+      "id": "help",
+      "title": "Help & Support",
+      "icon": "questionmark.circle.fill",
+      "iconBackgroundColor": "#AEFD14"
+    },
+    {
+      "id": "logout",
+      "title": "Logout",
+      "icon": "arrow.right.square.fill",
+      "iconBackgroundColor": "#AEFD14"
+    }
+  ]
+}

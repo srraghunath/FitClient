@@ -12,40 +12,28 @@ class ClientSettingsViewController: UIViewController {
     @IBOutlet weak var settingsTableView: UITableView!
     
     private var userProfile: ClientProfile?
-    
-    private let settings: [SettingsItem] = [
-        SettingsItem(
-            title: "Profile",
-            subtitle: "View and edit your profile",
-            icon: "user.fill",
-            iconBackgroundColor: .clear,
-            isProfileItem: true
-        ),
-        SettingsItem(
-            title: "Notifications",
-            subtitle: "Manage your notification preferences",
-            icon: "bell.fill",
-            iconBackgroundColor: UIColor(red: 0.68235294117647, green: 0.99607843137255, blue: 0.07843137254902, alpha: 1.0)
-        ),
-        SettingsItem(
-            title: "Help & Support",
-            subtitle: "Get help and support",
-            icon: "questionmark.circle.fill",
-            iconBackgroundColor: UIColor(red: 0.68235294117647, green: 0.99607843137255, blue: 0.07843137254902, alpha: 1.0)
-        ),
-        SettingsItem(
-            title: "Logout",
-            subtitle: nil,
-            icon: "arrow.right.square.fill",
-            iconBackgroundColor: UIColor(red: 0.68235294117647, green: 0.99607843137255, blue: 0.07843137254902, alpha: 1.0)
-        )
-    ]
+    private var settings: [SettingsMenuItem] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupTableView()
+        loadSettingsMenu()
         loadUserProfile()
+    }
+    
+    private func loadSettingsMenu() {
+        DataService.shared.loadSettingsMenuItems { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let menuData):
+                    self?.settings = menuData.clientSettings
+                    self?.settingsTableView.reloadData()
+                case .failure(let error):
+                    print("Failed to load settings menu: \(error)")
+                }
+            }
+        }
     }
     
     private func loadUserProfile() {
@@ -102,19 +90,19 @@ extension ClientSettingsViewController: UITableViewDataSource, UITableViewDelega
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-    _ = settings[indexPath.row]
+        let settingsItem = settings[indexPath.row]
         
-        switch indexPath.row {
-        case 0:
+        switch settingsItem.id {
+        case "profile":
             let editVC = ClientSettingsEditProfileViewController(nibName: "ClientSettingsEditProfileViewController", bundle: nil)
             navigationController?.pushViewController(editVC, animated: true)
-        case 1:
+        case "notifications":
             let notificationVC = ClientNotificationViewController(nibName: "ClientNotificationViewController", bundle: nil)
             navigationController?.pushViewController(notificationVC, animated: true)
-        case 2:
+        case "help":
             let helpVC = ClientHelpViewController(nibName: "ClientHelpViewController", bundle: nil)
             navigationController?.pushViewController(helpVC, animated: true)
-        case 3:
+        case "logout":
             print("Logout tapped")
             handleLogout()
         default:
@@ -131,16 +119,6 @@ extension ClientSettingsViewController: UITableViewDataSource, UITableViewDelega
         let window = UIApplication.shared.connectedScenes.first as? UIWindowScene
         window?.windows.first?.rootViewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
     }
-}
-
-// MARK: - Settings Item Model
-
-struct SettingsItem {
-    let title: String
-    let subtitle: String?
-    let icon: String
-    let iconBackgroundColor: UIColor
-    var isProfileItem: Bool = false
 }
 
 // MARK: - Settings Cell
@@ -254,12 +232,12 @@ class SettingsCell: UITableViewCell {
         ])
     }
     
-    func configure(with item: SettingsItem) {
+    func configure(with item: SettingsMenuItem) {
         titleLabel.text = item.title
         subtitleLabel.text = item.subtitle
         subtitleLabel.isHidden = item.subtitle == nil
         
-        if item.isProfileItem {
+        if item.isProfileItem == true {
             // Show profile image
             profileImageView.isHidden = false
             iconContainer.isHidden = true
@@ -292,7 +270,7 @@ class SettingsCell: UITableViewCell {
             // Show icon
             profileImageView.isHidden = true
             iconContainer.isHidden = false
-            iconContainer.backgroundColor = item.iconBackgroundColor
+            iconContainer.backgroundColor = item.iconBgColor
             iconImageView.image = UIImage(systemName: item.icon)
         }
     }

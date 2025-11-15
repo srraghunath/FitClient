@@ -1,0 +1,15 @@
+{
+  "genderOptions": [
+    "Male",
+    "Female",
+    "Other",
+    "Prefer not to say"
+  ],
+  "goalOptions": [
+    "Weight Loss",
+    "Muscle Gain",
+    "General Fitness",
+    "Athletic Performance",
+    "Rehabilitation"
+  ]
+}

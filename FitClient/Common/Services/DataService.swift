@@ -327,6 +327,78 @@ class DataService {
             completion(.failure(DataServiceError.decodingFailed(error)))
         }
     }
+    
+    // MARK: - Settings Menu
+    
+    func loadSettingsMenuItems(completion: @escaping (Result<SettingsMenuData, Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "settingsMenuData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("settingsMenuData.json")))
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let menuData = try decoder.decode(SettingsMenuData.self, from: data)
+            completion(.success(menuData))
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
+    
+    // MARK: - Signup Options
+    
+    func loadSignupOptions(completion: @escaping (Result<SignupOptionsData, Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "signupOptionsData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("signupOptionsData.json")))
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let optionsData = try decoder.decode(SignupOptionsData.self, from: data)
+            completion(.success(optionsData))
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
+    
+    // MARK: - Chat Responses
+    
+    func loadChatResponses(completion: @escaping (Result<ChatResponsesData, Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "chatResponsesData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("chatResponsesData.json")))
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let responsesData = try decoder.decode(ChatResponsesData.self, from: data)
+            completion(.success(responsesData))
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
+    
+    // MARK: - UI Labels
+    
+    func loadUILabels(completion: @escaping (Result<UILabelsData, Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "uiLabelsData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("uiLabelsData.json")))
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let labelsData = try decoder.decode(UILabelsData.self, from: data)
+            completion(.success(labelsData))
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
 }
 
 // MARK: - Custom Errors
