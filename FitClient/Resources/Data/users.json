@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "id": "client1",
+      "email": "client@test.com",
+      "passwordHash": "password123",
+      "role": "client",
+      "fullName": "John Doe",
+      "age": 30,
+      "gender": "Male",
+      "goal": "Weight Loss"
+    },
+    {
+      "id": "trainer1",
+      "email": "trainer@test.com",
+      "passwordHash": "password123",
+      "role": "trainer",
+      "fullName": "Jane Smith",
+      "specialization": "CrossFit"
+    }
+  ]
+}

@@ -1,5 +1,3 @@
-
-
 import Foundation
 
 class DataService {
@@ -23,6 +21,21 @@ class DataService {
             completion(.success(clientsData.clients))
         } catch {
             completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
+
+    func loadClient(forClientId clientId: String, completion: @escaping (Result<Client, Error>) -> Void) {
+        loadClients { result in
+            switch result {
+            case .success(let clients):
+                if let client = clients.first(where: { $0.id == clientId }) {
+                    completion(.success(client))
+                } else {
+                    completion(.failure(DataServiceError.clientNotFound(clientId)))
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
         }
     }
     
@@ -96,6 +109,21 @@ class DataService {
             } else {
                 completion(.failure(DataServiceError.clientProfileNotFound(clientId)))
             }
+        } catch {
+            completion(.failure(DataServiceError.decodingFailed(error)))
+        }
+    }
+
+    func loadClientProgress(forClientId clientId: String, completion: @escaping (Result<ClientActivityData, Error>) -> Void) {
+        guard let url = Bundle.main.url(forResource: "clientActivityData", withExtension: "json") else {
+            completion(.failure(DataServiceError.fileNotFound("clientActivityData.json")))
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let clientActivityData = try JSONDecoder().decode(ClientActivityData.self, from: data)
+            completion(.success(clientActivityData))
         } catch {
             completion(.failure(DataServiceError.decodingFailed(error)))
         }
@@ -290,27 +318,26 @@ class DataService {
             let decoder = JSONDecoder()
             let activityData = try decoder.decode(ClientMonthlyActivityData.self, from: data)
 
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd"
-            let monthFormatter = DateFormatter()
-            monthFormatter.dateFormat = "yyyy-MM"
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let dateString = dateFormatter.string(from: date)
 
-            let targetDateString = formatter.string(from: date)
-            let monthKey = monthFormatter.string(from: date)
+            dateFormatter.dateFormat = "yyyy-MM"
+            let monthString = dateFormatter.string(from: date)
 
-            if let monthDays = activityData.monthlyData[monthKey],
-               let day = monthDays.first(where: { $0.date == targetDateString }) {
-                completion(.success(day))
+            if let monthlyData = activityData.monthlyData[monthString],
+               let dayData = monthlyData.first(where: { $0.date == dateString }) {
+                completion(.success(dayData))
             } else {
-                // Default all false if no entry
-                let empty = DayActivityCompletion(date: targetDateString, workout: false, diet: false, sleep: false, waterIntake: false, cardio: false)
-                completion(.success(empty))
+                // Return default values if no data for this date
+                let defaultCompletion = DayActivityCompletion(date: dateString, workout: false, diet: false, sleep: false, waterIntake: false, cardio: false)
+                completion(.success(defaultCompletion))
             }
         } catch {
             completion(.failure(DataServiceError.decodingFailed(error)))
         }
     }
-
+    
     func loadDietForDate(_ date: Date, completion: @escaping (Result<[TodayMeal], Error>) -> Void) {
         guard let url = Bundle.main.url(forResource: "clientDashboardData", withExtension: "json") else {
             completion(.failure(DataServiceError.fileNotFound("clientDashboardData.json")))
@@ -399,16 +426,34 @@ class DataService {
             completion(.failure(DataServiceError.decodingFailed(error)))
         }
     }
+
+    // MARK: - Authentication/User Management
 }
 
 // MARK: - Custom Errors
 
+enum AuthError: LocalizedError {
+    case invalidCredentials
+    case emailExists
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidCredentials:
+            return "Invalid email or password."
+        case .emailExists:
+            return "An account with this email already exists."
+        }
+    }
+}
+
 enum DataServiceError: LocalizedError {
     case fileNotFound(String)
     case decodingFailed(Error)
+    case encodingFailed(Error)
     case chatNotFound(String)
     case clientProfileNotFound(String)
     case clientScheduleNotFound(String)
+    case clientNotFound(String)
     
     var errorDescription: String? {
         switch self {
@@ -416,12 +461,16 @@ enum DataServiceError: LocalizedError {
             return "Error: \(fileName) not found"
         case .decodingFailed(let error):
             return "Error loading data: \(error.localizedDescription)"
+        case .encodingFailed(let error):
+            return "Error saving data: \(error.localizedDescription)"
         case .chatNotFound(let clientId):
             return "Chat not found for client: \(clientId)"
         case .clientProfileNotFound(let clientId):
             return "Profile not found for client: \(clientId)"
         case .clientScheduleNotFound(let clientId):
             return "Schedule not found for client: \(clientId)"
+        case .clientNotFound(let clientId):
+            return "Client not found: \(clientId)"
         }
     }
 }

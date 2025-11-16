@@ -8,10 +8,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        guard let _ = (scene as? UIWindowScene) else { return }
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+
+        window = UIWindow(windowScene: windowScene)
+        
+        // Check if the user is authenticated
+        if AuthService.shared.isAuthenticated {
+            // Here you would typically fetch user details to determine the role
+            // For now, let's assume we need to decide which dashboard to show.
+            // This part needs to be improved to fetch the user's role.
+            // As a placeholder, we'll navigate to the client dashboard.
+            let clientTabBarController = ClientTabBarController()
+            window?.rootViewController = clientTabBarController
+        } else {
+            // If not authenticated, show the welcome screen
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            window?.rootViewController = storyboard.instantiateInitialViewController()
+        }
+        
+        window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

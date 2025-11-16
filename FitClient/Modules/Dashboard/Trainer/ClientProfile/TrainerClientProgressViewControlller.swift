@@ -20,29 +20,7 @@ struct ProgressSegment {
     let color: UIColor
 }
 
-struct ClientActivityData: Codable {
-    let clientId: String
-    let monthlyData: [String: [DailyActivityItem]] // "2025-11" -> array of activities
-}
 
-struct DailyActivityItem: Codable {
-    let date: String
-    let workout: Bool
-    let diet: Bool
-    let sleep: Bool
-    let waterIntake: Bool
-    let cardio: Bool
-    
-    var totalCompleted: Int {
-        var count = 0
-        if workout { count += 1 }
-        if diet { count += 1 }
-        if sleep { count += 1 }
-        if waterIntake { count += 1 }
-        if cardio { count += 1 }
-        return count
-    }
-}
 
 class TrainerClientProgressViewControlller: UIViewController {
     
@@ -74,11 +52,11 @@ class TrainerClientProgressViewControlller: UIViewController {
         super.viewDidLoad()
         loadUILabels()
         setupUI()
-        loadData()
-        updateUI()
+        loadClientActivityData()
     }
     
     private func loadUILabels() {
+        /*
         DataService.shared.loadUILabels { [weak self] result in
             switch result {
             case .success(let labels):
@@ -87,6 +65,7 @@ class TrainerClientProgressViewControlller: UIViewController {
                 print("Failed to load UI labels: \(error)")
             }
         }
+        */
     }
     
     // MARK: - Setup
@@ -430,28 +409,21 @@ class TrainerClientProgressViewControlller: UIViewController {
     }
     
     private func loadClientActivityData() {
-        guard let url = Bundle.main.url(forResource: "clientActivityData", withExtension: "json") else {
-            print("JSON file not found")
-            return
+        /*
+        DataService.shared.loadClientProgress(forClientId: clientId ?? "") { [weak self] (result: Result<ClientActivityData, Error>) in
+            guard let self = self else { return }
+            switch result {
+            case .success(let activityData):
+                self.clientActivityData = activityData
+                DispatchQueue.main.async {
+                    self.loadData()
+                    self.updateUI()
+                }
+            case .failure(let error):
+                print("Error loading client activity data: \(error)")
+            }
         }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            clientActivityData = try JSONDecoder().decode(ClientActivityData.self, from: data)
-            let totalMonths = clientActivityData?.monthlyData.count ?? 0
-            print("Successfully loaded activity data: \(totalMonths) months")
-            if let monthData = clientActivityData?.monthlyData["2025-11"]?.first {
-                print("   November first entry: \(monthData.date) - workout:\(monthData.workout) diet:\(monthData.diet)")
-            }
-            if let octoberData = clientActivityData?.monthlyData["2025-10"] {
-                print("October has \(octoberData.count) days of data")
-            }
-            if let septemberData = clientActivityData?.monthlyData["2025-09"] {
-                print("   September has \(septemberData.count) days of data (all 100%)")
-            }
-        } catch {
-            print("Error loading JSON: \(error)")
-        }
+        */
     }
     
     private func updateUI() {

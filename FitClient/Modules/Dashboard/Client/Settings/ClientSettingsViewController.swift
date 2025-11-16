@@ -11,49 +11,11 @@ class ClientSettingsViewController: UIViewController {
     
     @IBOutlet weak var settingsTableView: UITableView!
     
-    private var userProfile: ClientProfile?
-    private var settings: [SettingsMenuItem] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupTableView()
-        loadSettingsMenu()
-        loadUserProfile()
-    }
-    
-    private func loadSettingsMenu() {
-        DataService.shared.loadSettingsMenuItems { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let menuData):
-                    self?.settings = menuData.clientSettings
-                    self?.settingsTableView.reloadData()
-                case .failure(let error):
-                    print("Failed to load settings menu: \(error)")
-                }
-            }
-        }
-    }
-    
-    private func loadUserProfile() {
-        // Get logged-in user ID from UserDefaults
-        if UserDefaults.standard.string(forKey: "userEmail") != nil {
-            let clientId = "client_001" // This would normally come from auth
-            
-            // Use DataService to load profile
-            DataService.shared.loadClientProfile(forClientId: clientId) { [weak self] result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let profile):
-                        self?.userProfile = profile
-                        self?.settingsTableView.reloadData()
-                    case .failure(let error):
-                        print("Failed to load profile: \(error)")
-                    }
-                }
-            }
-        }
     }
     
     private func setupUI() {
@@ -77,32 +39,50 @@ class ClientSettingsViewController: UIViewController {
 extension ClientSettingsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return settings.count
+        return 4
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "SettingsCell", for: indexPath) as? SettingsCell else {
             return UITableViewCell()
         }
-        cell.configure(with: settings[indexPath.row])
+        let title: String
+        let iconName: String
+        switch indexPath.row {
+        case 0:
+            title = "Edit Profile"
+            iconName = "person.fill"
+        case 1:
+            title = "Notifications"
+            iconName = "bell.fill"
+        case 2:
+            title = "Help"
+            iconName = "questionmark.circle.fill"
+        case 3:
+            title = "Logout"
+            iconName = "arrow.right.square.fill"
+        default:
+            title = ""
+            iconName = ""
+        }
+        cell.configure(with: title, iconName: iconName)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let settingsItem = settings[indexPath.row]
         
-        switch settingsItem.id {
-        case "profile":
+        switch indexPath.row {
+        case 0:
             let editVC = ClientSettingsEditProfileViewController(nibName: "ClientSettingsEditProfileViewController", bundle: nil)
             navigationController?.pushViewController(editVC, animated: true)
-        case "notifications":
+        case 1:
             let notificationVC = ClientNotificationViewController(nibName: "ClientNotificationViewController", bundle: nil)
             navigationController?.pushViewController(notificationVC, animated: true)
-        case "help":
+        case 2:
             let helpVC = ClientHelpViewController(nibName: "ClientHelpViewController", bundle: nil)
             navigationController?.pushViewController(helpVC, animated: true)
-        case "logout":
+        case 3:
             print("Logout tapped")
             handleLogout()
         default:
@@ -111,13 +91,17 @@ extension ClientSettingsViewController: UITableViewDataSource, UITableViewDelega
     }
     
     private func handleLogout() {
-        // Clear user defaults
-        UserDefaults.standard.set(false, forKey: "isClient")
-        UserDefaults.standard.removeObject(forKey: "userEmail")
+        AuthService.shared.logout()
         
         // Navigate back to sign in
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let welcomeVC = storyboard.instantiateViewController(withIdentifier: "WelcomeViewController")
+        let navigationController = UINavigationController(rootViewController: welcomeVC)
+        navigationController.modalPresentationStyle = .fullScreen
+        navigationController.modalTransitionStyle = .crossDissolve
+        
         let window = UIApplication.shared.connectedScenes.first as? UIWindowScene
-        window?.windows.first?.rootViewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+        window?.windows.first?.rootViewController = navigationController
     }
 }
 
@@ -232,47 +216,14 @@ class SettingsCell: UITableViewCell {
         ])
     }
     
-    func configure(with item: SettingsMenuItem) {
-        titleLabel.text = item.title
-        subtitleLabel.text = item.subtitle
-        subtitleLabel.isHidden = item.subtitle == nil
+    func configure(with title: String, iconName: String) {
+        titleLabel.text = title
+        subtitleLabel.isHidden = true
         
-        if item.isProfileItem == true {
-            // Show profile image
-            profileImageView.isHidden = false
-            iconContainer.isHidden = true
-            
-            // Ensure circle shape is applied
-            DispatchQueue.main.async {
-                let size = min(self.profileImageView.bounds.width, self.profileImageView.bounds.height)
-                self.profileImageView.layer.cornerRadius = size / 2.0
-            }
-            
-            // Try to load profile image from assets
-            if let profileImageName = UserDefaults.standard.string(forKey: "userProfileImage"),
-               let profileImage = UIImage(named: profileImageName) {
-                profileImageView.image = profileImage
-                profileImageView.contentMode = .scaleAspectFill
-                profileImageView.backgroundColor = .clear
-            } else if let profileImage = UIImage(named: "profile1") {
-                profileImageView.image = profileImage
-                profileImageView.contentMode = .scaleAspectFill
-                profileImageView.backgroundColor = .clear
-            } else {
-                // Fallback: Create placeholder with initials
-                profileImageView.backgroundColor = UIColor(red: 0.68235294117647, green: 0.99607843137255, blue: 0.07843137254902, alpha: 1.0)
-                let initials = getUserInitials()
-                if profileImageView.subviews.isEmpty {
-                    addInitialsToImageView(initials)
-                }
-            }
-        } else {
-            // Show icon
-            profileImageView.isHidden = true
-            iconContainer.isHidden = false
-            iconContainer.backgroundColor = item.iconBgColor
-            iconImageView.image = UIImage(systemName: item.icon)
-        }
+        profileImageView.isHidden = true
+        iconContainer.isHidden = false
+        iconContainer.backgroundColor = UIColor(red: 0.18823529411764706, green: 0.19215686274509802, blue: 0.19215686274509802, alpha: 1.0)
+        iconImageView.image = UIImage(systemName: iconName)
     }
     
     private func getUserInitials() -> String {

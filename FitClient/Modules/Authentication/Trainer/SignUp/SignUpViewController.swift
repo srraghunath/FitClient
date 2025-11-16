@@ -16,24 +16,25 @@ class SignUpViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadSignupOptions()
+//        loadSignupOptions()
+        genderOptions = ["Male", "Female", "Other"]
         setupUI()
         setupGenderPicker()
     }
     
-    func loadSignupOptions() {
-        DataService.shared.loadSignupOptions { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let options):
-                    self?.genderOptions = options.genderOptions
-                    self?.genderPicker.reloadAllComponents()
-                case .failure(let error):
-                    print("Failed to load signup options: \(error)")
-                }
-            }
-        }
-    }
+//    func loadSignupOptions() {
+//        DataService.shared.loadSignupOptions { [weak self] result in
+//            DispatchQueue.main.async {
+//                switch result {
+//                case .success(let options):
+//                    self?.genderOptions = options.genderOptions
+//                    self?.genderPicker.reloadAllComponents()
+//                case .failure(let error):
+//                    print("Failed to load signup options: \(error)")
+//                }
+//            }
+//        }
+//    }
     
     func setupUI() {
         view.backgroundColor = .black
@@ -82,7 +83,45 @@ class SignUpViewController: UIViewController {
     }
     
     @IBAction func createAccountButtonTapped(_ sender: UIButton) {
-        print("Create Account tapped")
+        guard let fullName = fullNameTextField.text, !fullName.isEmpty,
+              let ageString = ageTextField.text, let age = Int(ageString),
+              let gender = genderTextField.text, !gender.isEmpty,
+              let specialization = specializationTextField.text, !specialization.isEmpty,
+              let email = emailTextField.text, !email.isEmpty,
+              let password = passwordTextField.text, !password.isEmpty,
+              let confirmPassword = confirmPasswordTextField.text, !confirmPassword.isEmpty else {
+            showAlert(message: "Please fill in all fields")
+            return
+        }
+
+        if password != confirmPassword {
+            showAlert(message: "Passwords do not match")
+            return
+        }
+        
+        if !email.isValidEmail {
+            showAlert(message: "Please enter a valid email address")
+            return
+        }
+
+        AuthService.shared.signup(email: email, password: password, fullName: fullName, role: "TRAINER", specialization: specialization) { [weak self] success, error in
+            DispatchQueue.main.async {
+                if success {
+                    self?.showAlert(message: "Signup successful! Please log in.", completion: {
+                        self?.navigationController?.popViewController(animated: true)
+                    })
+                } else {
+                    self?.showAlert(message: "Signup failed. Please check the details and try again.")
+                }
+            }
+        }
+    }
+
+    private func navigateToDashboard() {
+        let tabBarController = MainTabBarController()
+        tabBarController.modalPresentationStyle = .fullScreen
+        tabBarController.modalTransitionStyle = .crossDissolve
+        present(tabBarController, animated: true)
     }
 }
 

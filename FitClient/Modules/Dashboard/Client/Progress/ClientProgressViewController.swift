@@ -35,11 +35,12 @@ final class ClientProgressViewController: UIViewController {
         super.viewDidLoad()
         configureNavigationBar()
         setupUI()
-        loadUILabels()
+        // loadUILabels()
         loadData()
         updateUI()
     }
     
+    /*
     private func loadUILabels() {
         DataService.shared.loadUILabels { [weak self] result in
             switch result {
@@ -50,6 +51,7 @@ final class ClientProgressViewController: UIViewController {
             }
         }
     }
+    */
     
     // MARK: - Setup
     private func configureNavigationBar() {
@@ -263,7 +265,7 @@ final class ClientProgressViewController: UIViewController {
         let today = Date()
         let currentMonthKey = monthFormatter.string(from: today)
         let isFutureMonth = currentMonth > today
-        let isPastMonth = currentMonth < calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
+        _ = currentMonth < calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
         
         if isFutureMonth {
             segments = [

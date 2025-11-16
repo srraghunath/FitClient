@@ -14,23 +14,23 @@ class HelpViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        loadTrainerSettings()
+//        loadTrainerSettings()
     }
     
     private func setupNavigationBar() {
         navigationController?.navigationBar.tintColor = .primaryGreen
     }
 
-    private func loadTrainerSettings() {
-        DataService.shared.loadTrainerSettings { [weak self] result in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
-                if case .success(let config) = result {
-                    self.apply(help: config.help)
-                }
-            }
-        }
-    }
+//    private func loadTrainerSettings() {
+//        DataService.shared.loadTrainerSettings { [weak self] result in
+//            DispatchQueue.main.async {
+//                guard let self = self else { return }
+//                if case .success(let config) = result {
+//                    self.apply(help: config.help)
+//                }
+//            }
+//        }
+//    }
 
     private func apply(help: TrainerSettingsConfig.Help) {
         contactEmailLabel?.text = "Email: \(help.contactEmail)"

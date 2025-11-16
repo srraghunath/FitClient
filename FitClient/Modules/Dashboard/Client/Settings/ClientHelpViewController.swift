@@ -14,7 +14,7 @@ class ClientHelpViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        loadClientSettings()
+        // loadClientSettings()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -31,6 +31,7 @@ class ClientHelpViewController: UIViewController {
         ]
     }
 
+    /*
     private func loadClientSettings() {
         DataService.shared.loadClientSettings { [weak self] result in
             DispatchQueue.main.async {
@@ -43,6 +44,7 @@ class ClientHelpViewController: UIViewController {
             }
         }
     }
+    */
 
     private func apply(help: ClientSettingsConfig.Help) {
         emailLabel.text = "Email: \(help.contactEmail)"

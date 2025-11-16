@@ -15,13 +15,14 @@ class NotificationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        loadTrainerSettings()
+        // loadTrainerSettings()
     }
     
     private func setupNavigationBar() {
         navigationController?.navigationBar.tintColor = .primaryGreen
     }
 
+    /*
     private func loadTrainerSettings() {
         DataService.shared.loadTrainerSettings { [weak self] result in
             DispatchQueue.main.async {
@@ -32,6 +33,7 @@ class NotificationViewController: UIViewController {
             }
         }
     }
+    */
 
     private func apply(config: TrainerSettingsConfig) {
         sessionUpcomingSwitch?.isOn = config.notifications.upcomingSessions

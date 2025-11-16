@@ -22,7 +22,7 @@ class TrainerClientProfileViewController: UIViewController {
     
     // MARK: - Properties
     var client: Client?
-    private var clientProfile: ClientProfile?
+    private var clientProfile: Client?
     private var currentChildViewController: UIViewController?
     private let activityTableMaxHeight: CGFloat = 360
     
@@ -32,7 +32,7 @@ class TrainerClientProfileViewController: UIViewController {
         setupUI()
         setupNavigationBar()
         setupTableView()
-        loadClientProfile()
+        // loadClientProfile()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -116,12 +116,12 @@ class TrainerClientProfileViewController: UIViewController {
         recentActivitiesTableView.showsVerticalScrollIndicator = false
     }
     
+    /*
     private func loadClientProfile() {
-        guard let clientId = client?.id else {
-            showAlert(title: "Error", message: "Client information not available")
+        guard let clientId = clientId else {
+            print("Client ID is nil") // Debug log
             return
         }
-        
         print("Loading profile for client ID: \(clientId)")  // Debug log
         
         DataService.shared.loadClientProfile(forClientId: clientId) { [weak self] result in
@@ -134,13 +134,14 @@ class TrainerClientProfileViewController: UIViewController {
                     self?.updateTableHeight()
                 case .failure(let error):
                     print("Error loading profile: \(error)")  // Debug log
-                    self?.showAlert(title: "Error", 
+                    self?.showAlert(title: "Error",
                                   message: "Unable to load client profile. Please try again later.")
                 }
             }
         }
     }
-    
+    */
+
     private func updateTableHeight() {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -156,8 +157,8 @@ class TrainerClientProfileViewController: UIViewController {
     
     private func updateProfileUI() {
         guard let profile = clientProfile else { return }
-        totalActiveDaysLabel.text = "\(profile.totalActiveDays) Days"
-        consecutiveActiveDaysLabel.text = "\(profile.consecutiveActiveDays) Days"
+        // totalActiveDaysLabel.text = "\(profile.totalActiveDays) Days"
+        // consecutiveActiveDaysLabel.text = "\(profile.consecutiveActiveDays) Days"
     }
     
     @objc private func backButtonTapped() {
@@ -260,17 +261,11 @@ class TrainerClientProfileViewController: UIViewController {
 // MARK: - UITableViewDelegate & UITableViewDataSource
 extension TrainerClientProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return clientProfile?.recentActivities.count ?? 0
+        return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ActivityCell", for: indexPath) as? ActivityTableViewCell,
-              let activity = clientProfile?.recentActivities[indexPath.row] else {
-            return UITableViewCell()
-        }
-        
-        cell.configure(with: activity)
-        return cell
+        return UITableViewCell()
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

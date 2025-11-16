@@ -148,7 +148,7 @@ class DashboardViewController: UIViewController {
     @objc private func selectDateTapped() {
         selectedDate = datePicker.date
         updateNavigationDate()
-        loadDataForDate(selectedDate)
+        // loadDataForDate(selectedDate)
         dismiss(animated: true)
     }
     
@@ -219,65 +219,24 @@ class DashboardViewController: UIViewController {
     }
     
     func loadData() {
-        loadDataForDate(selectedDate)
+        // loadDataForDate(selectedDate)
     }
     
-    func loadDataForDate(_ date: Date) {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        let dateString = dateFormatter.string(from: date)
-        
-        let logPath = "/tmp/dashboard_debug.log"
-        let log = "📅 [Dashboard] Loading data for date: \(dateString)\n"
-        try? log.write(toFile: logPath, atomically: true, encoding: .utf8)
-        print(log)
-        
-        // Set stat values
-        totalActiveDaysValueLabel.text = "12 Days"
-        consecutiveDaysValueLabel.text = "7 Days"
-        
-        // Prefill Day Tracker from data service (existing data if any)
-        DataService.shared.loadDayActivityForDate(date) { [weak self] result in
-            switch result {
-            case .success(let activity):
-                var logMsg = "✅ [Dashboard] Day activity for \(dateString): workout=\(activity.workout), cardio=\(activity.cardio), water=\(activity.waterIntake), diet=\(activity.diet), sleep=\(activity.sleep)\n"
-                if let existingLog = try? String(contentsOfFile: logPath) {
-                    try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
-                }
-                print(logMsg)
+    private func loadData(for date: Date) {
+        let dateString = DateFormatter.localizedString(from: date, dateStyle: .medium, timeStyle: .none)
+        print("🗓️ [Dashboard] Loading data for: \(dateString)")
 
-                // Map to items; keep the same order/UI and texts
-                let items: [DayTrackerItem] = [
-                    DayTrackerItem(icon: "🏋️", title: "Workout", subtitle: "Full body", isCompleted: activity.workout),
-                    DayTrackerItem(icon: "❤️", title: "Cardio", subtitle: "Running, 30 minutes", isCompleted: activity.cardio),
-                    DayTrackerItem(icon: "💧", title: "Water Intake", subtitle: "8 litres", isCompleted: activity.waterIntake),
-                    DayTrackerItem(icon: "🍽", title: "Diet Plan", subtitle: "Balanced", isCompleted: activity.diet),
-                    DayTrackerItem(icon: "🌙", title: "Sleep Cycle", subtitle: "8 hours", isCompleted: activity.sleep)
-                ]
+        // Load day activity status
+        // loadDayActivityForDate(date)
 
-                DispatchQueue.main.async {
-                    self?.dayTrackerItems = items
-                    self?.updateUI()
-                }
-            case .failure(let error):
-                let errMsg = "❌ [Dashboard] Error loading day activity: \(error)\n"
-                if let existingLog = try? String(contentsOfFile: logPath) {
-                    try? (existingLog + errMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
-                }
-                print(errMsg)
-            }
-        }
-        
-    // Load scheduled workouts for the selected date
+        // Load scheduled workouts for the selected date
+        /*
         DataService.shared.loadWorkoutsForDate(date) { [weak self] result in
             switch result {
             case .success(let workouts):
                 var logMsg = "✅ [Dashboard] Loaded \(workouts.count) workouts for \(dateString)\n"
                 workouts.forEach { workout in
                     logMsg += "   - \(workout.name): \(workout.imageUrl)\n"
-                }
-                if let existingLog = try? String(contentsOfFile: logPath) {
-                    try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
                 }
                 print(logMsg)
                 
@@ -286,11 +245,7 @@ class DashboardViewController: UIViewController {
                     self?.updateUI()
                 }
             case .failure(let error):
-                let errMsg = "❌ [Dashboard] Error loading workouts: \(error)\n"
-                if let existingLog = try? String(contentsOfFile: logPath) {
-                    try? (existingLog + errMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
-                }
-                print(errMsg)
+                print("❌ [Dashboard] Error loading workouts: \(error)")
                 
                 DispatchQueue.main.async {
                     self?.scheduledWorkouts = []
@@ -298,17 +253,16 @@ class DashboardViewController: UIViewController {
                 }
             }
         }
+        */
 
         // Load diet for the selected date (dashboard todayDiet)
+        /*
         DataService.shared.loadDietForDate(date) { [weak self] result in
             switch result {
             case .success(let meals):
                 var logMsg = "✅ [Dashboard] Loaded \(meals.count) diet items for \(dateString)\n"
                 meals.forEach { meal in
                     logMsg += "   - \(meal.mealType): \(meal.name) @ \(meal.time)\n"
-                }
-                if let existingLog = try? String(contentsOfFile: logPath) {
-                    try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
                 }
                 print(logMsg)
                 self?.todayDiet = meals
@@ -323,51 +277,31 @@ class DashboardViewController: UIViewController {
                             if var diet = dict[meal.id] {
                                 // Display-only on client; do not mark selected or show stepper
                                 diet.isSelected = false
-                                if diet.quantity <= 0 { diet.quantity = 1 }
+                                diet.quantity = 0
                                 return diet
-                            } else {
-                                // Fallback minimal Diet using TodayMeal info if not found
-                                return Diet(
-                                    id: meal.id,
-                                    name: meal.name,
-                                    grams: 0,
-                                    protein: 0,
-                                    carbs: 0,
-                                    fat: 0,
-                                    calories: Int(meal.calories.filter({ $0.isNumber })) ?? 0,
-                                    imageUrl: meal.imageUrl,
-                                    mealType: MealType(rawValue: meal.mealType.lowercased()) ?? .breakfast,
-                                    dietType: .veg,
-                                    quantity: 1,
-                                    isSelected: false
-                                )
                             }
+                            return nil
                         }
+                        self?.dietItems = mapped
+                        
                         DispatchQueue.main.async {
-                            self?.todayDietDetails = mapped
                             self?.updateUI()
                         }
-                    case .failure:
-                        DispatchQueue.main.async {
-                            self?.todayDietDetails = []
-                            self?.updateUI()
-                        }
+                    case .failure(let error):
+                        print("❌ [Dashboard] Error loading all diets: \(error)")
                     }
                 }
+                
             case .failure(let error):
-                let errMsg = "❌ [Dashboard] Error loading diet: \(error)\n"
-                if let existingLog = try? String(contentsOfFile: logPath) {
-                    try? (existingLog + errMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
-                }
-                print(errMsg)
-
+                print("❌ [Dashboard] Error loading diet for date: \(error)")
                 DispatchQueue.main.async {
                     self?.todayDiet = []
-                    self?.todayDietDetails = []
+                    self?.dietItems = []
                     self?.updateUI()
                 }
             }
         }
+        */
     }
     
     func updateUI() {

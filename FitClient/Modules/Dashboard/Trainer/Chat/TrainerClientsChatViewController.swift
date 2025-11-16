@@ -19,7 +19,7 @@ class TrainerClientsChatViewController: UIViewController {
         setupNavigationBar()
         setupTableView()
         setupInputField()
-        loadMessages()
+        // loadMessages()
         hideKeyboardWhenTappedAround()
     }
     
@@ -55,6 +55,7 @@ class TrainerClientsChatViewController: UIViewController {
         sendButton.applyPrimaryStyle(title: "Send")
     }
     
+    /*
     private func loadMessages() {
         guard let clientId = clientId else { return }
         
@@ -70,6 +71,7 @@ class TrainerClientsChatViewController: UIViewController {
             }
         }
     }
+    */
     
     @objc private func keyboardWillShow(notification: NSNotification) {
         if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {

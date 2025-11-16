@@ -24,27 +24,29 @@ class SignUpClientViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadSignupOptions()
+//        loadSignupOptions()
+        genderOptions = ["Male", "Female", "Other"]
+        goalOptions = ["Weight Loss", "Muscle Gain", "General Fitness"]
         setupUI()
         setupGenderPicker()
         setupGoalPicker()
     }
     
-    func loadSignupOptions() {
-        DataService.shared.loadSignupOptions { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let options):
-                    self?.genderOptions = options.genderOptions
-                    self?.goalOptions = options.goalOptions
-                    self?.genderPicker.reloadAllComponents()
-                    self?.goalPicker.reloadAllComponents()
-                case .failure(let error):
-                    print("Failed to load signup options: \(error)")
-                }
-            }
-        }
-    }
+//    func loadSignupOptions() {
+//        DataService.shared.loadSignupOptions { [weak self] result in
+//            DispatchQueue.main.async {
+//                switch result {
+//                case .success(let options):
+//                    self?.genderOptions = options.genderOptions
+//                    self?.goalOptions = options.goalOptions
+//                    self?.genderPicker.reloadAllComponents()
+//                    self?.goalPicker.reloadAllComponents()
+//                case .failure(let error):
+//                    print("Failed to load signup options: \(error)")
+//                }
+//            }
+//        }
+//    }
     
     func setupUI() {
         view.backgroundColor = .black
@@ -112,7 +114,7 @@ class SignUpClientViewController: UIViewController {
     
     @IBAction func createAccountButtonTapped(_ sender: UIButton) {
         guard let fullName = fullNameTextField.text, !fullName.isEmpty,
-              let age = ageTextField.text, !age.isEmpty,
+              let ageString = ageTextField.text, let age = Int(ageString),
               let gender = genderTextField.text, !gender.isEmpty,
               let goal = goalTextField.text, !goal.isEmpty,
               let email = emailTextField.text, !email.isEmpty,
@@ -121,10 +123,21 @@ class SignUpClientViewController: UIViewController {
             return
         }
         
-        if email.isValidEmail {
-            navigateToDashboard()
-        } else {
+        if !email.isValidEmail {
             showAlert(message: "Please enter a valid email address")
+            return
+        }
+
+        AuthService.shared.signup(email: email, password: password, fullName: fullName, role: "CLIENT", goals: goal) { [weak self] success, error in
+            DispatchQueue.main.async {
+                if success {
+                    self?.showAlert(message: "Signup successful! Please log in.", completion: {
+                        self?.navigationController?.popViewController(animated: true)
+                    })
+                } else {
+                    self?.showAlert(message: error?.localizedDescription ?? "Signup failed")
+                }
+            }
         }
     }
     

@@ -36,7 +36,15 @@ class SignInViewController: UIViewController {
             return
         }
         
-        navigateToDashboard()
+        AuthService.shared.login(email: email, password: password) { [weak self] success, error in
+            DispatchQueue.main.async {
+                if success {
+                    self?.navigateToDashboard()
+                } else {
+                    self?.showAlert(message: error?.localizedDescription ?? "Login failed")
+                }
+            }
+        }
     }
     
     @IBAction func signUpButtonTapped(_ sender: UIButton) {

@@ -47,6 +47,7 @@ class TrainerSettingsViewController: UIViewController {
         }
         
         // Load trainer data and profile image
+        /*
         DataService.shared.loadTrainer { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
@@ -58,23 +59,19 @@ class TrainerSettingsViewController: UIViewController {
                                 DispatchQueue.main.async {
                                     self?.profileImageView.image = image
                                     // Set cornerRadius after image loads
-                                    if let imageView = self?.profileImageView {
-                                        let size = min(imageView.bounds.width, imageView.bounds.height)
-                                        imageView.layer.cornerRadius = size / 2.0
-                                    }
+                                    self?.profileImageView.layer.cornerRadius = (self?.profileImageView.bounds.width ?? 0) / 2.0
                                 }
                             }
                         }.resume()
-                    } else {
-                        self?.profileImageView.image = UIImage(systemName: "person.circle.fill")
-                        self?.profileImageView.tintColor = .systemGray
                     }
-                case .failure:
-                    self?.profileImageView.image = UIImage(systemName: "person.circle.fill")
-                    self?.profileImageView.tintColor = .systemGray
+                    self?.nameLabel.text = trainer.name
+                    self?.emailLabel.text = trainer.email
+                case .failure(let error):
+                    print("Failed to load trainer data: \(error)")
                 }
             }
         }
+        */
     }
     
     @IBAction func subscriptionTapped(_ sender: Any) {
@@ -98,15 +95,16 @@ class TrainerSettingsViewController: UIViewController {
     }
 
     @IBAction func logoutTapped(_ sender: Any) {
-        // Clear user defaults
-        UserDefaults.standard.set(false, forKey: "isClient")
-        UserDefaults.standard.removeObject(forKey: "userEmail")
+        AuthService.shared.logout()
 
         // Navigate back to the initial screen
-        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = scene.windows.first {
-            window.rootViewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
-            window.makeKeyAndVisible()
-        }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let welcomeVC = storyboard.instantiateViewController(withIdentifier: "WelcomeViewController")
+        let navigationController = UINavigationController(rootViewController: welcomeVC)
+        navigationController.modalPresentationStyle = .fullScreen
+        navigationController.modalTransitionStyle = .crossDissolve
+        
+        let window = UIApplication.shared.connectedScenes.first as? UIWindowScene
+        window?.windows.first?.rootViewController = navigationController
     }
 }

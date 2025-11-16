@@ -13,13 +13,13 @@ class ClientSettingsEditProfileViewController: UIViewController, UIImagePickerCo
     @IBOutlet weak var saveButton: UIButton!
 
     // MARK: - Properties
-    private var profile: ClientProfile?
+    private var client: Client?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         setupUI()
-        loadClientProfile()
+//        loadClient()
         hideKeyboardWhenTappedAround()
     }
 
@@ -84,25 +84,34 @@ class ClientSettingsEditProfileViewController: UIViewController, UIImagePickerCo
 
     // MARK: - Data Loading
 
-    private func loadClientProfile() {
-        let clientId = "client_001" // placeholder; replace with logged-in client id
-        DataService.shared.loadClientProfile(forClientId: clientId) { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let profile):
-                    self?.profile = profile
-                    self?.updateUI()
-                case .failure:
-                    break
-                }
-            }
-        }
-    }
+//    private func loadClient() {
+//        let clientId = "client_001" // placeholder; replace with logged-in client id
+//        DataService.shared.loadClient(forClientId: clientId) { [weak self] result in
+//            DispatchQueue.main.async {
+//                switch result {
+//                case .success(let client):
+//                    self?.client = client
+//                    self?.updateUI()
+//                case .failure:
+//                    break
+//                }
+//            }
+//        }
+//    }
 
     private func updateUI() {
-        // In absence of profile fields in JSON, keep fields empty except email from defaults
-        if let email = UserDefaults.standard.string(forKey: "userEmail") {
-            emailTextField.text = email
+        guard let client = client else { return }
+
+        nameTextField.text = client.name
+        emailTextField.text = client.email
+        phoneTextField.text = "" // No phone in client model
+        goalTextField.text = client.specialization
+        bioTextView.text = "" // No bio in client model
+
+        if !client.profileImage.isEmpty {
+            profileImageView.image = UIImage(named: client.profileImage)
+        } else {
+            profileImageView.image = UIImage(systemName: "person.circle.fill")
         }
     }
 

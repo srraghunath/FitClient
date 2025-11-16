@@ -128,6 +128,7 @@ class DietModalViewController: UIViewController {
     }
     
     private func loadDiets() {
+        /*
         DataService.shared.loadDiets { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
@@ -140,6 +141,7 @@ class DietModalViewController: UIViewController {
                 }
             }
         }
+        */
     }
     
     private func filterDiets() {

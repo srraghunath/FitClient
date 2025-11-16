@@ -139,6 +139,7 @@ class WorkoutModalViewController: UIViewController {
     }
     
     private func loadTargetPresets() {
+        /*
         DataService.shared.loadWorkoutTargetPresets { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
@@ -152,9 +153,11 @@ class WorkoutModalViewController: UIViewController {
                 }
             }
         }
+        */
     }
     
     private func loadWorkouts() {
+        /*
         DataService.shared.loadWorkouts { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
@@ -167,6 +170,7 @@ class WorkoutModalViewController: UIViewController {
                 }
             }
         }
+        */
     }
     
     private func filterWorkouts() {

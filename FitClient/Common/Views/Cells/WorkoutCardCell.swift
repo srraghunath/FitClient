@@ -62,12 +62,7 @@ class WorkoutCardCell: UITableViewCell {
         nameLabel.text = workout.name
         descriptionLabel.text = workout.reps
         
-        let logPath = "/tmp/dashboard_debug.log"
-        let logMsg = "🏋️ [WorkoutCardCell] Configuring: \(workout.name), URL: \(workout.imageUrl), showCheckbox: \(showCheckbox)\n"
-        if let existingLog = try? String(contentsOfFile: logPath) {
-            try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
-        }
-        print(logMsg)
+
         
         if showCheckbox {
             // Configure checkbox if needed
@@ -102,61 +97,33 @@ class WorkoutCardCell: UITableViewCell {
     }
     
     private func loadImage(from urlString: String, workoutId: String) {
-        let logPath = "/tmp/dashboard_debug.log"
-        
         // Check cache first
         if let cachedImage = ImageCache.shared.getImage(forKey: workoutId) {
-            let logMsg = "✅ [WorkoutCardCell] Image loaded from cache for: \(workoutId)\n"
-            if let existingLog = try? String(contentsOfFile: logPath) {
-                try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
-            }
-            print(logMsg)
+            print("✅ [WorkoutCardCell] Image loaded from cache for: \(workoutId)")
             workoutImageView.image = cachedImage
             return
         }
         
         // Load from network
         guard let url = URL(string: urlString) else {
-            let logMsg = "❌ [WorkoutCardCell] Invalid URL: \(urlString)\n"
-            if let existingLog = try? String(contentsOfFile: logPath) {
-                try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
-            }
-            print(logMsg)
+            print("❌ [WorkoutCardCell] Invalid URL: \(urlString)")
             return
         }
         
-        let logMsg1 = "🌐 [WorkoutCardCell] Loading image from network: \(urlString)\n"
-        if let existingLog = try? String(contentsOfFile: logPath) {
-            try? (existingLog + logMsg1).write(toFile: logPath, atomically: true, encoding: .utf8)
-        }
-        print(logMsg1)
+        print("🌐 [WorkoutCardCell] Loading image from network: \(urlString)")
         
         imageLoadTask = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-            let logPath = "/tmp/dashboard_debug.log"
-            
             if let error = error {
-                let logMsg = "❌ [WorkoutCardCell] Image load error: \(error.localizedDescription)\n"
-                if let existingLog = try? String(contentsOfFile: logPath) {
-                    try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
-                }
-                print(logMsg)
+                print("❌ [WorkoutCardCell] Image load error: \(error.localizedDescription)")
                 return
             }
             
             guard let data = data, let image = UIImage(data: data) else {
-                let logMsg = "❌ [WorkoutCardCell] Failed to create image from data\n"
-                if let existingLog = try? String(contentsOfFile: logPath) {
-                    try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
-                }
-                print(logMsg)
+                print("❌ [WorkoutCardCell] Failed to create image from data")
                 return
             }
             
-            let logMsg = "✅ [WorkoutCardCell] Image loaded successfully for: \(workoutId)\n"
-            if let existingLog = try? String(contentsOfFile: logPath) {
-                try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
-            }
-            print(logMsg)
+            print("✅ [WorkoutCardCell] Image loaded successfully for: \(workoutId)")
             
             // Cache the image
             ImageCache.shared.setImage(image, forKey: workoutId)
@@ -164,11 +131,7 @@ class WorkoutCardCell: UITableViewCell {
             DispatchQueue.main.async {
                 if self?.currentWorkoutId == workoutId {
                     self?.workoutImageView.image = image
-                    let logMsg2 = "✅ [WorkoutCardCell] Image set to imageView for: \(workoutId)\n"
-                    if let existingLog = try? String(contentsOfFile: logPath) {
-                        try? (existingLog + logMsg2).write(toFile: logPath, atomically: true, encoding: .utf8)
-                    }
-                    print(logMsg2)
+                    print("✅ [WorkoutCardCell] Image set to imageView for: \(workoutId)")
                 }
             }
         }

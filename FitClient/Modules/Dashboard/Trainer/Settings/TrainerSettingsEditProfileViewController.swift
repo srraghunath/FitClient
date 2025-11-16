@@ -25,7 +25,7 @@ class TrainerSettingsEditProfileViewController: UIViewController, UIImagePickerC
         super.viewDidLoad()
         setupNavigationBar()
         setupUI()
-        loadTrainerData()
+//        loadTrainerData()
         hideKeyboardWhenTappedAround()
     }
     
@@ -93,20 +93,20 @@ class TrainerSettingsEditProfileViewController: UIViewController, UIImagePickerC
     
     // MARK: - Data Loading
     
-    private func loadTrainerData() {
-        DataService.shared.loadTrainer { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let trainer):
-                    self?.trainer = trainer
-                    self?.updateUI(with: trainer)
-                case .failure(let error):
-                    print("Error loading trainer data: \(error.localizedDescription)")
-                    self?.showAlert(title: "Error", message: "Failed to load profile data")
-                }
-            }
-        }
-    }
+//    private func loadTrainerData() {
+//        DataService.shared.loadTrainer { [weak self] result in
+//            DispatchQueue.main.async {
+//                switch result {
+//                case .success(let trainer):
+//                    self?.trainer = trainer
+//                    self?.updateUI(with: trainer)
+//                case .failure(let error):
+//                    print("Error loading trainer data: \(error.localizedDescription)")
+//                    self?.showAlert(title: "Error", message: "Failed to load profile data")
+//                }
+//            }
+//        }
+//    }
     
     private func updateUI(with trainer: Trainer) {
         nameTextField.text = trainer.name

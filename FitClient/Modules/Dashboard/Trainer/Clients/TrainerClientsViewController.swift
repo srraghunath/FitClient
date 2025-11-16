@@ -16,7 +16,7 @@ class TrainerClientsViewController: UIViewController {
         setupUI()
         setupTableView()
         setupSearchBar()
-        loadClientsData()
+//        loadClientsData()
     }
     
     private func setupNavigationBar() {
@@ -65,18 +65,18 @@ class TrainerClientsViewController: UIViewController {
         searchBar.applyAppStyle()
     }
     
-    private func loadClientsData() {
-        DataService.shared.loadClients { result in
-            switch result {
-            case .success(let clients):
-                self.allClients = clients
-                self.filteredClients = clients
-                self.clientsTableView.reloadData()
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
-    }
+//    private func loadClientsData() {
+//        DataService.shared.loadClients { result in
+//            switch result {
+//            case .success(let clients):
+//                self.allClients = clients
+//                self.filteredClients = clients
+//                self.clientsTableView.reloadData()
+//            case .failure(let error):
+//                print(error.localizedDescription)
+//            }
+//        }
+//    }
 }
 
 extension TrainerClientsViewController: UITableViewDataSource {

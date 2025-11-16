@@ -1,5 +1,3 @@
-
-
 import UIKit
 
 class TrainerSessionsViewController: UIViewController {
@@ -57,8 +55,6 @@ class TrainerSessionsViewController: UIViewController {
         calendarButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
         calendarButton.setPreferredSymbolConfiguration(symbolConfig, forImageIn: .normal)
-    calendarButton.adjustsImageWhenHighlighted = false
-    calendarButton.adjustsImageWhenDisabled = false
         calendarButton.addTarget(self, action: #selector(calendarButtonTapped), for: .touchUpInside)
         self.calendarButton = calendarButton
         
@@ -171,15 +167,18 @@ class TrainerSessionsViewController: UIViewController {
     // MARK: BACKEND OPERATIONS
     
     private func loadSessionsData() {
+        /*
         DataService.shared.loadSessions { result in
             switch result {
             case .success(let sessionsData):
                 self.allSessions = sessionsData.todaySessions + sessionsData.upcomingSessions
-                self.filterSessionsForDate(self.selectedDate)
+                self.filteredSessions = self.allSessions
+                self.sessionsTableView.reloadData()
             case .failure(let error):
-                print(error.localizedDescription)
+                print("Error loading sessions: \(error.localizedDescription)")
             }
         }
+         */
     }
     
     private func filterSessionsForDate(_ date: Date) {

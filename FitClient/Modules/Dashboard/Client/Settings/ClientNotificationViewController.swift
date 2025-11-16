@@ -14,7 +14,7 @@ class ClientNotificationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        loadClientSettings()
+//        loadClientSettings()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -31,18 +31,18 @@ class ClientNotificationViewController: UIViewController {
         ]
     }
 
-    private func loadClientSettings() {
-        DataService.shared.loadClientSettings { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let config):
-                    self?.apply(config: config)
-                case .failure:
-                    break
-                }
-            }
-        }
-    }
+//    private func loadClientSettings() {
+//        DataService.shared.loadClientSettings { [weak self] result in
+//            DispatchQueue.main.async {
+//                switch result {
+//                case .success(let config):
+//                    self?.apply(config: config)
+//                case .failure:
+//                    break
+//                }
+//            }
+//        }
+//    }
 
     private func apply(config: ClientSettingsConfig) {
         upcomingWorkoutsSwitch.isOn = config.notifications.upcomingWorkouts
