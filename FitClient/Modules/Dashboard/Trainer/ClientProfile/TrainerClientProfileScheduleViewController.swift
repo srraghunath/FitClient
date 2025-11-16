@@ -291,7 +291,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
     
     // MARK: - Data Loading
     private func loadScheduleData() {
-        guard let clientId = clientId else { return }
+        guard clientId != nil else { return }
         
         /*
         DataService.shared.loadClientSchedule(forClientId: clientId) { [weak self] result in

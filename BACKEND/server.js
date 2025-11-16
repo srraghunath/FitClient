@@ -8,6 +8,12 @@ const morgan = require('morgan');
 const prisma = new PrismaClient();
 const app = express();
 const PORT = 3000;
+const DEFAULT_SESSION_DURATION_MINUTES = 60;
+
+const logApi = (context, message, data = {}) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [${context}] ${message} ${JSON.stringify(data)}`);
+};
 
 const UserRole = {
   CLIENT: 'CLIENT',
@@ -154,6 +160,223 @@ app.post('/api/trainer/clients',
           res.status(500).json({ error: 'Server error linking client' });
       }
   }
+);
+
+
+// --- SESSION ROUTES ---
+app.post('/api/sessions',
+    authenticateToken,
+    authorizeRole(UserRole.TRAINER),
+    body('clientId').notEmpty(),
+    body('startTime').isISO8601(),
+    body('endTime').optional().isISO8601(),
+    body('notes').optional().isString(),
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            logApi('Sessions', 'Validation failed for create', { errors: errors.array() });
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const trainerId = req.user.id;
+        const { clientId, startTime, endTime, notes } = req.body;
+
+        try {
+            const link = await prisma.clientTrainer.findFirst({
+                where: { clientId, trainerId }
+            });
+
+            if (!link) {
+                logApi('Sessions', 'Trainer attempted to schedule for non-linked client', { trainerId, clientId });
+                return res.status(403).json({ error: 'Forbidden: You are not linked with this client.' });
+            }
+
+            const start = new Date(startTime);
+            const resolvedEnd = endTime ? new Date(endTime) : new Date(start.getTime() + DEFAULT_SESSION_DURATION_MINUTES * 60000);
+
+            if (Number.isNaN(start.getTime()) || Number.isNaN(resolvedEnd.getTime())) {
+                return res.status(400).json({ error: 'Invalid start or end time provided.' });
+            }
+
+            if (resolvedEnd <= start) {
+                return res.status(400).json({ error: 'End time must be after start time.' });
+            }
+
+            const session = await prisma.session.create({
+                data: {
+                    trainerId,
+                    clientId,
+                    startTime: start,
+                    endTime: resolvedEnd,
+                    notes: notes ?? undefined,
+                },
+                include: {
+                    client: { select: { id: true, fullName: true, email: true } },
+                    trainer: { select: { id: true, fullName: true, email: true } },
+                }
+            });
+
+            logApi('Sessions', 'Session created', { sessionId: session.id, trainerId, clientId });
+            return res.status(201).json(session);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Failed to create session.' });
+        }
+    }
+);
+
+app.get('/api/sessions/list/:userId',
+    authenticateToken,
+    async (req, res) => {
+        const { userId } = req.params;
+        const requesterId = req.user.id;
+
+        if (userId !== requesterId) {
+            logApi('Sessions', 'Unauthorized list attempt', { userId, requesterId });
+            return res.status(403).json({ error: 'Forbidden: You can only view your own sessions.' });
+        }
+
+        try {
+            const sessions = await prisma.session.findMany({
+                where: {
+                    OR: [{ trainerId: userId }, { clientId: userId }]
+                },
+                orderBy: { startTime: 'asc' },
+                include: {
+                    client: { select: { id: true, fullName: true, email: true } },
+                    trainer: { select: { id: true, fullName: true, email: true } },
+                }
+            });
+
+            logApi('Sessions', 'Sessions fetched', { userId, count: sessions.length });
+            return res.json({ sessions });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Failed to retrieve sessions.' });
+        }
+    }
+);
+
+app.put('/api/sessions/:sessionId',
+    authenticateToken,
+    authorizeRole(UserRole.TRAINER),
+    body('startTime').optional().isISO8601(),
+    body('endTime').optional().isISO8601(),
+    body('notes').optional().isString(),
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            logApi('Sessions', 'Validation failed for update', { errors: errors.array() });
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { sessionId } = req.params;
+        const trainerId = req.user.id;
+        const { startTime, endTime, notes } = req.body;
+
+        if (!startTime && !endTime && typeof notes === 'undefined') {
+            return res.status(400).json({ error: 'Provide at least one field to update.' });
+        }
+
+        try {
+            const existing = await prisma.session.findUnique({
+                where: { id: sessionId }
+            });
+
+            if (!existing) {
+                return res.status(404).json({ error: 'Session not found.' });
+            }
+
+            if (existing.trainerId !== trainerId) {
+                logApi('Sessions', 'Trainer attempted to modify session not owned', { sessionId, trainerId });
+                return res.status(403).json({ error: 'Forbidden: You do not own this session.' });
+            }
+
+            const updateData = {};
+            let newStart = startTime ? new Date(startTime) : null;
+            let newEnd = endTime ? new Date(endTime) : null;
+
+            if (newStart && Number.isNaN(newStart.getTime())) {
+                return res.status(400).json({ error: 'Invalid start time provided.' });
+            }
+
+            if (newEnd && Number.isNaN(newEnd.getTime())) {
+                return res.status(400).json({ error: 'Invalid end time provided.' });
+            }
+
+            if (newStart) {
+                updateData.startTime = newStart;
+            }
+
+            if (newEnd) {
+                updateData.endTime = newEnd;
+            }
+
+            if (newStart && !newEnd) {
+                newEnd = new Date(newStart.getTime() + DEFAULT_SESSION_DURATION_MINUTES * 60000);
+                updateData.endTime = newEnd;
+            }
+
+            if (!newStart && newEnd && !existing.startTime) {
+                return res.status(400).json({ error: 'Cannot set end time without a start time.' });
+            }
+
+            const effectiveStart = newStart ?? existing.startTime;
+            const effectiveEnd = newEnd ?? existing.endTime;
+
+            if (effectiveEnd && effectiveStart && effectiveEnd <= effectiveStart) {
+                return res.status(400).json({ error: 'End time must be after start time.' });
+            }
+
+            if (typeof notes !== 'undefined') {
+                updateData.notes = notes;
+            }
+
+            const updated = await prisma.session.update({
+                where: { id: sessionId },
+                data: updateData,
+                include: {
+                    client: { select: { id: true, fullName: true, email: true } },
+                    trainer: { select: { id: true, fullName: true, email: true } },
+                }
+            });
+
+            logApi('Sessions', 'Session updated', { sessionId, trainerId });
+            return res.json(updated);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Failed to update session.' });
+        }
+    }
+);
+
+app.delete('/api/sessions/:sessionId',
+    authenticateToken,
+    authorizeRole(UserRole.TRAINER),
+    async (req, res) => {
+        const { sessionId } = req.params;
+        const trainerId = req.user.id;
+
+        try {
+            const existing = await prisma.session.findUnique({ where: { id: sessionId } });
+
+            if (!existing) {
+                return res.status(404).json({ error: 'Session not found.' });
+            }
+
+            if (existing.trainerId !== trainerId) {
+                logApi('Sessions', 'Trainer attempted to delete session not owned', { sessionId, trainerId });
+                return res.status(403).json({ error: 'Forbidden: You do not own this session.' });
+            }
+
+            await prisma.session.delete({ where: { id: sessionId } });
+            logApi('Sessions', 'Session deleted', { sessionId, trainerId });
+            return res.status(204).send();
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Failed to delete session.' });
+        }
+    }
 );
 
 

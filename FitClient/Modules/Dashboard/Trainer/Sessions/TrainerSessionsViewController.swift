@@ -167,18 +167,16 @@ class TrainerSessionsViewController: UIViewController {
     // MARK: BACKEND OPERATIONS
     
     private func loadSessionsData() {
-        /*
-        DataService.shared.loadSessions { result in
+        DataService.shared.loadSessions { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let sessionsData):
                 self.allSessions = sessionsData.todaySessions + sessionsData.upcomingSessions
-                self.filteredSessions = self.allSessions
-                self.sessionsTableView.reloadData()
+                self.filterSessionsForDate(self.selectedDate)
             case .failure(let error):
                 print("Error loading sessions: \(error.localizedDescription)")
             }
         }
-         */
     }
     
     private func filterSessionsForDate(_ date: Date) {
