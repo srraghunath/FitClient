@@ -43,7 +43,15 @@ class SignInClientViewController: UIViewController {
             return
         }
         
-        navigateToDashboard()
+        AuthService.shared.signIn(email: email, password: password) { [weak self] error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self?.showAlert(message: "Error signing in: \(error.localizedDescription)")
+                } else {
+                    self?.navigateToDashboard()
+                }
+            }
+        }
     }
     
     @IBAction func signUpButtonTapped(_ sender: UIButton) {

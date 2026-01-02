@@ -27,8 +27,17 @@ class ForgotPassword: UIViewController {
         }
 
         if email.isValidEmail {
-            print("Entered Email: \(email)")
-            showAlert(message: "Verification Link Sent")
+            AuthService.shared.forgotPassword(email: email) { [weak self] error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self?.showAlert(message: "Error sending reset link: \(error.localizedDescription)")
+                    } else {
+                        self?.showAlert(message: "A password reset link has been sent to your email.") {
+                            self?.navigationController?.popViewController(animated: true)
+                        }
+                    }
+                }
+            }
         } else {
             showAlert(message: "Please enter a valid email address.")
         }

@@ -1,183 +1,248 @@
-//
-//  TrainerSettingsEditProfileViewController.swift
-//  FitClient
-//
-//  Created by admin8 on 10/11/25.
-//
-
 import UIKit
 
-class TrainerSettingsEditProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
-    // MARK: - IBOutlets
-    @IBOutlet weak var profileImageView: UIImageView!
-    @IBOutlet weak var nameTextField: UITextField!
-    @IBOutlet weak var emailTextField: UITextField!
-    @IBOutlet weak var phoneTextField: UITextField!
-    @IBOutlet weak var specializationTextField: UITextField!
-    @IBOutlet weak var bioTextView: UITextView!
-    @IBOutlet weak var saveButton: UIButton!
-    
-    // MARK: - Properties
-    private var trainer: Trainer?
+final class TrainerSettingsEditProfileViewController: UIViewController,
+                                                     UIImagePickerControllerDelegate,
+                                                     UINavigationControllerDelegate {
 
+    // MARK: - IBOutlets
+    @IBOutlet private weak var profileImageView: UIImageView!
+    @IBOutlet private weak var nameTextField: UITextField!
+    @IBOutlet private weak var emailTextField: UITextField!
+    @IBOutlet private weak var ageTextField: UITextField!
+    @IBOutlet private weak var genderTextField: UITextField!
+    @IBOutlet private weak var specializationTextField: UITextField!
+    @IBOutlet private weak var saveButton: UIButton!
+
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavigationBar()
         setupUI()
-        loadTrainerData()
-        hideKeyboardWhenTappedAround()
+        fetchProfile()
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        tabBarController?.tabBar.isHidden = true
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        tabBarController?.tabBar.isHidden = false
-    }
-    
-    // MARK: - Setup Methods
-    
-    private func setupNavigationBar() {
-        title = "Edit Profile"
-        navigationController?.navigationBar.titleTextAttributes = [
-            .foregroundColor: UIColor.textPrimary,
-            .font: UIFont.systemFont(ofSize: 16, weight: .medium)
-        ]
-        
-        let backButton = UIButton(type: .system)
-        backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
-        //backButton.setTitle("Back", for: .normal)
-        backButton.sizeToFit()
-        backButton.tintColor = .primaryGreen
-        backButton.addAction(UIAction { [weak self] _ in
-            self?.navigationController?.popViewController(animated: true)
-        }, for: .touchUpInside)
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
-    }
-    
+
+    // MARK: - UI Setup
     private func setupUI() {
-        view.backgroundColor = .black
-        
-        // Setup profile image
-        profileImageView.layer.cornerRadius = 60
+        title = "Edit Profile"
+
+        view.backgroundColor = .backgroundBlack
+
+        profileImageView.layer.cornerRadius = profileImageView.frame.height / 2
         profileImageView.clipsToBounds = true
         profileImageView.layer.borderWidth = 2
         profileImageView.layer.borderColor = UIColor.primaryGreen.cgColor
-        profileImageView.contentMode = .scaleAspectFill
-        profileImageView.backgroundColor = UIColor(hex: "#212121")
-        
-        // Setup text fields with padding
-        setupTextField(nameTextField)
-        setupTextField(emailTextField)
-        setupTextField(phoneTextField)
-        setupTextField(specializationTextField)
-        
-        // Setup bio text view
-        bioTextView.textContainerInset = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
-        bioTextView.layer.borderColor = UIColor.clear.cgColor
-        bioTextView.layer.borderWidth = 0
+        profileImageView.isUserInteractionEnabled = true
+        profileImageView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(profileImageTapped))
+        )
+
+        configureTextFields()
+        emailTextField.isUserInteractionEnabled = false
+        saveButton.applyPrimaryStyle(title: "Save Changes")
     }
-    
-    private func setupTextField(_ textField: UITextField) {
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
-        textField.leftView = paddingView
-        textField.leftViewMode = .always
-        textField.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
-        textField.rightViewMode = .always
+
+    private func configureTextFields() {
+        let fields: [(UITextField, String)] = [
+            (nameTextField, "Full Name"),
+            (emailTextField, "Email"),
+            (ageTextField, "Age"),
+            (genderTextField, "Gender"),
+            (specializationTextField, "Specialization")
+        ]
+
+        fields.forEach { field, placeholder in
+            field.borderStyle = .none
+            field.applyAppStyle(placeholder: placeholder)
+            field.keyboardAppearance = .dark
+        }
     }
-    
-    // MARK: - Data Loading
-    
-    private func loadTrainerData() {
-        DataService.shared.loadTrainer { [weak self] result in
+
+    // MARK: - Fetch Profile
+    private func fetchProfile() {
+        print("[TrainerSettingsEditProfile] Fetching trainer profile via Supabase...")
+        TrainerService.shared.fetchTrainerProfile { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
-                case .success(let trainer):
-                    self?.trainer = trainer
-                    self?.updateUI(with: trainer)
+                case .success(let profile):
+                    print("[TrainerSettingsEditProfile] Fetched profile: name=\(profile.fullName) image=\(profile.profileImageURL ?? "nil")")
+                    self?.populateUI(with: profile)
                 case .failure(let error):
-                    print("Error loading trainer data: \(error.localizedDescription)")
-                    self?.showAlert(title: "Error", message: "Failed to load profile data")
+                    print("[TrainerSettingsEditProfile] Failed to fetch profile: \(error)")
+                    self?.showAlert(
+                        title: "Error",
+                        message: "Failed to load profile: \(error.localizedDescription)"
+                    )
                 }
             }
         }
     }
-    
-    private func updateUI(with trainer: Trainer) {
-        nameTextField.text = trainer.name
-        emailTextField.text = trainer.email
-        phoneTextField.text = trainer.phone
-        specializationTextField.text = trainer.specialization
-        bioTextView.text = trainer.bio
-        
-        // Load profile image
-        if let url = URL(string: trainer.profileImage) {
-            URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
-                if let data = data, let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        self?.profileImageView.image = image
-                    }
-                }
-            }.resume()
-        } else {
-            profileImageView.image = UIImage(systemName: "person.circle.fill")
-            profileImageView.tintColor = .systemGray
+
+    private func populateUI(with profile: TrainerProfile) {
+        nameTextField.text = profile.fullName
+        emailTextField.text = AuthService.shared.supabase.auth.currentUser?.email
+        if let age = profile.age { ageTextField.text = String(age) }
+        genderTextField.text = profile.gender
+        specializationTextField.text = profile.specialization
+
+        if let urlString = profile.profileImageURL,
+           let url = URL(string: urlString) {
+            print("[TrainerSettingsEditProfile] Loading profile image from URL: \(urlString)")
+            loadImage(from: url)
         }
     }
-    
-    // MARK: - IBActions
-    
-    @IBAction func changePhotoTapped(_ sender: Any) {
+
+    private func loadImage(from url: URL) {
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+            guard let data, let image = UIImage(data: data) else { return }
+            DispatchQueue.main.async {
+                self?.profileImageView.image = image
+            }
+        }.resume()
+    }
+
+    // MARK: - Actions
+    @objc private func profileImageTapped() {
         let picker = UIImagePickerController()
         picker.delegate = self
         picker.allowsEditing = true
-        picker.sourceType = .photoLibrary
-        present(picker, animated: true)
+
+        let alert = UIAlertController(title: "Select Image", message: nil, preferredStyle: .actionSheet)
+
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            alert.addAction(UIAlertAction(title: "Camera", style: .default) { _ in
+                picker.sourceType = .camera
+                self.present(picker, animated: true)
+            })
+        }
+
+        alert.addAction(UIAlertAction(title: "Photo Library", style: .default) { _ in
+            picker.sourceType = .photoLibrary
+            self.present(picker, animated: true)
+        })
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
     }
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let image = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage {
+
+    @IBAction private func saveButtonTapped(_ sender: UIButton) {
+        guard let user = AuthService.shared.supabase.auth.currentUser else {
+            print("[TrainerSettingsEditProfile] No authenticated user; aborting save")
+            showAlert(title: "Error", message: "Please log in again and retry")
+            return
+        }
+
+        guard let name = nameTextField.text, !name.isEmpty else {
+            showAlert(title: "Error", message: "Name cannot be empty")
+            return
+        }
+
+        let userId = user.id
+        print("[TrainerSettingsEditProfile] Preparing save for userId=\(userId)")
+
+        let age = Int(ageTextField.text ?? "")
+        let gender = genderTextField.text
+        let specialization = specializationTextField.text
+
+        if let image = profileImageView.image {
+            uploadImageAndSave(
+                image: image,
+                userId: userId,
+                name: name,
+                age: age,
+                gender: gender,
+                specialization: specialization
+            )
+        } else {
+            saveProfile(
+                imageURL: nil,
+                userId: userId,
+                name: name,
+                age: age,
+                gender: gender,
+                specialization: specialization
+            )
+        }
+    }
+
+    // MARK: - Save Helpers
+    private func uploadImageAndSave(
+        image: UIImage,
+        userId: UUID,
+        name: String,
+        age: Int?,
+        gender: String?,
+        specialization: String?
+    ) {
+        print("[TrainerSettingsEditProfile] Uploading profile image for userId=\(userId)")
+        TrainerService.shared.uploadProfileImage(image, for: userId) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let url):
+                    print("[TrainerSettingsEditProfile] Image uploaded. Public URL=\(url)")
+                    self?.saveProfile(
+                        imageURL: url,
+                        userId: userId,
+                        name: name,
+                        age: age,
+                        gender: gender,
+                        specialization: specialization
+                    )
+                case .failure(let error):
+                    print("[TrainerSettingsEditProfile] Image upload failed: \(error)")
+                    self?.showAlert(
+                        title: "Error",
+                        message: error.localizedDescription
+                    )
+                }
+            }
+        }
+    }
+
+    private func saveProfile(
+        imageURL: String?,
+        userId: UUID,
+        name: String,
+        age: Int?,
+        gender: String?,
+        specialization: String?
+    ) {
+        let update = TrainerProfileUpdate(
+            full_name: name,
+            age: age,
+            gender: gender,
+            specialization: specialization,
+            profile_image_url: imageURL
+        )
+
+        print("[TrainerSettingsEditProfile] Saving profile for userId=\(userId) imageURL=\(imageURL ?? "nil")")
+
+        TrainerService.shared.updateTrainerProfile(update, for: userId) { [weak self] error in
+            DispatchQueue.main.async {
+                if let error {
+                    print("[TrainerSettingsEditProfile] Save failed: \(error)")
+                    self?.showAlert(title: "Error", message: error.localizedDescription)
+                } else {
+                    print("[TrainerSettingsEditProfile] Save succeeded")
+                    self?.showAlert(title: "Success", message: "Profile updated") {
+                        self?.navigationController?.popViewController(animated: true)
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Image Picker
+    func imagePickerController(
+        _ picker: UIImagePickerController,
+        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]
+    ) {
+        if let image = info[.editedImage] as? UIImage
+            ?? info[.originalImage] as? UIImage {
             profileImageView.image = image
         }
-        dismiss(animated: true)
+        picker.dismiss(animated: true)
     }
-    
-    @IBAction func saveButtonTapped(_ sender: Any) {
-        guard let name = nameTextField.text, !name.isEmpty,
-              let email = emailTextField.text, !email.isEmpty,
-              let phone = phoneTextField.text, !phone.isEmpty,
-              let specialization = specializationTextField.text, !specialization.isEmpty,
-              let bio = bioTextView.text, !bio.isEmpty else {
-            showAlert(title: "Error", message: "Please fill in all fields")
-            return
-        }
-        
-        // Validate email
-        guard email.isValidEmail else {
-            showAlert(title: "Error", message: "Please enter a valid email address")
-            return
-        }
-        
-        // Show success message and pop back
-        showAlert(title: "Success", message: "Profile updated successfully") { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
-        }
-    }
-    
-    // MARK: - Keyboard Handling
-    
-    private func hideKeyboardWhenTappedAround() {
-        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        tap.cancelsTouchesInView = false
-        view.addGestureRecognizer(tap)
-    }
-    
-    @objc private func dismissKeyboard() {
-        view.endEditing(true)
+
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
     }
 }

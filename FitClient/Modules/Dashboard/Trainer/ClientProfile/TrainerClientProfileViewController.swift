@@ -57,7 +57,7 @@ class TrainerClientProfileViewController: UIViewController {
         
         guard let client = client else { return }
         nameLabel.text = client.name
-        specialtyLabel.text = client.specialization ?? "Fitness Enthusiast"
+        specialtyLabel.text = client.goal ?? "Fitness Enthusiast"
         goalsLabel.text = "Goals: \(client.level)"
         
         // Center align activity summary labels
@@ -124,7 +124,7 @@ class TrainerClientProfileViewController: UIViewController {
         
         print("Loading profile for client ID: \(clientId)")  // Debug log
         
-        DataService.shared.loadClientProfile(forClientId: clientId) { [weak self] result in
+        DataService.shared.loadClientProfile(forClientId: clientId.uuidString) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let profile):
@@ -190,7 +190,8 @@ class TrainerClientProfileViewController: UIViewController {
         
         // Load schedule view controller from XIB
         let scheduleVC = TrainerClientProfileScheduleViewController(nibName: "TrainerClientProfileScheduleViewController", bundle: nil)
-        scheduleVC.clientId = client?.id
+        guard let clientId = client?.id else { return }
+        scheduleVC.clientId = clientId.uuidString
         
         // Add as child view controller
         addChild(scheduleVC)

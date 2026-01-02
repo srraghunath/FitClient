@@ -82,7 +82,33 @@ class SignUpViewController: UIViewController {
     }
     
     @IBAction func createAccountButtonTapped(_ sender: UIButton) {
-        print("Create Account tapped")
+        guard let fullName = fullNameTextField.text, !fullName.isEmpty,
+              let age = ageTextField.text, !age.isEmpty,
+              let gender = genderTextField.text, !gender.isEmpty,
+              let specialization = specializationTextField.text, !specialization.isEmpty,
+              let email = emailTextField.text, !email.isEmpty,
+              let password = passwordTextField.text, !password.isEmpty,
+              let confirmPassword = confirmPasswordTextField.text, !confirmPassword.isEmpty else {
+            showAlert(message: "Please fill all fields")
+            return
+        }
+
+        guard password == confirmPassword else {
+            showAlert(message: "Passwords do not match")
+            return
+        }
+
+        AuthService.shared.signUp(email: email, password: password, fullName: fullName, age: age, gender: gender, specialization: specialization) { [weak self] error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self?.showAlert(message: "Error signing up: \(error.localizedDescription)")
+                } else {
+                    self?.showAlert(message: "Sign up successful! Please check your email to verify your account.") {
+                        self?.navigationController?.popToRootViewController(animated: true)
+                    }
+                }
+            }
+        }
     }
 }
 

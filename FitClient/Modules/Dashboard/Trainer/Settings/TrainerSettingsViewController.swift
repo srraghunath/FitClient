@@ -16,6 +16,7 @@ class TrainerSettingsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupNavigationBar()
+        loadProfileImage()
     }
     
     private func setupNavigationBar() {
@@ -46,35 +47,68 @@ class TrainerSettingsViewController: UIViewController {
             self.profileImageView.layer.cornerRadius = size / 2.0
         }
         
-        // Load trainer data and profile image
-        DataService.shared.loadTrainer { [weak self] result in
+        print("[TrainerSettings] Fetching profile image from Supabase...")
+        TrainerService.shared.fetchTrainerProfile { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
-                case .success(let trainer):
-                    // Load profile image from URL
-                    if let url = URL(string: trainer.profileImage) {
-                        URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+                case .success(let trainerProfile):
+                    if let urlString = trainerProfile.profileImageURL,
+                       let url = URL(string: urlString) {
+                        print("[TrainerSettings] Loading profile image from URL: \(urlString)")
+                        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
+                            if let error {
+                                print("[TrainerSettings] Image download failed: \(error)")
+                            }
+
                             if let data = data, let image = UIImage(data: data) {
                                 DispatchQueue.main.async {
                                     self?.profileImageView.image = image
-                                    // Set cornerRadius after image loads
                                     if let imageView = self?.profileImageView {
                                         let size = min(imageView.bounds.width, imageView.bounds.height)
                                         imageView.layer.cornerRadius = size / 2.0
                                     }
                                 }
+                            } else {
+                                print("[TrainerSettings] No image data; using placeholder")
+                                self?.setInitialsPlaceholder(name: trainerProfile.fullName)
                             }
                         }.resume()
                     } else {
-                        self?.profileImageView.image = UIImage(systemName: "person.circle.fill")
-                        self?.profileImageView.tintColor = .systemGray
+                        print("[TrainerSettings] No profile image URL; using initials placeholder")
+                        self?.setInitialsPlaceholder(name: trainerProfile.fullName)
                     }
-                case .failure:
-                    self?.profileImageView.image = UIImage(systemName: "person.circle.fill")
-                    self?.profileImageView.tintColor = .systemGray
+                case .failure(let error):
+                    print("[TrainerSettings] Failed to fetch profile: \(error)")
+                    self?.setInitialsPlaceholder(name: "Trainer")
                 }
             }
         }
+    }
+
+    private func setInitialsPlaceholder(name: String) {
+        let initials = name
+            .split(separator: " ")
+            .compactMap { $0.first }
+            .prefix(2)
+            .map { String($0) }
+            .joined()
+            .uppercased()
+
+        let label = UILabel(frame: profileImageView.bounds)
+        label.backgroundColor = .primaryGreen
+        label.textColor = .black
+        label.textAlignment = .center
+        label.font = .systemFont(ofSize: 22, weight: .bold)
+        label.text = initials.isEmpty ? "T" : initials
+
+        UIGraphicsBeginImageContextWithOptions(profileImageView.bounds.size, false, 0.0)
+        label.layer.render(in: UIGraphicsGetCurrentContext()!)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        profileImageView.image = image
+        let size = min(profileImageView.bounds.width, profileImageView.bounds.height)
+        profileImageView.layer.cornerRadius = size / 2.0
     }
     
     @IBAction func subscriptionTapped(_ sender: Any) {

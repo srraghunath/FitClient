@@ -38,6 +38,9 @@ class TrainerClientsViewController: UIViewController {
     private func showAddClientModal() {
         let vc = AddClientModalViewController(nibName: "AddClientModalViewController", bundle: nil)
         vc.modalPresentationStyle = .pageSheet
+        vc.onClientAdded = { [weak self] _ in
+            self?.loadClientsData()
+        }
         if let sheet = vc.sheetPresentationController {
             sheet.detents = [.custom { _ in 196 }] // i have set 196 becoz 40 (top) + 56 (textfield) + 20 (space) + 56 (button) + 24 (bottom)
             sheet.prefersGrabberVisible = true
@@ -66,14 +69,21 @@ class TrainerClientsViewController: UIViewController {
     }
     
     private func loadClientsData() {
-        DataService.shared.loadClients { result in
-            switch result {
-            case .success(let clients):
-                self.allClients = clients
-                self.filteredClients = clients
-                self.clientsTableView.reloadData()
-            case .failure(let error):
-                print(error.localizedDescription)
+        guard let trainerId = AuthService.shared.supabase.auth.currentUser?.id else {
+            print("Trainer not logged in")
+            return
+        }
+        
+        ClientService.shared.fetchClients(for: trainerId) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let clients):
+                    self.allClients = clients
+                    self.filteredClients = clients
+                    self.clientsTableView.reloadData()
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
             }
         }
     }
@@ -132,7 +142,7 @@ extension TrainerClientsViewController: ClientTableViewCellDelegate {
     
     func didTapChatButton(for client: Client) {
         let chatVC = TrainerClientsChatViewController(nibName: "TrainerClientsChatViewController", bundle: nil)
-        chatVC.clientId = client.id
+        chatVC.clientId = client.id.uuidString
         chatVC.clientName = client.name
         chatVC.clientImage = client.profileImage
         navigationController?.pushViewController(chatVC, animated: true)

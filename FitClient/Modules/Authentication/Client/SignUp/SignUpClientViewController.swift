@@ -122,7 +122,17 @@ class SignUpClientViewController: UIViewController {
         }
         
         if email.isValidEmail {
-            navigateToDashboard()
+            AuthService.shared.signUpClient(email: email, password: password, fullName: fullName, age: age, gender: gender, goal: goal) { [weak self] error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self?.showAlert(message: "Error signing up: \(error.localizedDescription)")
+                    } else {
+                        self?.showAlert(message: "Sign up successful! Please check your email to verify your account.") {
+                            self?.navigationController?.popToRootViewController(animated: true)
+                        }
+                    }
+                }
+            }
         } else {
             showAlert(message: "Please enter a valid email address")
         }

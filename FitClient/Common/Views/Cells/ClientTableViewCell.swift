@@ -48,15 +48,28 @@ class ClientTableViewCell: UITableViewCell {
         nameLabel.text = client.name
         levelLabel.text = client.level
         
-        if let url = URL(string: client.profileImage) {
+        if let url = URL(string: client.profileImage), client.profileImage != "" {
             URLSession.shared.dataTask(with: url) { data, _, _ in
                 if let data = data, let image = UIImage(data: data) {
                     DispatchQueue.main.async { self.profileImageView.image = image }
                 }
             }.resume()
         } else {
-            profileImageView.image = UIImage(systemName: "person.circle.fill")
-            profileImageView.tintColor = .primaryGreen
+            let initials = client.name.components(separatedBy: " ").reduce("") { ($0 == "" ? "" : "\($0.first!)") + "\($1.first!)" }
+            let label = UILabel()
+            label.frame.size = profileImageView.frame.size
+            label.backgroundColor = .primaryGreen
+            label.textColor = .white
+            label.textAlignment = .center
+            label.text = initials
+            label.font = .systemFont(ofSize: 24, weight: .bold)
+            
+            UIGraphicsBeginImageContext(label.frame.size)
+            label.layer.render(in: UIGraphicsGetCurrentContext()!)
+            let image = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            profileImageView.image = image
         }
     }
 }

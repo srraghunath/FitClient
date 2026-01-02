@@ -46,8 +46,17 @@ class AddClientModalViewController: UIViewController {
             return
         }
         
-        onClientAdded?(email)
-        dismiss(animated: true)
+        ClientService.shared.addClient(email: email) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    self?.onClientAdded?(email)
+                    self?.dismiss(animated: true)
+                case .failure(let error):
+                    self?.showAlert(message: "Error adding client: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 }
 

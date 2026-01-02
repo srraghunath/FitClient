@@ -14,13 +14,14 @@ struct Session: Codable {
     
     var client: Client {
         return Client(
-            id: clientId,
-            name: clientName,
-            email: "",  // This will be updated when actual data is loaded
-            profileImage: clientProfileImage,
+            id: UUID(uuidString: clientId) ?? UUID(),
+            user_id: UUID(), // This needs to be fetched or passed in
+            trainer_id: nil,
+            full_name: clientName,
             age: nil,
-            specialization: nil,
-            level: "Fitness Goals"  // This will be updated when actual data is loaded
+            gender: nil,
+            goal: "Fitness Goals",
+            created_at: Date()
         )
     }
     
