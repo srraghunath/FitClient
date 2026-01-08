@@ -15,15 +15,14 @@ class ClientchatViewController: UIViewController {
     @IBOutlet weak var inputContainerView: UIView!
     
     private var messages: [ChatMessage] = []
-    private var currentUserName = "S R RAGHUNATH"
-    private var currentUserImage = "https://via.placeholder.com/40x40?text=Client"
+    private var conversation: Conversation?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupTableView()
         setupMessageInput()
-        loadChatsData()
+        loadConversationAndMessages()
         addKeyboardObservers()
     }
     
@@ -82,21 +81,32 @@ class ClientchatViewController: UIViewController {
         messageInputTextField.returnKeyType = .send
     }
     
-    private func loadChatsData() {
-        guard let url = Bundle.main.url(forResource: "chatsData", withExtension: "json") else {
-            print("Failed to locate chatsData.json")
-            return
-        }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let decodedMessages = try decoder.decode([ChatMessage].self, from: data)
-            messages = decodedMessages.sorted { $0.timestamp < $1.timestamp }
-            messagesTableView.reloadData()
-            scrollToBottom()
-        } catch {
-            print("Failed to decode chatsData.json: \(error)")
+    private func loadConversationAndMessages() {
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                let conversation = try await ChatService.shared.ensureConversationForCurrentClient()
+                let dbMessages = try await ChatService.shared.fetchMessages(conversationId: conversation.id)
+                let mapped = dbMessages.map { db in
+                    ChatMessage(
+                        id: db.id.uuidString,
+                        senderId: db.senderId.uuidString,
+                        senderName: db.senderName ?? "",
+                        senderImage: db.senderImage ?? "",
+                        message: db.text,
+                        timestamp: ChatService.shared.isoString(from: db.timestamp),
+                        isClient: db.isFromTrainer == false
+                    )
+                }
+                await MainActor.run {
+                    self.conversation = conversation
+                    self.messages = mapped
+                    self.messagesTableView.reloadData()
+                    self.scrollToBottom()
+                }
+            } catch {
+                print("[ClientchatViewController] Failed to load conversation/messages: \(error)")
+            }
         }
     }
     
@@ -108,70 +118,42 @@ class ClientchatViewController: UIViewController {
         guard let messageText = messageInputTextField.text, !messageText.trimmingCharacters(in: .whitespaces).isEmpty else {
             return
         }
-        
-        // Create new message
-        let newMessage = ChatMessage(
-            id: "msg_\(UUID().uuidString.prefix(8))",
-            senderId: "client_001",
-            senderName: currentUserName,
-            senderImage: currentUserImage,
-            message: messageText,
-            timestamp: ISO8601DateFormatter().string(from: Date()),
-            isClient: true
-        )
-        
-        // Add to messages
-        messages.append(newMessage)
-        
-        // Clear input
+        guard let conversation else {
+            print("[ClientchatViewController] Conversation not loaded yet")
+            return
+        }
         messageInputTextField.text = ""
         
-        // Reload table and scroll
-        messagesTableView.beginUpdates()
-        let indexPath = IndexPath(row: messages.count - 1, section: 0)
-        messagesTableView.insertRows(at: [indexPath], with: .automatic)
-        messagesTableView.endUpdates()
-        
-        scrollToBottom()
-        
-        // Simulate trainer response after 2 seconds
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.simulateTrainerResponse()
-        }
-    }
-    
-    private func simulateTrainerResponse() {
-        DataService.shared.loadChatResponses { [weak self] result in
-            guard let self = self else { return }
-            
-            let randomResponse: String
-            switch result {
-            case .success(let responsesData):
-                randomResponse = responsesData.trainerResponses.randomElement() ?? "Great work!"
-            case .failure(let error):
-                print("Failed to load chat responses: \(error)")
-                randomResponse = "Great work!"
-            }
-            
-            let trainerMessage = ChatMessage(
-                id: "msg_\(UUID().uuidString.prefix(8))",
-                senderId: "trainer_001",
-                senderName: "DINESH",
-                senderImage: "https://via.placeholder.com/40x40?text=Trainer",
-                message: randomResponse,
-                timestamp: ISO8601DateFormatter().string(from: Date()),
-                isClient: false
-            )
-            
-            DispatchQueue.main.async {
-                self.messages.append(trainerMessage)
-                
-                self.messagesTableView.beginUpdates()
-                let indexPath = IndexPath(row: self.messages.count - 1, section: 0)
-                self.messagesTableView.insertRows(at: [indexPath], with: .automatic)
-                self.messagesTableView.endUpdates()
-                
-                self.scrollToBottom()
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                let clientContext = try await ChatService.shared.fetchClientContextForCurrentUser()
+                let dbMessage = try await ChatService.shared.sendMessage(
+                    conversationId: conversation.id,
+                    text: messageText,
+                    isFromTrainer: false,
+                    senderName: clientContext.name,
+                    senderImage: clientContext.imageURL
+                )
+                let chatMessage = ChatMessage(
+                    id: dbMessage.id.uuidString,
+                    senderId: dbMessage.senderId.uuidString,
+                    senderName: dbMessage.senderName ?? clientContext.name,
+                    senderImage: dbMessage.senderImage ?? clientContext.imageURL ?? "",
+                    message: dbMessage.text,
+                    timestamp: ChatService.shared.isoString(from: dbMessage.timestamp),
+                    isClient: true
+                )
+                await MainActor.run {
+                    self.messages.append(chatMessage)
+                    self.messagesTableView.beginUpdates()
+                    let indexPath = IndexPath(row: self.messages.count - 1, section: 0)
+                    self.messagesTableView.insertRows(at: [indexPath], with: .automatic)
+                    self.messagesTableView.endUpdates()
+                    self.scrollToBottom()
+                }
+            } catch {
+                print("[ClientchatViewController] Failed to send message: \(error)")
             }
         }
     }

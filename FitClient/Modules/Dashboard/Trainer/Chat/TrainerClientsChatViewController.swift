@@ -13,6 +13,7 @@ class TrainerClientsChatViewController: UIViewController {
     var clientName: String?
     var clientImage: String?
     private var messages: [Message] = []
+    private var conversation: Conversation?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,20 +54,77 @@ class TrainerClientsChatViewController: UIViewController {
     private func setupInputField() {
         messageInputField.applyAppStyle(placeholder: "Type a message...")
         sendButton.applyPrimaryStyle(title: "Send")
+        sendButton.addTarget(self, action: #selector(sendTapped), for: .touchUpInside)
     }
     
     private func loadMessages() {
-        guard let clientId = clientId else { return }
-        
-        DataService.shared.loadChat(forClientId: clientId) { [weak self] result in
-            switch result {
-            case .success(let chatData):
-                self?.messages = chatData.messages.reversed()
-                DispatchQueue.main.async {
-                    self?.tableView.reloadData()
+        guard let clientId = clientId, let clientUUID = UUID(uuidString: clientId) else { return }
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                let conversation = try await ChatService.shared.ensureConversationForTrainer(clientId: clientUUID)
+                let dbMessages = try await ChatService.shared.fetchMessages(conversationId: conversation.id)
+                let mapped: [Message] = dbMessages.map { db in
+                    Message(
+                        id: db.id.uuidString,
+                        senderId: db.senderId.uuidString,
+                        senderName: db.senderName ?? "",
+                        senderImage: db.senderImage ?? "",
+                        text: db.text,
+                        timestamp: ChatService.shared.isoString(from: db.timestamp),
+                        isFromTrainer: db.isFromTrainer
+                    )
                 }
-            case .failure(let error):
-                print("Error loading messages: \(error)")
+                await MainActor.run {
+                    self.conversation = conversation
+                    self.messages = mapped.reversed()
+                    self.tableView.reloadData()
+                }
+            } catch {
+                print("[TrainerClientsChatViewController] Failed to load messages: \(error)")
+            }
+        }
+    }
+
+    @objc private func sendTapped() {
+        sendMessage()
+    }
+
+    private func sendMessage() {
+        guard let text = messageInputField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else { return }
+        guard let conversation else { return }
+        messageInputField.text = ""
+
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                let trainerContext = try await ChatService.shared.fetchTrainerContextForCurrentUser()
+                let dbMessage = try await ChatService.shared.sendMessage(
+                    conversationId: conversation.id,
+                    text: text,
+                    isFromTrainer: true,
+                    senderName: trainerContext.name,
+                    senderImage: trainerContext.imageURL
+                )
+                let message = Message(
+                    id: dbMessage.id.uuidString,
+                    senderId: dbMessage.senderId.uuidString,
+                    senderName: dbMessage.senderName ?? trainerContext.name,
+                    senderImage: dbMessage.senderImage ?? trainerContext.imageURL ?? "",
+                    text: dbMessage.text,
+                    timestamp: ChatService.shared.isoString(from: dbMessage.timestamp),
+                    isFromTrainer: true
+                )
+
+                await MainActor.run {
+                    self.messages.insert(message, at: 0)
+                    self.tableView.beginUpdates()
+                    let indexPath = IndexPath(row: 0, section: 0)
+                    self.tableView.insertRows(at: [indexPath], with: .automatic)
+                    self.tableView.endUpdates()
+                }
+            } catch {
+                print("[TrainerClientsChatViewController] Failed to send message: \(error)")
             }
         }
     }
