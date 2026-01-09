@@ -263,7 +263,7 @@ final class ClientProgressViewController: UIViewController {
         let today = Date()
         let currentMonthKey = monthFormatter.string(from: today)
         let isFutureMonth = currentMonth > today
-        let isPastMonth = currentMonth < calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
+        _ = currentMonth < calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
         
         if isFutureMonth {
             segments = [

@@ -781,7 +781,7 @@ extension TrainerClientProfileScheduleViewController: ScheduleCardCellDelegate {
 extension TrainerClientProfileScheduleViewController: SliderCardCellDelegate {
     
     func sliderCardCell(_ cell: SliderCardCell, didUpdateValue value: Double, for sliderItem: SliderItem) {
-        guard var scheduleData = clientScheduleData, var dayData = currentDayData else { return }
+        guard let scheduleData = clientScheduleData, var dayData = currentDayData else { return }
         let dayName = getDayName(from: selectedDay)
         
         // Update the appropriate value
@@ -821,7 +821,7 @@ extension TrainerClientProfileScheduleViewController: SliderCardCellDelegate {
 extension TrainerClientProfileScheduleViewController: CardioInputCellDelegate {
     
     func cardioInputCell(_ cell: CardioInputCell, didUpdateValue text: String) {
-        guard var scheduleData = clientScheduleData, var dayData = currentDayData else { return }
+        guard let scheduleData = clientScheduleData, var dayData = currentDayData else { return }
         let dayName = getDayName(from: selectedDay)
         
         // Update cardio notes

@@ -57,8 +57,6 @@ class TrainerSessionsViewController: UIViewController {
         calendarButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
         calendarButton.setPreferredSymbolConfiguration(symbolConfig, forImageIn: .normal)
-    calendarButton.adjustsImageWhenHighlighted = false
-    calendarButton.adjustsImageWhenDisabled = false
         calendarButton.addTarget(self, action: #selector(calendarButtonTapped), for: .touchUpInside)
         self.calendarButton = calendarButton
         

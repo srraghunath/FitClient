@@ -11,12 +11,13 @@ class ClientService {
         print("Fetching clients for trainer ID: \(trainerId)")
         Task {
             do {
-                let clients: [Client] = try await supabase.database
+                let clients: [Client] = try await supabase
                     .from("clients")
                     .select()
                     .eq("trainer_id", value: trainerId.uuidString)
                     .execute()
                     .value
+
                 print("Successfully fetched \(clients.count) clients.")
                 completion(.success(clients))
             } catch {

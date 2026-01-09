@@ -111,13 +111,16 @@ extension ClientSettingsViewController: UITableViewDataSource, UITableViewDelega
     }
     
     private func handleLogout() {
-        // Clear user defaults
-        UserDefaults.standard.set(false, forKey: "isClient")
-        UserDefaults.standard.removeObject(forKey: "userEmail")
-        
-        // Navigate back to sign in
-        let window = UIApplication.shared.connectedScenes.first as? UIWindowScene
-        window?.windows.first?.rootViewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+        AuthService.shared.signOut { error in
+            DispatchQueue.main.async {
+                if let error {
+                    self.showAlert(message: "Error logging out: \(error.localizedDescription)")
+                    return
+                }
+                let window = UIApplication.shared.connectedScenes.first as? UIWindowScene
+                window?.windows.first?.rootViewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+            }
+        }
     }
 }
 

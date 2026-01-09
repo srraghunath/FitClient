@@ -132,15 +132,18 @@ class TrainerSettingsViewController: UIViewController {
     }
 
     @IBAction func logoutTapped(_ sender: Any) {
-        // Clear user defaults
-        UserDefaults.standard.set(false, forKey: "isClient")
-        UserDefaults.standard.removeObject(forKey: "userEmail")
-
-        // Navigate back to the initial screen
-        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = scene.windows.first {
-            window.rootViewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
-            window.makeKeyAndVisible()
+        AuthService.shared.signOut { error in
+            DispatchQueue.main.async {
+                if let error {
+                    self.showAlert(message: "Error logging out: \(error.localizedDescription)")
+                    return
+                }
+                if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let window = scene.windows.first {
+                    window.rootViewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+                    window.makeKeyAndVisible()
+                }
+            }
         }
     }
 }

@@ -240,8 +240,8 @@ class DashboardViewController: UIViewController {
         DataService.shared.loadDayActivityForDate(date) { [weak self] result in
             switch result {
             case .success(let activity):
-                var logMsg = "✅ [Dashboard] Day activity for \(dateString): workout=\(activity.workout), cardio=\(activity.cardio), water=\(activity.waterIntake), diet=\(activity.diet), sleep=\(activity.sleep)\n"
-                if let existingLog = try? String(contentsOfFile: logPath) {
+                let logMsg = "✅ [Dashboard] Day activity for \(dateString): workout=\(activity.workout), cardio=\(activity.cardio), water=\(activity.waterIntake), diet=\(activity.diet), sleep=\(activity.sleep)\n"
+                if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                     try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
                 }
                 print(logMsg)
@@ -261,7 +261,7 @@ class DashboardViewController: UIViewController {
                 }
             case .failure(let error):
                 let errMsg = "❌ [Dashboard] Error loading day activity: \(error)\n"
-                if let existingLog = try? String(contentsOfFile: logPath) {
+                if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                     try? (existingLog + errMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
                 }
                 print(errMsg)
@@ -276,7 +276,7 @@ class DashboardViewController: UIViewController {
                 workouts.forEach { workout in
                     logMsg += "   - \(workout.name): \(workout.imageUrl)\n"
                 }
-                if let existingLog = try? String(contentsOfFile: logPath) {
+                if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                     try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
                 }
                 print(logMsg)
@@ -287,7 +287,7 @@ class DashboardViewController: UIViewController {
                 }
             case .failure(let error):
                 let errMsg = "❌ [Dashboard] Error loading workouts: \(error)\n"
-                if let existingLog = try? String(contentsOfFile: logPath) {
+                if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                     try? (existingLog + errMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
                 }
                 print(errMsg)
@@ -307,7 +307,7 @@ class DashboardViewController: UIViewController {
                 meals.forEach { meal in
                     logMsg += "   - \(meal.mealType): \(meal.name) @ \(meal.time)\n"
                 }
-                if let existingLog = try? String(contentsOfFile: logPath) {
+                if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                     try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
                 }
                 print(logMsg)
@@ -356,7 +356,7 @@ class DashboardViewController: UIViewController {
                 }
             case .failure(let error):
                 let errMsg = "❌ [Dashboard] Error loading diet: \(error)\n"
-                if let existingLog = try? String(contentsOfFile: logPath) {
+                if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                     try? (existingLog + errMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
                 }
                 print(errMsg)

@@ -17,7 +17,7 @@ struct SettingsMenuItem: Codable {
     var isProfileItem: Bool?
     
     var iconBgColor: UIColor {
-        return UIColor(hex: iconBackgroundColor) ?? .clear
+        return UIColor(hex: iconBackgroundColor)
     }
 }
 

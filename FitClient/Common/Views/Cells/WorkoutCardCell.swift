@@ -64,7 +64,7 @@ class WorkoutCardCell: UITableViewCell {
         
         let logPath = "/tmp/dashboard_debug.log"
         let logMsg = "🏋️ [WorkoutCardCell] Configuring: \(workout.name), URL: \(workout.imageUrl), showCheckbox: \(showCheckbox)\n"
-        if let existingLog = try? String(contentsOfFile: logPath) {
+        if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
             try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
         }
         print(logMsg)
@@ -107,7 +107,7 @@ class WorkoutCardCell: UITableViewCell {
         // Check cache first
         if let cachedImage = ImageCache.shared.getImage(forKey: workoutId) {
             let logMsg = "✅ [WorkoutCardCell] Image loaded from cache for: \(workoutId)\n"
-            if let existingLog = try? String(contentsOfFile: logPath) {
+            if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                 try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
             }
             print(logMsg)
@@ -118,7 +118,7 @@ class WorkoutCardCell: UITableViewCell {
         // Load from network
         guard let url = URL(string: urlString) else {
             let logMsg = "❌ [WorkoutCardCell] Invalid URL: \(urlString)\n"
-            if let existingLog = try? String(contentsOfFile: logPath) {
+            if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                 try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
             }
             print(logMsg)
@@ -126,7 +126,7 @@ class WorkoutCardCell: UITableViewCell {
         }
         
         let logMsg1 = "🌐 [WorkoutCardCell] Loading image from network: \(urlString)\n"
-        if let existingLog = try? String(contentsOfFile: logPath) {
+        if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
             try? (existingLog + logMsg1).write(toFile: logPath, atomically: true, encoding: .utf8)
         }
         print(logMsg1)
@@ -136,7 +136,7 @@ class WorkoutCardCell: UITableViewCell {
             
             if let error = error {
                 let logMsg = "❌ [WorkoutCardCell] Image load error: \(error.localizedDescription)\n"
-                if let existingLog = try? String(contentsOfFile: logPath) {
+                if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                     try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
                 }
                 print(logMsg)
@@ -145,7 +145,7 @@ class WorkoutCardCell: UITableViewCell {
             
             guard let data = data, let image = UIImage(data: data) else {
                 let logMsg = "❌ [WorkoutCardCell] Failed to create image from data\n"
-                if let existingLog = try? String(contentsOfFile: logPath) {
+                if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                     try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
                 }
                 print(logMsg)
@@ -153,7 +153,7 @@ class WorkoutCardCell: UITableViewCell {
             }
             
             let logMsg = "✅ [WorkoutCardCell] Image loaded successfully for: \(workoutId)\n"
-            if let existingLog = try? String(contentsOfFile: logPath) {
+            if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                 try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
             }
             print(logMsg)
@@ -165,7 +165,7 @@ class WorkoutCardCell: UITableViewCell {
                 if self?.currentWorkoutId == workoutId {
                     self?.workoutImageView.image = image
                     let logMsg2 = "✅ [WorkoutCardCell] Image set to imageView for: \(workoutId)\n"
-                    if let existingLog = try? String(contentsOfFile: logPath) {
+                    if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                         try? (existingLog + logMsg2).write(toFile: logPath, atomically: true, encoding: .utf8)
                     }
                     print(logMsg2)
