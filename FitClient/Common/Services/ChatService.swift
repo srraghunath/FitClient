@@ -90,7 +90,8 @@ final class ChatService {
 
     private let supabase = AuthService.shared.supabase
     private let isoFormatter = ISO8601DateFormatter()
-    private let profileImagesBaseURL = URL(string: "https://xhxyhexaoxnejrsusfhb.supabase.co/storage/v1/object/public/profile-images")!
+    private let profileImagesBaseURL = URL(
+        string: "https://xhxyhexaoxnejrsusfhb.supabase.co/storage/v1/object/public/profile-images")!
 
     private init() {}
 
@@ -99,7 +100,9 @@ final class ChatService {
     func ensureConversationForCurrentClient() async throws -> Conversation {
         let clientCtx = try await fetchClientContextForCurrentUser()
         guard let trainerId = clientCtx.trainerId, let clientId = clientCtx.clientId else {
-            throw NSError(domain: "ChatService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Trainer or client relationship missing"])
+            throw NSError(
+                domain: "ChatService", code: 0,
+                userInfo: [NSLocalizedDescriptionKey: "Trainer or client relationship missing"])
         }
         return try await ensureConversation(clientId: clientId, trainerId: trainerId)
     }
@@ -129,7 +132,9 @@ final class ChatService {
         senderImage: String?
     ) async throws -> DBMessage {
         guard let userId = supabase.auth.currentUser?.id else {
-            throw NSError(domain: "ChatService", code: 401, userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
+            throw NSError(
+                domain: "ChatService", code: 401,
+                userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
         }
 
         let payload = MessageInsert(
@@ -141,7 +146,8 @@ final class ChatService {
             is_from_trainer: isFromTrainer
         )
 
-        let inserted: [DBMessage] = try await supabase
+        let inserted: [DBMessage] =
+            try await supabase
             .from("messages")
             .insert(payload)
             .select()
@@ -150,7 +156,9 @@ final class ChatService {
             .value
 
         guard let first = inserted.first else {
-            throw NSError(domain: "ChatService", code: 500, userInfo: [NSLocalizedDescriptionKey: "Insert returned no rows"])
+            throw NSError(
+                domain: "ChatService", code: 500,
+                userInfo: [NSLocalizedDescriptionKey: "Insert returned no rows"])
         }
         return first
     }
@@ -163,15 +171,19 @@ final class ChatService {
 
     func defaultProfileImageURL(for userId: UUID) -> String {
         let idString = userId.uuidString.lowercased()
-        return profileImagesBaseURL.appendingPathComponent("\(idString)/\(idString).jpg").absoluteString
+        return profileImagesBaseURL.appendingPathComponent("\(idString)/\(idString).jpg")
+            .absoluteString
     }
 
     func fetchClientContextForCurrentUser() async throws -> ParticipantContext {
         guard let userId = supabase.auth.currentUser?.id else {
-            throw NSError(domain: "ChatService", code: 401, userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
+            throw NSError(
+                domain: "ChatService", code: 401,
+                userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
         }
 
-        let rows: [ClientRow] = try await supabase
+        let rows: [ClientRow] =
+            try await supabase
             .from("clients")
             .select()
             .eq("user_id", value: userId.uuidString)
@@ -180,20 +192,27 @@ final class ChatService {
             .value
 
         guard let client = rows.first else {
-            throw NSError(domain: "ChatService", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client record not found for current user"])
+            throw NSError(
+                domain: "ChatService", code: 404,
+                userInfo: [NSLocalizedDescriptionKey: "Client record not found for current user"])
         }
 
         let name = client.fullName ?? "Client"
         let imageURL = defaultProfileImageURL(for: client.userId)
-        return ParticipantContext(userId: client.userId, name: name, imageURL: imageURL, trainerId: client.trainerId, clientId: client.id)
+        return ParticipantContext(
+            userId: client.userId, name: name, imageURL: imageURL, trainerId: client.trainerId,
+            clientId: client.id)
     }
 
     func fetchTrainerContextForCurrentUser() async throws -> ParticipantContext {
         guard let userId = supabase.auth.currentUser?.id else {
-            throw NSError(domain: "ChatService", code: 401, userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
+            throw NSError(
+                domain: "ChatService", code: 401,
+                userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
         }
 
-        let rows: [TrainerRow] = try await supabase
+        let rows: [TrainerRow] =
+            try await supabase
             .from("trainers")
             .select()
             .eq("id", value: userId.uuidString)
@@ -202,12 +221,16 @@ final class ChatService {
             .value
 
         guard let trainer = rows.first else {
-            throw NSError(domain: "ChatService", code: 404, userInfo: [NSLocalizedDescriptionKey: "Trainer record not found"])
+            throw NSError(
+                domain: "ChatService", code: 404,
+                userInfo: [NSLocalizedDescriptionKey: "Trainer record not found"])
         }
 
         let name = trainer.fullName ?? "Trainer"
         let imageURL = trainer.profileImageURL ?? defaultProfileImageURL(for: trainer.id)
-        return ParticipantContext(userId: trainer.id, name: name, imageURL: imageURL, trainerId: trainer.id, clientId: nil)
+        return ParticipantContext(
+            userId: trainer.id, name: name, imageURL: imageURL, trainerId: trainer.id, clientId: nil
+        )
     }
 
     // MARK: - Private
@@ -218,7 +241,8 @@ final class ChatService {
         }
 
         let insert = ConversationInsert(trainer_id: trainerId, client_id: clientId)
-        let created: [Conversation] = try await supabase
+        let created: [Conversation] =
+            try await supabase
             .from("conversations")
             .insert(insert)
             .select()
@@ -227,13 +251,16 @@ final class ChatService {
             .value
 
         guard let conversation = created.first else {
-            throw NSError(domain: "ChatService", code: 500, userInfo: [NSLocalizedDescriptionKey: "Failed to create conversation"])
+            throw NSError(
+                domain: "ChatService", code: 500,
+                userInfo: [NSLocalizedDescriptionKey: "Failed to create conversation"])
         }
         return conversation
     }
 
     private func findConversation(clientId: UUID) async throws -> Conversation? {
-        let rows: [Conversation] = try await supabase
+        let rows: [Conversation] =
+            try await supabase
             .from("conversations")
             .select()
             .eq("client_id", value: clientId.uuidString)
@@ -242,4 +269,78 @@ final class ChatService {
             .value
         return rows.first
     }
+
+    // MARK: - Realtime
+    func subscribeToMessages(
+        conversationId: UUID,
+        onMessage: @escaping (Result<DBMessage, Error>) -> Void
+    ) -> RealtimeChannelV2 {
+
+        print("🟢 [Realtime] Creating channel for conversation:", conversationId)
+
+        let channelName = "public:messages:conversation_\(conversationId.uuidString)"
+        let channel = supabase.realtimeV2.channel(channelName)
+
+        Task {
+            print("🟡 [Realtime] Task started for channel:", channelName)
+
+            var decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+
+            print("🟡 [Realtime] Registering postgresChange listener")
+
+            let changes = channel.postgresChange(
+                InsertAction.self,
+                schema: "public",
+                table: "messages",
+                filter: "conversation_id=eq.\(conversationId.uuidString)"
+            )
+
+            print("🟡 [Realtime] Listener registered, now subscribing…")
+
+            do {
+                try await channel.subscribeWithError()
+                print("✅ [Realtime] Channel subscribed SUCCESSFULLY:", channelName)
+            } catch {
+                print("🔴 [Realtime] Channel subscription FAILED:", error)
+                await MainActor.run {
+                    onMessage(.failure(error))
+                }
+                return
+            }
+
+            print("🟢 [Realtime] Waiting for INSERT events…")
+
+            for await insert in changes {
+                print("📥 [Realtime] INSERT event received")
+
+                do {
+                    let message = try insert.decodeRecord(
+                        as: DBMessage.self,
+                        decoder: decoder
+                    )
+
+                    print("✅ [Realtime] Decoded message id:", message.id)
+                    print("   ↳ conversation_id:", message.conversationId)
+                    print("   ↳ sender_id:", message.senderId)
+                    print("   ↳ text:", message.text)
+
+                    await MainActor.run {
+                        print("🧵 [Realtime] Delivering message to UI")
+                        onMessage(.success(message))
+                    }
+                } catch {
+                    print("🔴 [Realtime] Failed to decode INSERT payload:", error)
+                    await MainActor.run {
+                        onMessage(.failure(error))
+                    }
+                }
+            }
+
+            print("⚠️ [Realtime] postgresChange stream ENDED")
+        }
+
+        return channel
+    }
+
 }

@@ -1,6 +1,7 @@
 
 
 import UIKit
+import Supabase
 
 class TrainerClientsChatViewController: UIViewController {
     
@@ -14,6 +15,7 @@ class TrainerClientsChatViewController: UIViewController {
     var clientImage: String?
     private var messages: [Message] = []
     private var conversation: Conversation?
+    private var realtimeChannel: RealtimeChannelV2?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,6 +81,7 @@ class TrainerClientsChatViewController: UIViewController {
                     self.conversation = conversation
                     self.messages = mapped.reversed()
                     self.tableView.reloadData()
+                    self.startRealtime(for: conversation.id)
                 }
             } catch {
                 print("[TrainerClientsChatViewController] Failed to load messages: \(error)")
@@ -116,13 +119,6 @@ class TrainerClientsChatViewController: UIViewController {
                     isFromTrainer: true
                 )
 
-                await MainActor.run {
-                    self.messages.insert(message, at: 0)
-                    self.tableView.beginUpdates()
-                    let indexPath = IndexPath(row: 0, section: 0)
-                    self.tableView.insertRows(at: [indexPath], with: .automatic)
-                    self.tableView.endUpdates()
-                }
             } catch {
                 print("[TrainerClientsChatViewController] Failed to send message: \(error)")
             }
@@ -153,6 +149,41 @@ class TrainerClientsChatViewController: UIViewController {
     
     @objc private func dismissKeyboard() {
         view.endEditing(true)
+    }
+}
+
+// MARK: - Realtime
+
+private extension TrainerClientsChatViewController {
+    func startRealtime(for conversationId: UUID) {
+        realtimeChannel = ChatService.shared.subscribeToMessages(conversationId: conversationId) { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success(let dbMessage):
+                // Avoid duplicates when the sender is this trainer
+                if self.messages.contains(where: { $0.id == dbMessage.id.uuidString }) { return }
+
+                let message = Message(
+                    id: dbMessage.id.uuidString,
+                    senderId: dbMessage.senderId.uuidString,
+                    senderName: dbMessage.senderName ?? "",
+                    senderImage: dbMessage.senderImage ?? "",
+                    text: dbMessage.text,
+                    timestamp: ChatService.shared.isoString(from: dbMessage.timestamp),
+                    isFromTrainer: dbMessage.isFromTrainer
+                )
+
+                Task { @MainActor in
+                    self.messages.insert(message, at: 0)
+                    self.tableView.beginUpdates()
+                    let indexPath = IndexPath(row: 0, section: 0)
+                    self.tableView.insertRows(at: [indexPath], with: .automatic)
+                    self.tableView.endUpdates()
+                }
+            case .failure(let error):
+                print("[TrainerClientsChatViewController] Realtime error: \(error)")
+            }
+        }
     }
 }
 
