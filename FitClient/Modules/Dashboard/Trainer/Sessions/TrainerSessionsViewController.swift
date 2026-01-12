@@ -15,13 +15,14 @@ class TrainerSessionsViewController: UIViewController {
     private var allSessions: [Session] = []
     private var todaySessions: [Session] = []
     private var upcomingSessions: [Session] = []
+    private var rangeSessions: [TrainerSessionDTO] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         setupUI()
         setupTableView()
-        loadSessionsData()
+        loadSessionsData(for: selectedDate)
     }
     
     private func setupNavigationBar() {
@@ -143,7 +144,7 @@ class TrainerSessionsViewController: UIViewController {
     @objc private func dateChanged() {
         selectedDate = datePicker.date
         updateDateLabel()
-        filterSessionsForDate(selectedDate)
+        loadSessionsData(for: selectedDate)
     }
     
     private func setupUI() {
@@ -167,57 +168,66 @@ class TrainerSessionsViewController: UIViewController {
     }
     
     // MARK: BACKEND OPERATIONS
-    
-    private func loadSessionsData() {
-        DataService.shared.loadSessions { result in
-            switch result {
-            case .success(let sessionsData):
-                self.allSessions = sessionsData.todaySessions + sessionsData.upcomingSessions
-                self.filterSessionsForDate(self.selectedDate)
-            case .failure(let error):
-                print(error.localizedDescription)
+
+    private func loadSessionsData(for date: Date) {
+        SessionService.shared.fetchSessions(startingFrom: date) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let rows):
+                    self?.rangeSessions = rows
+                    self?.mapSessions(for: date)
+                case .failure(let error):
+                    print("[TrainerSessions] Failed to fetch sessions: \(error)")
+                    self?.todaySessions = []
+                    self?.upcomingSessions = []
+                    self?.sessionsTableView.reloadData()
+                }
             }
         }
     }
-    
-    private func filterSessionsForDate(_ date: Date) {
-        let calendar = Calendar.current
+
+    private func mapSessions(for date: Date) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let selectedDateString = dateFormatter.string(from: date)
-        
-        // Check if selected date is today
-        let isToday = calendar.isDateInToday(date)
-        
-        // Filter sessions for selected date
-        let sessionsForDate = allSessions.filter { session in
-            return session.date == selectedDateString
-        }
-        
-        if isToday {
-            // If today, show in "Today" section
-            todaySessions = sessionsForDate
-            
-            // Upcoming shows future dates
-            upcomingSessions = allSessions.filter { session in
-                if let sessionDate = dateFormatter.date(from: session.date) {
-                    return sessionDate > date
-                }
-                return false
+        let calendar = Calendar.current
+
+        func displayTime(from raw: String?) -> String? {
+            guard let raw = raw else { return nil }
+            let input = DateFormatter()
+            input.dateFormat = "HH:mm:ss"
+            if let parsed = input.date(from: raw) {
+                let output = DateFormatter()
+                output.dateFormat = "h:mm a"
+                return output.string(from: parsed)
             }
-        } else {
-            // If not today, show selected date sessions in "Today" section
-            todaySessions = sessionsForDate
-            
-            // Upcoming shows sessions after selected date
-            upcomingSessions = allSessions.filter { session in
-                if let sessionDate = dateFormatter.date(from: session.date) {
-                    return sessionDate > date
-                }
-                return false
-            }
+            return raw
         }
-        
+
+        allSessions = rangeSessions.compactMap { row in
+            Session(
+                id: row.sessionId.uuidString,
+                clientId: row.clientId.uuidString,
+                clientName: row.clientName,
+                clientProfileImage: row.clientProfileImageUrl ?? "",
+                startTime: displayTime(from: row.startTime),
+                endTime: displayTime(from: row.endTime),
+                date: row.sessionDate,
+                dayOfWeek: row.dayOfWeek,
+                isToday: {
+                    guard let sessionDate = dateFormatter.date(from: row.sessionDate) else { return false }
+                    return calendar.isDateInToday(sessionDate)
+                }()
+            )
+        }
+
+        todaySessions = allSessions.filter { $0.date == selectedDateString }
+
+        upcomingSessions = allSessions.filter { session in
+            guard let sessionDate = dateFormatter.date(from: session.date) else { return false }
+            return sessionDate > date
+        }
+
         sessionsTableView.reloadData()
     }
 }

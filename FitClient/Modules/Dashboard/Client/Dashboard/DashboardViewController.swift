@@ -41,6 +41,7 @@ class DashboardViewController: UIViewController {
     private var scheduledWorkouts: [TodayWorkout] = []
     private var todayDiet: [TodayMeal] = []
     private var todayDietDetails: [Diet] = [] // mapped Diet models to render with DietCell
+    private var dayActivityRecord: DayActivityDTO?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -237,34 +238,44 @@ class DashboardViewController: UIViewController {
         consecutiveDaysValueLabel.text = "7 Days"
         
         // Prefill Day Tracker from data service (existing data if any)
-        DataService.shared.loadDayActivityForDate(date) { [weak self] result in
+        DayActivityService.shared.fetchActivity(for: date) { [weak self] result in
             switch result {
-            case .success(let activity):
-                let logMsg = "✅ [Dashboard] Day activity for \(dateString): workout=\(activity.workout), cardio=\(activity.cardio), water=\(activity.waterIntake), diet=\(activity.diet), sleep=\(activity.sleep)\n"
+            case .success(let record):
+                let logMsg = "✅ [Dashboard] Day activity for \(dateString): workout=\(record.workoutDone), cardio=\(record.cardioDone), water=\(record.waterDone), diet=\(record.dietDone), sleep=\(record.sleepDone)\n"
                 if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                     try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
                 }
                 print(logMsg)
 
-                // Map to items; keep the same order/UI and texts
-                let items: [DayTrackerItem] = [
-                    DayTrackerItem(icon: "🏋️", title: "Workout", subtitle: "Full body", isCompleted: activity.workout),
-                    DayTrackerItem(icon: "❤️", title: "Cardio", subtitle: "Running, 30 minutes", isCompleted: activity.cardio),
-                    DayTrackerItem(icon: "💧", title: "Water Intake", subtitle: "8 litres", isCompleted: activity.waterIntake),
-                    DayTrackerItem(icon: "🍽", title: "Diet Plan", subtitle: "Balanced", isCompleted: activity.diet),
-                    DayTrackerItem(icon: "🌙", title: "Sleep Cycle", subtitle: "8 hours", isCompleted: activity.sleep)
-                ]
-
                 DispatchQueue.main.async {
-                    self?.dayTrackerItems = items
-                    self?.updateUI()
+                    self?.applyDayActivity(record)
                 }
             case .failure(let error):
-                let errMsg = "❌ [Dashboard] Error loading day activity: \(error)\n"
+                let errMsg = "❌ [Dashboard] Error loading day activity from Supabase: \(error)\n"
                 if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                     try? (existingLog + errMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
                 }
                 print(errMsg)
+
+                // Fallback to bundled JSON so the screen still renders
+                DataService.shared.loadDayActivityForDate(date) { jsonResult in
+                    switch jsonResult {
+                    case .success(let activity):
+                        let record = DayActivityDTO(
+                            activityDate: dateString,
+                            workoutDone: activity.workout,
+                            cardioDone: activity.cardio,
+                            waterDone: activity.waterIntake,
+                            dietDone: activity.diet,
+                            sleepDone: activity.sleep
+                        )
+                        DispatchQueue.main.async {
+                            self?.applyDayActivity(record)
+                        }
+                    case .failure(let jsonError):
+                        print("❌ [Dashboard] Fallback JSON load failed: \(jsonError)")
+                    }
+                }
             }
         }
         
@@ -368,6 +379,29 @@ class DashboardViewController: UIViewController {
                 }
             }
         }
+    }
+
+    private func applyDayActivity(_ record: DayActivityDTO) {
+        dayActivityRecord = record
+        dayTrackerItems = makeDayTrackerItems(from: record)
+        updateUI()
+    }
+
+    private func makeDayTrackerItems(from record: DayActivityDTO) -> [DayTrackerItem] {
+        [
+            DayTrackerItem(icon: "🏋️", title: "Workout", subtitle: "Full body", isCompleted: record.workoutDone),
+            DayTrackerItem(icon: "❤️", title: "Cardio", subtitle: "Running, 30 minutes", isCompleted: record.cardioDone),
+            DayTrackerItem(icon: "💧", title: "Water Intake", subtitle: "8 litres", isCompleted: record.waterDone),
+            DayTrackerItem(icon: "🍽", title: "Diet Plan", subtitle: "Balanced", isCompleted: record.dietDone),
+            DayTrackerItem(icon: "🌙", title: "Sleep Cycle", subtitle: "8 hours", isCompleted: record.sleepDone)
+        ]
+    }
+
+    private func isFutureDate(_ date: Date) -> Bool {
+        let calendar = Calendar.current
+        let startOfSelected = calendar.startOfDay(for: date)
+        let startOfToday = calendar.startOfDay(for: Date())
+        return startOfSelected > startOfToday
     }
     
     func updateUI() {
@@ -518,6 +552,52 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
             return 72 // Match Schedule Workout modal height
         } else {
             return 96
+        }
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard tableView == dayTrackerTableView else { return }
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        if isFutureDate(selectedDate) {
+            showAlert(title: "Not Allowed", message: "You cannot update checkboxes for future dates.")
+            return
+        }
+
+        guard var record = dayActivityRecord else { return }
+        let previousRecord = record
+
+        switch indexPath.row {
+        case 0: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: !record.workoutDone, cardioDone: record.cardioDone, waterDone: record.waterDone, dietDone: record.dietDone, sleepDone: record.sleepDone)
+        case 1: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: record.workoutDone, cardioDone: !record.cardioDone, waterDone: record.waterDone, dietDone: record.dietDone, sleepDone: record.sleepDone)
+        case 2: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: record.workoutDone, cardioDone: record.cardioDone, waterDone: !record.waterDone, dietDone: record.dietDone, sleepDone: record.sleepDone)
+        case 3: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: record.workoutDone, cardioDone: record.cardioDone, waterDone: record.waterDone, dietDone: !record.dietDone, sleepDone: record.sleepDone)
+        case 4: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: record.workoutDone, cardioDone: record.cardioDone, waterDone: record.waterDone, dietDone: record.dietDone, sleepDone: !record.sleepDone)
+        default: return
+        }
+
+        dayActivityRecord = record
+        dayTrackerItems = makeDayTrackerItems(from: record)
+        dayTrackerTableView.reloadRows(at: [indexPath], with: .automatic)
+
+        DayActivityService.shared.upsertActivity(for: selectedDate, record: record) { [weak self] result in
+            switch result {
+            case .success(let saved):
+                DispatchQueue.main.async {
+                    self?.dayActivityRecord = saved
+                    self?.dayTrackerItems = self?.makeDayTrackerItems(from: saved) ?? []
+                    self?.updateUI()
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    self?.dayActivityRecord = previousRecord
+                    if let previous = self?.dayActivityRecord {
+                        self?.dayTrackerItems = self?.makeDayTrackerItems(from: previous) ?? []
+                    }
+                    self?.updateUI()
+                    self?.showAlert(title: "Update Failed", message: error.localizedDescription)
+                }
+            }
         }
     }
     

@@ -50,7 +50,12 @@ class SessionTableViewCell: UITableViewCell {
     
     func configure(with session: Session) {
         clientNameLabel.text = session.clientName
-        timeLabel.text = "\(session.startTime) - \(session.endTime)"
+        let start = session.startTime?.isEmpty == false ? session.startTime! : "Time TBD"
+        if let end = session.endTime, !end.isEmpty {
+            timeLabel.text = "\(start) - \(end)"
+        } else {
+            timeLabel.text = start
+        }
         
         if let url = URL(string: session.clientProfileImage) {
             URLSession.shared.dataTask(with: url) { data, _, _ in

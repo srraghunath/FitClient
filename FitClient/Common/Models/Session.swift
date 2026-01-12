@@ -7,9 +7,10 @@ struct Session: Codable {
     let clientId: String
     let clientName: String
     let clientProfileImage: String
-    let startTime: String
-    let endTime: String
+    let startTime: String?
+    let endTime: String?
     let date: String
+    let dayOfWeek: Int?
     let isToday: Bool
     
     var client: Client {
@@ -33,6 +34,7 @@ struct Session: Codable {
         case startTime = "start_time"
         case endTime = "end_time"
         case date
+        case dayOfWeek = "day_of_week"
         case isToday = "is_today"
     }
 }
