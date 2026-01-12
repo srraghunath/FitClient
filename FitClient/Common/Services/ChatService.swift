@@ -115,10 +115,20 @@ final class ChatService {
     }
 
     func fetchMessages(conversationId: UUID) async throws -> [DBMessage] {
-        try await supabase
+        try await fetchMessages(conversationId: conversationId, since: nil)
+    }
+
+    func fetchMessages(conversationId: UUID, since date: Date?) async throws -> [DBMessage] {
+        var query = supabase
             .from("messages")
             .select()
             .eq("conversation_id", value: conversationId.uuidString)
+
+        if let date {
+            query = query.gt("timestamp", value: isoFormatter.string(from: date))
+        }
+
+        return try await query
             .order("timestamp", ascending: true)
             .execute()
             .value
@@ -341,6 +351,44 @@ final class ChatService {
         }
 
         return channel
+    }
+
+    /// Lightweight polling fallback for environments without realtime.
+    func startPollingMessages(
+        conversationId: UUID,
+        lastTimestamp: Date?,
+        interval: TimeInterval = 10,
+        onBatch: @escaping (Result<[DBMessage], Error>) -> Void
+    ) -> Task<Void, Never> {
+        Task {
+            var latestSeen = lastTimestamp
+
+            while !Task.isCancelled {
+                do {
+                    let newMessages = try await fetchMessages(
+                        conversationId: conversationId,
+                        since: latestSeen
+                    )
+
+                    if let maxTimestamp = newMessages.map({ $0.timestamp }).max() {
+                        latestSeen = maxTimestamp
+                    }
+
+                    if !newMessages.isEmpty {
+                        await MainActor.run {
+                            onBatch(.success(newMessages))
+                        }
+                    }
+                } catch {
+                    await MainActor.run {
+                        onBatch(.failure(error))
+                    }
+                }
+
+                // Sleep to avoid hammering the free-tier limits.
+                try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
+            }
+        }
     }
 
 }

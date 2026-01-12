@@ -16,6 +16,7 @@ class TrainerClientsChatViewController: UIViewController {
     private var messages: [Message] = []
     private var conversation: Conversation?
     private var realtimeChannel: RealtimeChannelV2?
+    private var pollingTask: Task<Void, Never>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,6 +38,15 @@ class TrainerClientsChatViewController: UIViewController {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
         NotificationCenter.default.removeObserver(self)
+    }
+
+    deinit {
+        Task { [realtimeChannel] in
+            await realtimeChannel?.unsubscribe()
+        }
+        realtimeChannel = nil
+        pollingTask?.cancel()
+        pollingTask = nil
     }
     
     private func setupNavigationBar() {
@@ -119,6 +129,16 @@ class TrainerClientsChatViewController: UIViewController {
                     isFromTrainer: true
                 )
 
+                await MainActor.run {
+                    if self.messages.contains(where: { $0.id == message.id }) == false {
+                        self.messages.insert(message, at: 0)
+                        self.tableView.beginUpdates()
+                        let indexPath = IndexPath(row: 0, section: 0)
+                        self.tableView.insertRows(at: [indexPath], with: .automatic)
+                        self.tableView.endUpdates()
+                    }
+                }
+
             } catch {
                 print("[TrainerClientsChatViewController] Failed to send message: \(error)")
             }
@@ -182,6 +202,54 @@ private extension TrainerClientsChatViewController {
                 }
             case .failure(let error):
                 print("[TrainerClientsChatViewController] Realtime error: \(error)")
+                self.startPolling(for: conversationId)
+            }
+        }
+    }
+
+    func startPolling(for conversationId: UUID) {
+        pollingTask?.cancel()
+
+        let latestDate = messages.first.flatMap { ISO8601DateFormatter().date(from: $0.timestamp) }
+
+        pollingTask = ChatService.shared.startPollingMessages(
+            conversationId: conversationId,
+            lastTimestamp: latestDate,
+            interval: 10
+        ) { [weak self] result in
+            guard let self else { return }
+
+            switch result {
+            case .success(let dbMessages):
+                let newMessages: [Message] = dbMessages
+                    .filter { db in
+                        self.messages.contains(where: { $0.id == db.id.uuidString }) == false
+                    }
+                    .map { db in
+                        Message(
+                            id: db.id.uuidString,
+                            senderId: db.senderId.uuidString,
+                            senderName: db.senderName ?? "",
+                            senderImage: db.senderImage ?? "",
+                            text: db.text,
+                            timestamp: ChatService.shared.isoString(from: db.timestamp),
+                            isFromTrainer: db.isFromTrainer
+                        )
+                    }
+
+                if newMessages.isEmpty { return }
+
+                Task { @MainActor in
+                    for message in newMessages.reversed() {
+                        self.messages.insert(message, at: 0)
+                        let indexPath = IndexPath(row: 0, section: 0)
+                        self.tableView.beginUpdates()
+                        self.tableView.insertRows(at: [indexPath], with: .automatic)
+                        self.tableView.endUpdates()
+                    }
+                }
+            case .failure(let error):
+                print("[TrainerClientsChatViewController] Polling error: \(error)")
             }
         }
     }

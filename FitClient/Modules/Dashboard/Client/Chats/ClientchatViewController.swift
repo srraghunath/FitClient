@@ -18,6 +18,7 @@ class ClientchatViewController: UIViewController {
     private var messages: [ChatMessage] = []
     private var conversation: Conversation?
     private var realtimeChannel: RealtimeChannelV2?
+    private var pollingTask: Task<Void, Never>?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,6 +35,8 @@ class ClientchatViewController: UIViewController {
             await realtimeChannel?.unsubscribe()
         }
         realtimeChannel = nil
+        pollingTask?.cancel()
+        pollingTask = nil
     }
 
     private func setupUI() {
@@ -170,8 +173,24 @@ class ClientchatViewController: UIViewController {
                 print("   ↳ id:", dbMessage.id)
                 print("   ↳ text:", dbMessage.text)
 
-                // ⚠️ DO NOT update UI here
-                // Realtime must echo it back
+                let chatMessage = ChatMessage(
+                    id: dbMessage.id.uuidString,
+                    senderId: dbMessage.senderId.uuidString,
+                    senderName: dbMessage.senderName ?? clientContext.name,
+                    senderImage: (dbMessage.senderImage ?? clientContext.imageURL)!,
+                    message: dbMessage.text,
+                    timestamp: ChatService.shared.isoString(from: dbMessage.timestamp),
+                    isClient: dbMessage.isFromTrainer == false
+                )
+
+                await MainActor.run {
+                    // Optimistic insert to avoid waiting on realtime echo.
+                    if self.messages.contains(where: { $0.id == chatMessage.id }) == false {
+                        self.messages.append(chatMessage)
+                        self.messagesTableView.reloadData()
+                        self.scrollToBottom()
+                    }
+                }
 
             } catch {
                 print("🔴 [ClientChat] FAILED to send message:", error)
@@ -269,6 +288,49 @@ extension ClientchatViewController {
 
             case .failure(let error):
                 print("🔴 [ClientChat] Realtime error:", error)
+                self.startPolling(for: conversationId)
+            }
+        }
+    }
+
+    fileprivate func startPolling(for conversationId: UUID) {
+        pollingTask?.cancel()
+
+        let lastTimestamp = messages.last?.timestampDate
+        pollingTask = ChatService.shared.startPollingMessages(
+            conversationId: conversationId,
+            lastTimestamp: lastTimestamp,
+            interval: 10
+        ) { [weak self] result in
+            guard let self else { return }
+
+            switch result {
+            case .success(let dbMessages):
+                let newMessages = dbMessages
+                    .filter { db in
+                        self.messages.contains(where: { $0.id == db.id.uuidString }) == false
+                    }
+                    .map { db in
+                        ChatMessage(
+                            id: db.id.uuidString,
+                            senderId: db.senderId.uuidString,
+                            senderName: db.senderName ?? "",
+                            senderImage: db.senderImage ?? "",
+                            message: db.text,
+                            timestamp: ChatService.shared.isoString(from: db.timestamp),
+                            isClient: db.isFromTrainer == false
+                        )
+                    }
+
+                if newMessages.isEmpty { return }
+
+                Task { @MainActor in
+                    self.messages.append(contentsOf: newMessages)
+                    self.messagesTableView.reloadData()
+                    self.scrollToBottom()
+                }
+            case .failure(let error):
+                print("[ClientchatViewController] Polling error:", error)
             }
         }
     }
