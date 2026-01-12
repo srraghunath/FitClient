@@ -294,7 +294,7 @@ final class ChatService {
         Task {
             print("🟡 [Realtime] Task started for channel:", channelName)
 
-            var decoder = JSONDecoder()
+            let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
 
             print("🟡 [Realtime] Registering postgresChange listener")
@@ -303,7 +303,7 @@ final class ChatService {
                 InsertAction.self,
                 schema: "public",
                 table: "messages",
-                filter: "conversation_id=eq.\(conversationId.uuidString)"
+                filter: .eq("conversation_id", value: conversationId.uuidString)
             )
 
             print("🟡 [Realtime] Listener registered, now subscribing…")

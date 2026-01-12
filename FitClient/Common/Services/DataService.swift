@@ -122,17 +122,29 @@ class DataService {
     // MARK: - Client Schedules
     
     func loadClientSchedule(forClientId clientId: String, completion: @escaping (Result<ClientScheduleData, Error>) -> Void) {
-        guard let url = Bundle.main.url(forResource: "clientSchedulesData", withExtension: "json") else {
-            completion(.failure(DataServiceError.fileNotFound("clientSchedulesData.json")))
-            return
-        }
-        
-        do {
+        // Prefer persisted copy in Documents (written by schedule save), fallback to bundled JSON.
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first
+        let documentsFile = documentsURL?.appendingPathComponent("clientSchedulesData.json")
+
+        func load(from url: URL) throws -> ClientSchedulesResponse {
             let data = try Data(contentsOf: url)
             let decoder = JSONDecoder()
-            let schedulesResponse = try decoder.decode(ClientSchedulesResponse.self, from: data)
-            
-            if let schedule = schedulesResponse.schedules.first(where: { $0.clientId == clientId }) {
+            return try decoder.decode(ClientSchedulesResponse.self, from: data)
+        }
+
+        do {
+            let response: ClientSchedulesResponse
+            if let doc = documentsFile, fileManager.fileExists(atPath: doc.path) {
+                response = try load(from: doc)
+            } else if let bundleURL = Bundle.main.url(forResource: "clientSchedulesData", withExtension: "json") {
+                response = try load(from: bundleURL)
+            } else {
+                completion(.failure(DataServiceError.fileNotFound("clientSchedulesData.json")))
+                return
+            }
+
+            if let schedule = response.schedules.first(where: { $0.clientId == clientId }) {
                 completion(.success(schedule))
             } else {
                 completion(.failure(DataServiceError.clientScheduleNotFound(clientId)))

@@ -601,12 +601,4 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if tableView == dayTrackerTableView {
-            dayTrackerItems[indexPath.row].isCompleted.toggle()
-            tableView.reloadRows(at: [indexPath], with: .automatic)
-        } else if tableView == dietTableView {
-            // No selection behavior for diet in this screen
-        }
-    }
 }

@@ -129,6 +129,7 @@ class TrainerSessionsViewController: UIViewController {
     }
     
     @objc private func selectDateTapped() {
+        view.window?.endEditing(true)
         dateChanged()
         dismiss(animated: true) { [weak self] in
             self?.resetCalendarButtonAppearance()
@@ -223,9 +224,12 @@ class TrainerSessionsViewController: UIViewController {
 
         todaySessions = allSessions.filter { $0.date == selectedDateString }
 
-        upcomingSessions = allSessions.filter { session in
-            guard let sessionDate = dateFormatter.date(from: session.date) else { return false }
-            return sessionDate > date
+        // Only show the next day's sessions in the Upcoming section (tomorrow), per expected UX
+        if let tomorrow = calendar.date(byAdding: .day, value: 1, to: date) {
+            let tomorrowString = dateFormatter.string(from: tomorrow)
+            upcomingSessions = allSessions.filter { $0.date == tomorrowString }
+        } else {
+            upcomingSessions = []
         }
 
         sessionsTableView.reloadData()

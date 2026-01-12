@@ -129,14 +129,18 @@ class TrainerClientProfileViewController: UIViewController {
                 switch result {
                 case .success(let profile):
                     self?.clientProfile = profile
-                    self?.updateProfileUI()
-                    self?.recentActivitiesTableView.reloadData()
-                    self?.updateTableHeight()
-                case .failure(let error):
-                    print("Error loading profile: \(error)")  // Debug log
-                    self?.showAlert(title: "Error", 
-                                  message: "Unable to load client profile. Please try again later.")
+                case .failure:
+                    // Graceful fallback for Supabase-backed clients without local JSON profile
+                    let placeholder = ClientProfile(
+                        totalActiveDays: 0,
+                        consecutiveActiveDays: 0,
+                        recentActivities: []
+                    )
+                    self?.clientProfile = placeholder
                 }
+                self?.updateProfileUI()
+                self?.recentActivitiesTableView.reloadData()
+                self?.updateTableHeight()
             }
         }
     }
@@ -196,22 +200,16 @@ class TrainerClientProfileViewController: UIViewController {
         // Add as child view controller
         addChild(scheduleVC)
         
-        // Get the scroll view's content view (if it exists in your layout) or the recentActivitiesTableView's parent view
-        if let scrollView = recentActivitiesTableView.superview as? UIScrollView {
-            scheduleVC.view.frame = scrollView.bounds
-            scrollView.addSubview(scheduleVC.view)
-        } else if let parentView = recentActivitiesTableView.superview {
-            scheduleVC.view.translatesAutoresizingMaskIntoConstraints = false
-            parentView.addSubview(scheduleVC.view)
-            
-            // Constrain to match table view
-            NSLayoutConstraint.activate([
-                scheduleVC.view.leadingAnchor.constraint(equalTo: parentView.leadingAnchor),
-                scheduleVC.view.trailingAnchor.constraint(equalTo: parentView.trailingAnchor),
-                scheduleVC.view.topAnchor.constraint(equalTo: parentView.topAnchor),
-                scheduleVC.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor)
-            ])
-        }
+        // Attach to parent view with full-edge constraints to maintain full height layout
+        guard let parentView = recentActivitiesTableView.superview else { return }
+        scheduleVC.view.translatesAutoresizingMaskIntoConstraints = false
+        parentView.addSubview(scheduleVC.view)
+        NSLayoutConstraint.activate([
+            scheduleVC.view.leadingAnchor.constraint(equalTo: parentView.leadingAnchor),
+            scheduleVC.view.trailingAnchor.constraint(equalTo: parentView.trailingAnchor),
+            scheduleVC.view.topAnchor.constraint(equalTo: parentView.topAnchor),
+            scheduleVC.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor)
+        ])
         
         scheduleVC.didMove(toParent: self)
         self.currentChildViewController = scheduleVC
@@ -227,22 +225,15 @@ class TrainerClientProfileViewController: UIViewController {
         // Add as child view controller
         addChild(progressVC)
         
-        // Get the scroll view's content view (if it exists in your layout) or the recentActivitiesTableView's parent view
-        if let scrollView = recentActivitiesTableView.superview as? UIScrollView {
-            progressVC.view.frame = scrollView.bounds
-            scrollView.addSubview(progressVC.view)
-        } else if let parentView = recentActivitiesTableView.superview {
-            progressVC.view.translatesAutoresizingMaskIntoConstraints = false
-            parentView.addSubview(progressVC.view)
-            
-            // Constrain to match table view
-            NSLayoutConstraint.activate([
-                progressVC.view.leadingAnchor.constraint(equalTo: parentView.leadingAnchor),
-                progressVC.view.trailingAnchor.constraint(equalTo: parentView.trailingAnchor),
-                progressVC.view.topAnchor.constraint(equalTo: parentView.topAnchor),
-                progressVC.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor)
-            ])
-        }
+        guard let parentView = recentActivitiesTableView.superview else { return }
+        progressVC.view.translatesAutoresizingMaskIntoConstraints = false
+        parentView.addSubview(progressVC.view)
+        NSLayoutConstraint.activate([
+            progressVC.view.leadingAnchor.constraint(equalTo: parentView.leadingAnchor),
+            progressVC.view.trailingAnchor.constraint(equalTo: parentView.trailingAnchor),
+            progressVC.view.topAnchor.constraint(equalTo: parentView.topAnchor),
+            progressVC.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor)
+        ])
         
         progressVC.didMove(toParent: self)
         self.currentChildViewController = progressVC

@@ -157,7 +157,7 @@
                                     <rect key="frame" x="0.0" y="258.66666666666663" width="393" height="334"/>
                                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="0.0" id="table-height"/>
+                                        <constraint firstAttribute="height" constant="334" id="table-height"/>
                                     </constraints>
                                 </tableView>
                             </subviews>

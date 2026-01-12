@@ -48,6 +48,9 @@ class TrainerClientProfileScheduleViewController: UIViewController {
                 self?.showWorkoutModal()
             }
         }
+
+        // Ensure no stray keyboards linger when presenting this view
+        view.window?.endEditing(true)
     }
     
     // MARK: - Setup Methods
@@ -252,18 +255,14 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         guard let dayData = scheduleData.weekSchedule[dayName] else { 
             return false 
         }
-        
-        // Check if day is active AND all 5 required fields are filled
+
         guard dayData.isActive else { return false }
-        
-        let hasWorkouts = !dayData.selectedWorkoutIds.isEmpty
+
         let hasSleep = dayData.sleepHours > 0
         let hasWater = dayData.waterIntake > 0
-        let hasDiet = !dayData.selectedDietItems.isEmpty
         let hasCardio = !dayData.cardioNotes.isEmpty
-        
-        // All 5 tasks must be completed for green
-        return hasWorkouts && hasSleep && hasWater && hasDiet && hasCardio
+
+        return hasSleep && hasWater && hasCardio
     }
     
     private func getDayName(from weekday: Weekday) -> String {
@@ -292,19 +291,23 @@ class TrainerClientProfileScheduleViewController: UIViewController {
     // MARK: - Data Loading
     private func loadScheduleData() {
         guard let clientId = clientId else { return }
-        
-        DataService.shared.loadClientSchedule(forClientId: clientId) { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let scheduleData):
-                    self?.clientScheduleData = scheduleData
-                    self?.updateAllWeekdayButtons()
-                    self?.loadDayData(for: self?.selectedDay ?? .monday)
-                case .failure(let error):
-                    self?.showAlert(title: "Error", message: "Failed to load schedule data: \(error.localizedDescription)")
-                }
-            }
+
+        // Build an empty in-memory schedule; actual values are fetched per-day from Supabase
+        let emptyWeek: [String: DayScheduleData] = Weekday.allCases.reduce(into: [:]) { dict, weekday in
+            dict[self.getDayName(from: weekday)] = DayScheduleData(
+                isActive: true,
+                sleepHours: 7.0,
+                waterIntake: 2.0,
+                cardioNotes: "",
+                selectedWorkoutIds: [],
+                workoutDetails: [],
+                selectedDietItems: []
+            )
         }
+
+        clientScheduleData = ClientScheduleData(clientId: clientId, weekSchedule: emptyWeek)
+        updateAllWeekdayButtons()
+        loadDayData(for: selectedDay)
     }
     
     private func loadWorkoutCatalog() {
@@ -328,6 +331,55 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         let dayName = getDayName(from: weekday)
         currentDayData = scheduleData.weekSchedule[dayName]
         scheduleTableView.reloadData()
+
+        fetchPlanFromSupabase(for: weekday)
+    }
+
+    private func fetchPlanFromSupabase(for weekday: Weekday) {
+        guard let clientId = clientId, let uuid = UUID(uuidString: clientId), var scheduleData = clientScheduleData else { return }
+
+        let dayNumber = weekday.index + 1
+
+        DayPlanService.shared.fetchPlan(for: uuid, dayOfWeek: dayNumber) { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+
+                switch result {
+                case .success(let plan):
+                    let dayName = self.getDayName(from: weekday)
+                    let existing = scheduleData.weekSchedule[dayName] ?? DayScheduleData(
+                        isActive: true,
+                        sleepHours: 7.0,
+                        waterIntake: 2.0,
+                        cardioNotes: "",
+                        selectedWorkoutIds: [],
+                        workoutDetails: [],
+                        selectedDietItems: []
+                    )
+
+                    let updatedDay = DayScheduleData(
+                        isActive: existing.isActive,
+                        sleepHours: plan?.sleepHours ?? existing.sleepHours,
+                        waterIntake: plan?.waterLiters ?? existing.waterIntake,
+                        cardioNotes: plan?.cardioNotes ?? existing.cardioNotes,
+                        selectedWorkoutIds: existing.selectedWorkoutIds,
+                        workoutDetails: existing.workoutDetails,
+                        selectedDietItems: existing.selectedDietItems
+                    )
+
+                    scheduleData.weekSchedule[dayName] = updatedDay
+                    self.clientScheduleData = scheduleData
+                    if self.selectedDay == weekday {
+                        self.currentDayData = updatedDay
+                    }
+                    self.scheduleTableView.reloadData()
+                    self.updateAllWeekdayButtons()
+
+                case .failure(let error):
+                    self.logDebug("Failed to fetch plan: \(error.localizedDescription)")
+                }
+            }
+        }
     }
     
     private func updateAllWeekdayButtons() {
@@ -428,51 +480,68 @@ class TrainerClientProfileScheduleViewController: UIViewController {
     }
     
     @IBAction func saveButtonTapped(_ sender: Any) {
-        // Save to JSON file
-        saveScheduleToJSON()
-        
-        // Show success feedback
-        let alert = UIAlertController(
-            title: "Success",
-            message: "Schedule saved successfully!",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
-    
-    private func saveScheduleToJSON() {
-        guard let schedule = clientScheduleData,
-              let fileURL = Bundle.main.url(forResource: "clientSchedulesData", withExtension: "json") else {
+        guard let clientId = clientId, let uuid = UUID(uuidString: clientId), let dayData = currentDayData else {
             return
         }
-        
-        do {
-            // Read existing data
-            let data = try Data(contentsOf: fileURL)
-            var response = try JSONDecoder().decode(ClientSchedulesResponse.self, from: data)
-            
-            // Update or add this client's schedule
-            if let index = response.schedules.firstIndex(where: { $0.clientId == schedule.clientId }) {
-                response.schedules[index] = schedule
-            } else {
-                response.schedules.append(schedule)
+
+        let dayNumber = selectedDay.index + 1
+
+        DayPlanService.shared.savePlan(
+            for: uuid,
+            dayOfWeek: dayNumber,
+            sleepHours: dayData.sleepHours,
+            waterLiters: dayData.waterIntake,
+            cardioNotes: dayData.cardioNotes
+        ) { [weak self] error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    let alert = UIAlertController(title: "Save Failed", message: error.localizedDescription, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self?.present(alert, animated: true)
+                } else {
+                    self?.showSaveBanner()
+                    self?.updateAllWeekdayButtons()
+                }
             }
-            
-            // Write back to file
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-            let jsonData = try encoder.encode(response)
-            
-            // Get writable path in Documents directory
-            let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let writableURL = documentsPath.appendingPathComponent("clientSchedulesData.json")
-            try jsonData.write(to: writableURL)
-            
-            print("✅ Schedule saved to: \(writableURL.path)")
-        } catch {
-            print("❌ Error saving schedule: \(error)")
         }
+    }
+
+    private func showSaveBanner() {
+        // Lightweight success banner with primaryGreen background
+        let banner = UIView()
+        banner.backgroundColor = .primaryGreen
+        banner.layer.cornerRadius = 12
+        banner.layer.masksToBounds = true
+        banner.alpha = 0.0
+
+        let label = UILabel()
+        label.text = "Saved"
+        label.textColor = .black
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        banner.translatesAutoresizingMaskIntoConstraints = false
+        banner.addSubview(label)
+        view.addSubview(banner)
+
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: banner.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: banner.centerYAnchor),
+            banner.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            banner.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            banner.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            banner.heightAnchor.constraint(equalToConstant: 44)
+        ])
+
+        UIView.animate(withDuration: 0.2, animations: {
+            banner.alpha = 1.0
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.2, delay: 1.2, options: [], animations: {
+                banner.alpha = 0.0
+            }, completion: { _ in
+                banner.removeFromSuperview()
+            })
+        })
     }
     
     // MARK: - Debug Logging
