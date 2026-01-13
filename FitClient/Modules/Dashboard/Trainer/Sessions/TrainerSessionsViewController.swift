@@ -337,7 +337,7 @@ extension TrainerSessionsViewController: UITableViewDelegate {
         let session = indexPath.section == 0 ? todaySessions[indexPath.row] : upcomingSessions[indexPath.row]
         
         // Create and configure TrainerClientProfileViewController
-        let profileVC = TrainerClientProfileViewController()
+        let profileVC = TrainerClientProfileViewController(nibName: "TrainerClientProfileViewController", bundle: nil)
         profileVC.client = session.client
         navigationController?.pushViewController(profileVC, animated: true)
     }

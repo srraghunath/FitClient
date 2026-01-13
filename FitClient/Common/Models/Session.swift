@@ -22,6 +22,7 @@ struct Session: Codable {
             age: nil,
             gender: nil,
             goal: "Fitness Goals",
+            profileImageURL: clientProfileImage,
             created_at: Date()
         )
     }

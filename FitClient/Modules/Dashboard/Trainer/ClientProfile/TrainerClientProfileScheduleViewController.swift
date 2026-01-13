@@ -247,6 +247,15 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         }
     }
     
+    private func dayHasContent(_ dayData: DayScheduleData) -> Bool {
+        let hasSleep = dayData.sleepHours > 0
+        let hasWater = dayData.waterIntake > 0
+        let hasCardio = !dayData.cardioNotes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let hasWorkouts = !dayData.selectedWorkoutIds.isEmpty
+        let hasDiet = !dayData.selectedDietItems.isEmpty
+        return hasSleep || hasWater || hasCardio || hasWorkouts || hasDiet
+    }
+    
     private func hasScheduleData(for weekday: Weekday) -> Bool {
         guard let scheduleData = clientScheduleData else { 
             return false 
@@ -256,13 +265,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
             return false 
         }
 
-        guard dayData.isActive else { return false }
-
-        let hasSleep = dayData.sleepHours > 0
-        let hasWater = dayData.waterIntake > 0
-        let hasCardio = !dayData.cardioNotes.isEmpty
-
-        return hasSleep && hasWater && hasCardio
+        return dayHasContent(dayData)
     }
     
     private func getDayName(from weekday: Weekday) -> String {
@@ -295,9 +298,9 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         // Build an empty in-memory schedule; actual values are fetched per-day from Supabase
         let emptyWeek: [String: DayScheduleData] = Weekday.allCases.reduce(into: [:]) { dict, weekday in
             dict[self.getDayName(from: weekday)] = DayScheduleData(
-                isActive: true,
-                sleepHours: 7.0,
-                waterIntake: 2.0,
+                isActive: false,
+                sleepHours: 0,
+                waterIntake: 0,
                 cardioNotes: "",
                 selectedWorkoutIds: [],
                 workoutDetails: [],
@@ -307,6 +310,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
 
         clientScheduleData = ClientScheduleData(clientId: clientId, weekSchedule: emptyWeek)
         updateAllWeekdayButtons()
+        fetchPlansForAllDays()
         loadDayData(for: selectedDay)
     }
     
@@ -335,29 +339,35 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         fetchPlanFromSupabase(for: weekday)
     }
 
+    private func fetchPlansForAllDays() {
+        Weekday.allCases.forEach { weekday in
+            fetchPlanFromSupabase(for: weekday)
+        }
+    }
+
     private func fetchPlanFromSupabase(for weekday: Weekday) {
-        guard let clientId = clientId, let uuid = UUID(uuidString: clientId), var scheduleData = clientScheduleData else { return }
+        guard let clientId = clientId, let uuid = UUID(uuidString: clientId) else { return }
 
         let dayNumber = weekday.index + 1
 
         DayPlanService.shared.fetchPlan(for: uuid, dayOfWeek: dayNumber) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else { return }
-
+                let currentSchedule = self.clientScheduleData ?? ClientScheduleData(clientId: clientId, weekSchedule: [:])
                 switch result {
                 case .success(let plan):
                     let dayName = self.getDayName(from: weekday)
-                    let existing = scheduleData.weekSchedule[dayName] ?? DayScheduleData(
-                        isActive: true,
-                        sleepHours: 7.0,
-                        waterIntake: 2.0,
+                    let existing = currentSchedule.weekSchedule[dayName] ?? DayScheduleData(
+                        isActive: false,
+                        sleepHours: 0,
+                        waterIntake: 0,
                         cardioNotes: "",
                         selectedWorkoutIds: [],
                         workoutDetails: [],
                         selectedDietItems: []
                     )
 
-                    let updatedDay = DayScheduleData(
+                    let mergedDay = DayScheduleData(
                         isActive: existing.isActive,
                         sleepHours: plan?.sleepHours ?? existing.sleepHours,
                         waterIntake: plan?.waterLiters ?? existing.waterIntake,
@@ -367,12 +377,23 @@ class TrainerClientProfileScheduleViewController: UIViewController {
                         selectedDietItems: existing.selectedDietItems
                     )
 
-                    scheduleData.weekSchedule[dayName] = updatedDay
-                    self.clientScheduleData = scheduleData
+                    let updatedDay = DayScheduleData(
+                        isActive: self.dayHasContent(mergedDay),
+                        sleepHours: mergedDay.sleepHours,
+                        waterIntake: mergedDay.waterIntake,
+                        cardioNotes: mergedDay.cardioNotes,
+                        selectedWorkoutIds: mergedDay.selectedWorkoutIds,
+                        workoutDetails: mergedDay.workoutDetails,
+                        selectedDietItems: mergedDay.selectedDietItems
+                    )
+
+                    var updatedSchedule = currentSchedule
+                    updatedSchedule.weekSchedule[dayName] = updatedDay
+                    self.clientScheduleData = updatedSchedule
                     if self.selectedDay == weekday {
                         self.currentDayData = updatedDay
+                        self.scheduleTableView.reloadData()
                     }
-                    self.scheduleTableView.reloadData()
                     self.updateAllWeekdayButtons()
 
                 case .failure(let error):
@@ -437,12 +458,11 @@ class TrainerClientProfileScheduleViewController: UIViewController {
     }
     
     private func clearCurrentDaySchedule() {
-        guard let scheduleData = clientScheduleData else { return }
+        guard var scheduleData = clientScheduleData, let clientId = clientId, let uuid = UUID(uuidString: clientId) else { return }
         let dayName = getDayName(from: selectedDay)
         
         // Update the schedule data
-        var updatedSchedule = scheduleData
-        updatedSchedule.weekSchedule[dayName] = DayScheduleData(
+        let clearedDay = DayScheduleData(
             isActive: false,
             sleepHours: 0,
             waterIntake: 0,
@@ -451,9 +471,12 @@ class TrainerClientProfileScheduleViewController: UIViewController {
             workoutDetails: [],
             selectedDietItems: []
         )
+
+        var updatedSchedule = scheduleData
+        updatedSchedule.weekSchedule[dayName] = clearedDay
         
         clientScheduleData = updatedSchedule
-        currentDayData = updatedSchedule.weekSchedule[dayName]
+        currentDayData = clearedDay
         
         // Update UI
         updateAllWeekdayButtons()
@@ -461,6 +484,23 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         
         // Persist changes
         persistSchedule()
+
+        // Also persist the cleared state to Supabase so it stays cleared
+        DayPlanService.shared.savePlan(
+            for: uuid,
+            dayOfWeek: selectedDay.index + 1,
+            sleepHours: 0,
+            waterLiters: 0,
+            cardioNotes: ""
+        ) { [weak self] error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self?.logDebug("Failed to clear remote plan: \(error.localizedDescription)")
+                } else {
+                    self?.logDebug("Cleared plan for \(dayName) on Supabase")
+                }
+            }
+        }
     }
     
     // MARK: - Button Actions
@@ -569,6 +609,9 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         
         if let encoded = try? JSONEncoder().encode(schedule) {
             UserDefaults.standard.set(encoded, forKey: "ClientSchedule_\(schedule.clientId)")
+            DispatchQueue.main.async { [weak self] in
+                self?.updateAllWeekdayButtons()
+            }
         }
     }
 }
@@ -786,7 +829,17 @@ extension TrainerClientProfileScheduleViewController: UITableViewDelegate {
         
         // Update the day data with new workout selections
         let updatedDayData = DayScheduleData(
-            isActive: dayData.isActive,
+            isActive: dayHasContent(
+                DayScheduleData(
+                    isActive: dayData.isActive,
+                    sleepHours: dayData.sleepHours,
+                    waterIntake: dayData.waterIntake,
+                    cardioNotes: dayData.cardioNotes,
+                    selectedWorkoutIds: selectedIds,
+                    workoutDetails: filteredDetails,
+                    selectedDietItems: dayData.selectedDietItems
+                )
+            ),
             sleepHours: dayData.sleepHours,
             waterIntake: dayData.waterIntake,
             cardioNotes: dayData.cardioNotes,
@@ -810,7 +863,17 @@ extension TrainerClientProfileScheduleViewController: UITableViewDelegate {
         
         // Update the day data with new diet selections
         let updatedDayData = DayScheduleData(
-            isActive: dayData.isActive,
+            isActive: dayHasContent(
+                DayScheduleData(
+                    isActive: dayData.isActive,
+                    sleepHours: dayData.sleepHours,
+                    waterIntake: dayData.waterIntake,
+                    cardioNotes: dayData.cardioNotes,
+                    selectedWorkoutIds: dayData.selectedWorkoutIds,
+                    workoutDetails: dayData.workoutDetails,
+                    selectedDietItems: selectedDietItems
+                )
+            ),
             sleepHours: dayData.sleepHours,
             waterIntake: dayData.waterIntake,
             cardioNotes: dayData.cardioNotes,
@@ -856,7 +919,17 @@ extension TrainerClientProfileScheduleViewController: SliderCardCellDelegate {
         // Update the appropriate value
         if sliderItem.id == "sleep" {
             dayData = DayScheduleData(
-                isActive: dayData.isActive,
+                isActive: dayHasContent(
+                    DayScheduleData(
+                        isActive: dayData.isActive,
+                        sleepHours: value,
+                        waterIntake: dayData.waterIntake,
+                        cardioNotes: dayData.cardioNotes,
+                        selectedWorkoutIds: dayData.selectedWorkoutIds,
+                        workoutDetails: dayData.workoutDetails,
+                        selectedDietItems: dayData.selectedDietItems
+                    )
+                ),
                 sleepHours: value,
                 waterIntake: dayData.waterIntake,
                 cardioNotes: dayData.cardioNotes,
@@ -866,7 +939,17 @@ extension TrainerClientProfileScheduleViewController: SliderCardCellDelegate {
             )
         } else if sliderItem.id == "water" {
             dayData = DayScheduleData(
-                isActive: dayData.isActive,
+                isActive: dayHasContent(
+                    DayScheduleData(
+                        isActive: dayData.isActive,
+                        sleepHours: dayData.sleepHours,
+                        waterIntake: value,
+                        cardioNotes: dayData.cardioNotes,
+                        selectedWorkoutIds: dayData.selectedWorkoutIds,
+                        workoutDetails: dayData.workoutDetails,
+                        selectedDietItems: dayData.selectedDietItems
+                    )
+                ),
                 sleepHours: dayData.sleepHours,
                 waterIntake: value,
                 cardioNotes: dayData.cardioNotes,
@@ -895,7 +978,17 @@ extension TrainerClientProfileScheduleViewController: CardioInputCellDelegate {
         
         // Update cardio notes
         dayData = DayScheduleData(
-            isActive: dayData.isActive,
+            isActive: dayHasContent(
+                DayScheduleData(
+                    isActive: dayData.isActive,
+                    sleepHours: dayData.sleepHours,
+                    waterIntake: dayData.waterIntake,
+                    cardioNotes: text,
+                    selectedWorkoutIds: dayData.selectedWorkoutIds,
+                    workoutDetails: dayData.workoutDetails,
+                    selectedDietItems: dayData.selectedDietItems
+                )
+            ),
             sleepHours: dayData.sleepHours,
             waterIntake: dayData.waterIntake,
             cardioNotes: text,
