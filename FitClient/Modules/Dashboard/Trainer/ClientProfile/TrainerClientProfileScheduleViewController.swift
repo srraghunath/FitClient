@@ -348,7 +348,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
     private func fetchPlanFromSupabase(for weekday: Weekday) {
         guard let clientId = clientId, let uuid = UUID(uuidString: clientId) else { return }
 
-        let dayNumber = weekday.index + 1
+        let dayNumber = weekday.index
 
         DayPlanService.shared.fetchPlan(for: uuid, dayOfWeek: dayNumber) { [weak self] result in
             DispatchQueue.main.async {
@@ -524,7 +524,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
             return
         }
 
-        let dayNumber = selectedDay.index + 1
+        let dayNumber = selectedDay.index
 
         DayPlanService.shared.savePlan(
             for: uuid,
