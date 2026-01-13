@@ -458,7 +458,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
     }
     
     private func clearCurrentDaySchedule() {
-        guard var scheduleData = clientScheduleData, let clientId = clientId, let uuid = UUID(uuidString: clientId) else { return }
+        guard let scheduleData = clientScheduleData, let clientId = clientId, let uuid = UUID(uuidString: clientId) else { return }
         let dayName = getDayName(from: selectedDay)
         
         // Update the schedule data

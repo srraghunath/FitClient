@@ -42,6 +42,7 @@ class DashboardViewController: UIViewController {
     private var todayDiet: [TodayMeal] = []
     private var todayDietDetails: [Diet] = [] // mapped Diet models to render with DietCell
     private var dayActivityRecord: DayActivityDTO?
+    private var currentDayPlan: DayPlan?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -236,6 +237,8 @@ class DashboardViewController: UIViewController {
         // Set stat values
         totalActiveDaysValueLabel.text = "12 Days"
         consecutiveDaysValueLabel.text = "7 Days"
+
+        fetchDayPlan(for: date)
         
         // Prefill Day Tracker from data service (existing data if any)
         DayActivityService.shared.fetchActivity(for: date) { [weak self] result in
@@ -278,6 +281,8 @@ class DashboardViewController: UIViewController {
                 }
             }
         }
+
+        fetchDayPlan(for: date)
         
     // Load scheduled workouts for the selected date
         DataService.shared.loadWorkoutsForDate(date) { [weak self] result in
@@ -381,20 +386,76 @@ class DashboardViewController: UIViewController {
         }
     }
 
+    private func fetchDayPlan(for date: Date) {
+        Task {
+            do {
+                let plan = try await DayPlanService.shared.fetchPlanForClient(date: date)
+                DispatchQueue.main.async { [weak self] in
+                    self?.currentDayPlan = plan
+                    self?.rebuildDayTrackerItems()
+                }
+            } catch {
+                DispatchQueue.main.async { [weak self] in
+                    self?.currentDayPlan = nil
+                    self?.rebuildDayTrackerItems()
+                }
+            }
+        }
+    }
+
     private func applyDayActivity(_ record: DayActivityDTO) {
         dayActivityRecord = record
-        dayTrackerItems = makeDayTrackerItems(from: record)
+        rebuildDayTrackerItems()
+    }
+
+    private func rebuildDayTrackerItems() {
+        let record = dayActivityRecord ?? DayActivityDTO(
+            activityDate: isoDate(from: selectedDate),
+            workoutDone: false,
+            cardioDone: false,
+            waterDone: false,
+            dietDone: false,
+            sleepDone: false
+        )
+        dayTrackerItems = makeDayTrackerItems(from: record, plan: currentDayPlan)
         updateUI()
     }
 
-    private func makeDayTrackerItems(from record: DayActivityDTO) -> [DayTrackerItem] {
-        [
+    private func makeDayTrackerItems(from record: DayActivityDTO, plan: DayPlan?) -> [DayTrackerItem] {
+        let cardioSubtitle: String = {
+            let trimmed = (plan?.cardioNotes ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            return trimmed.isEmpty ? "Cardio: Not set" : "Cardio: \(trimmed)"
+        }()
+
+        let waterSubtitle: String = {
+            if let water = plan?.waterLiters {
+                return "Water: \(formatDouble(water)) L"
+            }
+            return "Water: Not set"
+        }()
+
+        let sleepSubtitle: String = {
+            if let sleep = plan?.sleepHours {
+                return "Sleep: \(formatDouble(sleep)) hrs"
+            }
+            return "Sleep: Not set"
+        }()
+
+        return [
             DayTrackerItem(icon: "🏋️", title: "Workout", subtitle: "Full body", isCompleted: record.workoutDone),
-            DayTrackerItem(icon: "❤️", title: "Cardio", subtitle: "Running, 30 minutes", isCompleted: record.cardioDone),
-            DayTrackerItem(icon: "💧", title: "Water Intake", subtitle: "8 litres", isCompleted: record.waterDone),
+            DayTrackerItem(icon: "❤️", title: "Cardio", subtitle: cardioSubtitle, isCompleted: record.cardioDone),
+            DayTrackerItem(icon: "💧", title: "Water Intake", subtitle: waterSubtitle, isCompleted: record.waterDone),
             DayTrackerItem(icon: "🍽", title: "Diet Plan", subtitle: "Balanced", isCompleted: record.dietDone),
-            DayTrackerItem(icon: "🌙", title: "Sleep Cycle", subtitle: "8 hours", isCompleted: record.sleepDone)
+            DayTrackerItem(icon: "🌙", title: "Sleep Cycle", subtitle: sleepSubtitle, isCompleted: record.sleepDone)
         ]
+    }
+
+    private func formatDouble(_ value: Double) -> String {
+        let rounded = (value * 10).rounded() / 10
+        if rounded.truncatingRemainder(dividingBy: 1) == 0 {
+            return String(format: "%.0f", rounded)
+        }
+        return String(format: "%.1f", rounded)
     }
 
     private func isFutureDate(_ date: Date) -> Bool {
@@ -402,6 +463,12 @@ class DashboardViewController: UIViewController {
         let startOfSelected = calendar.startOfDay(for: date)
         let startOfToday = calendar.startOfDay(for: Date())
         return startOfSelected > startOfToday
+    }
+
+    private func isoDate(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
     }
     
     func updateUI() {
@@ -577,7 +644,7 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
         }
 
         dayActivityRecord = record
-        dayTrackerItems = makeDayTrackerItems(from: record)
+        dayTrackerItems = makeDayTrackerItems(from: record, plan: currentDayPlan)
         dayTrackerTableView.reloadRows(at: [indexPath], with: .automatic)
 
         DayActivityService.shared.upsertActivity(for: selectedDate, record: record) { [weak self] result in
@@ -585,14 +652,14 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
             case .success(let saved):
                 DispatchQueue.main.async {
                     self?.dayActivityRecord = saved
-                    self?.dayTrackerItems = self?.makeDayTrackerItems(from: saved) ?? []
+                    self?.dayTrackerItems = self?.makeDayTrackerItems(from: saved, plan: self?.currentDayPlan) ?? []
                     self?.updateUI()
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
                     self?.dayActivityRecord = previousRecord
                     if let previous = self?.dayActivityRecord {
-                        self?.dayTrackerItems = self?.makeDayTrackerItems(from: previous) ?? []
+                        self?.dayTrackerItems = self?.makeDayTrackerItems(from: previous, plan: self?.currentDayPlan) ?? []
                     }
                     self?.updateUI()
                     self?.showAlert(title: "Update Failed", message: error.localizedDescription)

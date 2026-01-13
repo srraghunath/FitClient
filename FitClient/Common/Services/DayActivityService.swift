@@ -23,17 +23,14 @@ final class DayActivityService {
     static let shared = DayActivityService()
     private let supabase = AuthService.shared.supabase
 
-    private struct ActivityDateRequest: Encodable {
-        let p_date: String
-    }
-
-    private struct ActivityUpsertRequest: Encodable {
-        let p_date: String
-        let p_workout: Bool
-        let p_cardio: Bool
-        let p_water: Bool
-        let p_diet: Bool
-        let p_sleep: Bool
+    private struct ActivityTableRow: Encodable {
+        let activity_date: String
+        let workout_done: Bool
+        let cardio_done: Bool
+        let water_done: Bool
+        let diet_done: Bool
+        let sleep_done: Bool
+        let client_id: UUID
     }
 
     private init() {}
@@ -51,8 +48,14 @@ final class DayActivityService {
         let dateString = isoDate(from: date)
         Task {
             do {
+                let clientId = try await ensureClientId()
+
                 let rows: [DayActivityDTO] = try await supabase
-                    .rpc("get_day_activity_for_date", params: ActivityDateRequest(p_date: dateString))
+                    .from("client_day_activity")
+                    .select()
+                    .eq("client_id", value: clientId.uuidString)
+                    .eq("activity_date", value: dateString)
+                    .limit(1)
                     .execute()
                     .value
 
@@ -81,18 +84,29 @@ final class DayActivityService {
     ) {
         Task {
             do {
+                let clientId = try await ensureClientId()
+                let row = ActivityTableRow(
+                    activity_date: isoDate(from: date),
+                    workout_done: record.workoutDone,
+                    cardio_done: record.cardioDone,
+                    water_done: record.waterDone,
+                    diet_done: record.dietDone,
+                    sleep_done: record.sleepDone,
+                    client_id: clientId
+                )
+
+                // Manual upsert to avoid table/constraint ambiguity
+                _ = try await supabase
+                    .from("client_day_activity")
+                    .delete()
+                    .eq("client_id", value: clientId.uuidString)
+                    .eq("activity_date", value: row.activity_date)
+                    .execute()
+
                 let rows: [DayActivityDTO] = try await supabase
-                    .rpc(
-                        "upsert_day_activity",
-                        params: ActivityUpsertRequest(
-                            p_date: isoDate(from: date),
-                            p_workout: record.workoutDone,
-                            p_cardio: record.cardioDone,
-                            p_water: record.waterDone,
-                            p_diet: record.dietDone,
-                            p_sleep: record.sleepDone
-                        )
-                    )
+                    .from("client_day_activity")
+                    .insert(row)
+                    .select()
                     .execute()
                     .value
 
@@ -109,5 +123,16 @@ final class DayActivityService {
                 completion(.failure(error))
             }
         }
+    }
+
+    private func ensureClientId() async throws -> UUID {
+        if let cached = AuthService.shared.cachedRole {
+            if case let .client(_, clientId, _) = cached { return clientId }
+        }
+
+        guard let role = try await AuthService.shared.resolveCurrentRole(), case let .client(_, clientId, _) = role else {
+            throw NSError(domain: "DayActivityService", code: 401, userInfo: [NSLocalizedDescriptionKey: "No client role found for current user"])
+        }
+        return clientId
     }
 }
