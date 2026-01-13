@@ -149,10 +149,7 @@ class TrainerClientProfileViewController: UIViewController {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.recentActivitiesTableView.layoutIfNeeded()
-            let contentHeight = self.recentActivitiesTableView.contentSize.height
-            let targetHeight = min(contentHeight, self.activityTableMaxHeight)
-            self.tableHeightConstraint.constant = targetHeight
-            let shouldScroll = contentHeight > self.activityTableMaxHeight
+            let shouldScroll = true
             self.recentActivitiesTableView.isScrollEnabled = shouldScroll
             self.recentActivitiesTableView.alwaysBounceVertical = shouldScroll
         }
