@@ -38,6 +38,14 @@ final class DayPlanService {
             }
         }
     }
+    
+    private struct UpsertDayPlanParams: Encodable {
+        let p_client_id: String
+        let p_day_of_week: Int
+        let p_sleep_hours: Double
+        let p_water_intake_liters: Double
+        let p_cardio_notes: String
+    }
 
     func savePlan(
         for clientId: UUID,
@@ -49,18 +57,18 @@ final class DayPlanService {
     ) {
         Task {
             do {
-                try await supabase
-                    .rpc(
-                        "upsert_day_plan",
-                        params: [
-                            "p_client_id": clientId.uuidString,
-                            "p_day_of_week": dayOfWeek,
-                            "p_sleep_hours": sleepHours,
-                            "p_water_intake_liters": waterLiters,
-                            "p_cardio_notes": cardioNotes
-                        ]
-                    )
+                let params = UpsertDayPlanParams(
+                    p_client_id: clientId.uuidString,
+                    p_day_of_week: dayOfWeek,
+                    p_sleep_hours: sleepHours,
+                    p_water_intake_liters: waterLiters,
+                    p_cardio_notes: cardioNotes
+                )
+
+                let _: PostgrestResponse<Void> = try await supabase
+                    .rpc("upsert_day_plan", params: params)
                     .execute()
+
                 completion(nil)
             } catch {
                 completion(error)
@@ -68,17 +76,18 @@ final class DayPlanService {
         }
     }
 
+
     // Client-facing fetch based on date (uses auth user)
     func fetchPlanForClient(date: Date) async throws -> DayPlan? {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         let dateString = formatter.string(from: date)
 
-        let response = try await supabase
+        let rows: [DayPlan] = try await supabase
             .rpc("get_client_day_plan", params: ["p_date": dateString])
             .execute()
+            .value
 
-        let rows: [DayPlan] = try response.decoded()
         return rows.first
     }
 }
