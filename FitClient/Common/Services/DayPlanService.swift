@@ -96,12 +96,33 @@ final class DayPlanService {
 
     // Client-facing fetch based on date (uses auth user)
     func fetchPlanForClient(date: Date) async throws -> DayPlan? {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        let dateString = formatter.string(from: date)
+        // Derive weekday index matching trainer save (0 = Monday ... 6 = Sunday)
+        let calendar = Calendar.current
+        let weekdayNumber = calendar.component(.weekday, from: date) // 1 = Sunday ... 7 = Saturday
+        let weekdayIndex = (weekdayNumber + 5) % 7
+
+        guard let authId = supabase.auth.currentUser?.id else {
+            throw NSError(domain: "DayPlanService", code: 401, userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
+        }
+
+        // Map auth user -> client.id (sessions store client_id, not auth user id)
+        struct ClientRow: Decodable { let id: String }
+        let clients: [ClientRow] = try await supabase
+            .from("clients")
+            .select("id")
+            .eq("user_id", value: authId)
+            .limit(1)
+            .execute()
+            .value
+
+        guard let clientId = clients.first?.id else { return nil }
 
         let rows: [DayPlan] = try await supabase
-            .rpc("get_client_day_plan", params: ["p_date": dateString])
+            .from("sessions")
+            .select("day_of_week,sleep_hours,water_intake_liters,cardio_notes,workout_details")
+            .eq("client_id", value: clientId)
+            .eq("day_of_week", value: weekdayIndex)
+            .limit(1)
             .execute()
             .value
 

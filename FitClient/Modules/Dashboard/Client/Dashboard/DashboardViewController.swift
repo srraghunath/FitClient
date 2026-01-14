@@ -426,7 +426,7 @@ class DashboardViewController: UIViewController {
             guard let details = plan?.workoutDetails, !details.isEmpty else { return "Workout: Not set" }
             let first = details[0]
             if let sets = first.targetSets, let reps = first.targetReps {
-                let label = "Workout: \(sets)x\(reps)"
+                let label = "Workout: \(sets) sets of \(reps) reps"
                 if details.count > 1 {
                     return "\(label) • \(details.count) moves"
                 }

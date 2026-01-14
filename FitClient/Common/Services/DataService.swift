@@ -359,30 +359,45 @@ class DataService {
     }
     
     func loadWorkoutsForDate(_ date: Date, completion: @escaping (Result<[TodayWorkout], Error>) -> Void) {
-        guard let url = Bundle.main.url(forResource: "clientDashboardData", withExtension: "json") else {
-            completion(.failure(DataServiceError.fileNotFound("clientDashboardData.json")))
-            return
-        }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let dashboardData = try decoder.decode(ClientDashboardData.self, from: data)
-            
-            // Format date as "yyyy-MM-dd"
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let dateString = dateFormatter.string(from: date)
-            
-            // Get workouts for the specific date
-            if let workouts = dashboardData.workoutsByDate[dateString] {
-                completion(.success(workouts))
-            } else {
-                // Return empty array if no workouts for this date
-                completion(.success([]))
+        Task {
+            do {
+                // Fetch trainer-scheduled workout targets for this date from Supabase
+                let plan = try await DayPlanService.shared.fetchPlanForClient(date: date)
+                let details = plan?.workoutDetails ?? []
+
+                // Load workout catalog (remote JSON) to hydrate names/images
+                let catalog: [String: Workout] = try await withCheckedThrowingContinuation { cont in
+                    self.loadWorkouts { result in
+                        switch result {
+                        case .success(let workouts):
+                            let dict = Dictionary(uniqueKeysWithValues: workouts.map { ($0.id, $0) })
+                            cont.resume(returning: dict)
+                        case .failure(let error):
+                            cont.resume(throwing: error)
+                        }
+                    }
+                }
+
+                // Map workout details (targets) to TodayWorkout models for the dashboard list
+                let todayWorkouts: [TodayWorkout] = details.compactMap { detail in
+                    guard
+                        let workout = catalog[detail.workoutId],
+                        let sets = detail.targetSets,
+                        let reps = detail.targetReps
+                    else { return nil }
+
+                    return TodayWorkout(
+                        id: workout.id,
+                        name: workout.name,
+                        reps: "Do \(sets) sets of \(reps) reps",
+                        imageUrl: workout.imageUrl
+                    )
+                }
+
+                completion(.success(todayWorkouts))
+            } catch {
+                completion(.failure(error))
             }
-        } catch {
-            completion(.failure(DataServiceError.decodingFailed(error)))
         }
     }
 

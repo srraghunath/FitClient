@@ -20,6 +20,45 @@ struct TrainerProfile: Codable {
     }
 }
 
+// MARK: - Image Prep
+
+private extension TrainerService {
+    static func prepareJPEGDataForUpload(from image: UIImage) -> Data? {
+        let maxDimension: CGFloat = 1024
+        let maxBytes = 500_000
+
+        let targetImage = resize(image: image, maxDimension: maxDimension) ?? image
+
+        var quality: CGFloat = 0.7
+        var data = targetImage.jpegData(compressionQuality: quality)
+
+        while let d = data, d.count > maxBytes, quality > 0.2 {
+            quality -= 0.1
+            data = targetImage.jpegData(compressionQuality: quality)
+        }
+
+        return data
+    }
+
+    static func resize(image: UIImage, maxDimension: CGFloat) -> UIImage? {
+        let size = image.size
+        let maxSide = max(size.width, size.height)
+        guard maxSide > maxDimension else { return image }
+
+        let scale = maxDimension / maxSide
+        let newSize = CGSize(width: size.width * scale, height: size.height * scale)
+
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = image.scale
+        format.opaque = false
+        let renderer = UIGraphicsImageRenderer(size: newSize, format: format)
+        let rendered = renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: newSize))
+        }
+        return rendered
+    }
+}
+
 struct TrainerProfileUpdate: Encodable {
     let full_name: String
     let age: Int?
@@ -116,7 +155,7 @@ final class TrainerService {
             print("[TrainerService] Warning: current auth user (\(currentUserId)) does not match requested userId (\(userId)). Proceeding may fail RLS.")
         }
 
-        guard let imageData = image.jpegData(compressionQuality: 0.5) else {
+        guard let imageData = Self.prepareJPEGDataForUpload(from: image) else {
             completion(.failure(NSError(
                 domain: "TrainerService",
                 code: 0,
