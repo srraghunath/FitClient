@@ -6,12 +6,14 @@ struct DayPlan: Codable {
     let sleepHours: Double?
     let waterLiters: Double?
     let cardioNotes: String?
+    let workoutDetails: [WorkoutScheduleDetail]?
 
     enum CodingKeys: String, CodingKey {
         case dayOfWeek = "day_of_week"
         case sleepHours = "sleep_hours"
         case waterLiters = "water_intake_liters"
         case cardioNotes = "cardio_notes"
+        case workoutDetails = "workout_details"
     }
 }
 
@@ -26,7 +28,7 @@ final class DayPlanService {
             do {
                 let rows: [DayPlan] = try await supabase
                     .from("sessions")
-                    .select("day_of_week,sleep_hours,water_intake_liters,cardio_notes")
+                    .select("day_of_week,sleep_hours,water_intake_liters,cardio_notes,workout_details")
                     .eq("client_id", value: clientId.uuidString)
                     .eq("day_of_week", value: dayOfWeek)
                     .limit(1)
@@ -53,6 +55,7 @@ final class DayPlanService {
         sleepHours: Double,
         waterLiters: Double,
         cardioNotes: String,
+        workoutDetails: [WorkoutScheduleDetail],
         completion: @escaping (Error?) -> Void
     ) {
         Task {
@@ -67,6 +70,20 @@ final class DayPlanService {
 
                 let _: PostgrestResponse<Void> = try await supabase
                     .rpc("upsert_day_plan", params: params)
+                    .execute()
+
+                // Persist workout targets to the new JSONB column
+                struct WorkoutDetailsUpdate: Encodable {
+                    let workout_details: [WorkoutScheduleDetail]
+                }
+
+                let updatePayload = WorkoutDetailsUpdate(workout_details: workoutDetails)
+
+                try await supabase
+                    .from("sessions")
+                    .update(updatePayload)
+                    .eq("client_id", value: clientId.uuidString)
+                    .eq("day_of_week", value: dayOfWeek)
                     .execute()
 
                 completion(nil)

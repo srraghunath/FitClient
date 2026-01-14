@@ -422,6 +422,19 @@ class DashboardViewController: UIViewController {
     }
 
     private func makeDayTrackerItems(from record: DayActivityDTO, plan: DayPlan?) -> [DayTrackerItem] {
+        let workoutSubtitle: String = {
+            guard let details = plan?.workoutDetails, !details.isEmpty else { return "Workout: Not set" }
+            let first = details[0]
+            if let sets = first.targetSets, let reps = first.targetReps {
+                let label = "Workout: \(sets)x\(reps)"
+                if details.count > 1 {
+                    return "\(label) • \(details.count) moves"
+                }
+                return label
+            }
+            return "Workout: Not set"
+        }()
+
         let cardioSubtitle: String = {
             let trimmed = (plan?.cardioNotes ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
             return trimmed.isEmpty ? "Cardio: Not set" : "Cardio: \(trimmed)"
@@ -442,7 +455,7 @@ class DashboardViewController: UIViewController {
         }()
 
         return [
-            DayTrackerItem(icon: "🏋️", title: "Workout", subtitle: "Full body", isCompleted: record.workoutDone),
+            DayTrackerItem(icon: "🏋️", title: "Workout", subtitle: workoutSubtitle, isCompleted: record.workoutDone),
             DayTrackerItem(icon: "❤️", title: "Cardio", subtitle: cardioSubtitle, isCompleted: record.cardioDone),
             DayTrackerItem(icon: "💧", title: "Water Intake", subtitle: waterSubtitle, isCompleted: record.waterDone),
             DayTrackerItem(icon: "🍽", title: "Diet Plan", subtitle: "Balanced", isCompleted: record.dietDone),

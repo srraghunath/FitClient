@@ -190,9 +190,9 @@ class WorkoutModalViewController: UIViewController {
         
         // Apply search filter if search text exists
         if !searchText.isEmpty {
+            let needle = searchText.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
             workouts = workouts.filter { workout in
-                workout.name.lowercased().contains(searchText.lowercased()) ||
-                workout.description.lowercased().contains(searchText.lowercased())
+                workout.name.lowercased().contains(needle)
             }
             logDebug("After search filter: \(workouts.count) workouts match '\(searchText)'")
         }
@@ -234,6 +234,14 @@ class WorkoutModalViewController: UIViewController {
     @IBAction func saveButtonTapped(_ sender: UIButton) {
         let orderedIds = selectedWorkoutOrder.filter { selectedWorkoutSet.contains($0) }
         let details = orderedIds.map { detailForSave(workoutId: $0) }
+        let invalid = details.filter { !hasValidTargets($0) }
+
+        if let firstInvalid = invalid.first, let workoutName = allWorkouts.first(where: { $0.id == firstInvalid.workoutId })?.name {
+            presentTargetValidationAlert(for: workoutName)
+            logDebug("Blocked save: missing targets for \(workoutName) [sets: \(String(describing: firstInvalid.targetSets)), reps: \(String(describing: firstInvalid.targetReps))]")
+            return
+        }
+
         onSave?(orderedIds, details)
         logDebug("Saving \(orderedIds.count) selected workouts: \(orderedIds) with details: \(details.map { $0.shortSummary })")
         dismiss(animated: true)
@@ -278,11 +286,26 @@ class WorkoutModalViewController: UIViewController {
         }
         return WorkoutScheduleDetail(workoutId: workoutId, targetSets: nil, targetReps: nil)
     }
+
+    private func hasValidTargets(_ detail: WorkoutScheduleDetail) -> Bool {
+        guard let sets = detail.targetSets, let reps = detail.targetReps else { return false }
+        return sets > 0 && reps > 0
+    }
+
+    private func presentTargetValidationAlert(for workoutName: String) {
+        let alert = UIAlertController(
+            title: "Targets Required",
+            message: "Please set both sets and reps for \(workoutName) before saving.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
     
     private func presentDetailInput(for workout: Workout, isNewSelection: Bool) {
         let alert = UIAlertController(
             title: workout.name,
-            message: "Set target sets and reps (optional).",
+            message: "Set target sets and reps (required).",
             preferredStyle: .alert
         )
         let existingDetail = workoutDetails[workout.id]
@@ -306,6 +329,10 @@ class WorkoutModalViewController: UIViewController {
             guard let self else { return }
             let sets = self.parseInt(from: alert.textFields?.first?.text)
             let reps = self.parseInt(from: alert.textFields?.last?.text)
+            guard let sets, let reps, sets > 0, reps > 0 else {
+                self.presentTargetValidationAlert(for: workout.name)
+                return
+            }
             let detail = WorkoutScheduleDetail(workoutId: workout.id, targetSets: sets, targetReps: reps)
             self.ensureSelection(for: workout)
             self.workoutDetails[workout.id] = detail
@@ -314,26 +341,15 @@ class WorkoutModalViewController: UIViewController {
         alert.addAction(saveAction)
         
         if isNewSelection {
-            let defaultButtonTitle = preset != nil ? "Use Suggested Targets" : "Add Without Targets"
-            let defaultAction = UIAlertAction(title: defaultButtonTitle, style: .default) { [weak self] _ in
-                guard let self else { return }
-                self.ensureSelection(for: workout)
-                if let presetDetail = self.defaultDetail(for: workout.id) {
+            if let presetDetail = self.defaultDetail(for: workout.id), self.hasValidTargets(presetDetail) {
+                let defaultAction = UIAlertAction(title: "Use Suggested Targets", style: .default) { [weak self] _ in
+                    guard let self else { return }
+                    self.ensureSelection(for: workout)
                     self.workoutDetails[workout.id] = presetDetail
-                } else {
-                    self.workoutDetails[workout.id] = WorkoutScheduleDetail(workoutId: workout.id, targetSets: nil, targetReps: nil)
+                    self.refreshRow(for: workout.id)
                 }
-                self.refreshRow(for: workout.id)
+                alert.addAction(defaultAction)
             }
-            alert.addAction(defaultAction)
-        } else {
-            let clearAction = UIAlertAction(title: "Clear Targets", style: .default) { [weak self] _ in
-                guard let self else { return }
-                self.ensureSelection(for: workout)
-                self.workoutDetails[workout.id] = WorkoutScheduleDetail(workoutId: workout.id, targetSets: nil, targetReps: nil)
-                self.refreshRow(for: workout.id)
-            }
-            alert.addAction(clearAction)
         }
         
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
@@ -351,14 +367,6 @@ class WorkoutModalViewController: UIViewController {
         actionSheet.addAction(UIAlertAction(title: "Edit Targets", style: .default) { [weak self] _ in
             self?.presentDetailInput(for: workout, isNewSelection: false)
         })
-        if let detail = workoutDetails[workout.id], detail.hasTargets {
-            actionSheet.addAction(UIAlertAction(title: "Clear Targets", style: .default) { [weak self] _ in
-                guard let self else { return }
-                self.ensureSelection(for: workout)
-                self.workoutDetails[workout.id] = WorkoutScheduleDetail(workoutId: workout.id, targetSets: nil, targetReps: nil)
-                self.refreshRow(for: workout.id)
-            })
-        }
         actionSheet.addAction(UIAlertAction(title: "Remove Workout", style: .destructive) { [weak self] _ in
             self?.removeSelection(for: workout)
         })

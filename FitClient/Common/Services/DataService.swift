@@ -1,3 +1,16 @@
+// Remote workout payloads
+private struct RemoteExercise: Decodable {
+    let id: String
+    let name: String
+    let description: String?
+    let image_url: String?
+    let category: String?
+}
+
+private struct RemoteExerciseMinimal: Decodable {
+    let name: String
+    let image: String?
+}
 
 
 import Foundation
@@ -5,6 +18,8 @@ import Foundation
 class DataService {
     
     static let shared = DataService()
+    private let workoutsURL = URL(string: "https://raw.githubusercontent.com/srraghunath/FitClient/refs/heads/main/exercises.json")!
+    private var workoutsTask: Task<[Workout], Error>?
     
     private init() {}
     
@@ -156,19 +171,104 @@ class DataService {
     
     // MARK: - Workouts
     
+    func prefetchWorkoutsInBackground() {
+        guard workoutsTask == nil else { return }
+        workoutsTask = Task.detached { [weak self] in
+            guard let self = self else { return [] }
+            return try await self.fetchRemoteWorkouts()
+        }
+    }
+
     func loadWorkouts(completion: @escaping (Result<[Workout], Error>) -> Void) {
-        guard let url = Bundle.main.url(forResource: "workoutsData", withExtension: "json") else {
-            completion(.failure(DataServiceError.fileNotFound("workoutsData.json")))
+        if let task = workoutsTask {
+            Task {
+                do { completion(.success(try await task.value)) }
+                catch { completion(.failure(error)) }
+            }
             return
         }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let workoutsData = try decoder.decode(WorkoutsData.self, from: data)
-            completion(.success(workoutsData.workouts))
-        } catch {
-            completion(.failure(DataServiceError.decodingFailed(error)))
+
+        let task = Task { [weak self] () throws -> [Workout] in
+            guard let self = self else { return [] }
+            return try await self.fetchRemoteWorkouts()
+        }
+        workoutsTask = task
+
+        Task {
+            do { completion(.success(try await task.value)) }
+            catch { completion(.failure(error)) }
+        }
+    }
+
+    private func fetchRemoteWorkouts() async throws -> [Workout] {
+        let (data, response) = try await URLSession.shared.data(from: workoutsURL)
+        guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+            throw DataServiceError.fileNotFound("Remote workouts fetch failed")
+        }
+
+        let decoder = JSONDecoder()
+
+        // Primary attempt: array of detailed exercises (id, name, description, image_url, category)
+        if let detailed = try? decoder.decode([RemoteExercise].self, from: data) {
+            return mapDetailedExercises(detailed)
+        }
+
+        // Secondary attempt: category buckets {"upper": [...], "lower": [...], "full": [...]}
+        if let buckets = try? decoder.decode([String: [RemoteExerciseMinimal]].self, from: data) {
+            return mapBucketedExercises(buckets)
+        }
+
+        throw DataServiceError.decodingFailed(NSError(domain: "DataService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unexpected workouts payload"]))
+    }
+
+    private func mapDetailedExercises(_ items: [RemoteExercise]) -> [Workout] {
+        items.map { item in
+            Workout(
+                id: item.id,
+                name: item.name,
+                description: item.description ?? "",
+                imageUrl: item.image_url ?? "",
+                category: mapCategory(item.category),
+                isSelected: false,
+                targetSets: nil,
+                targetReps: nil
+            )
+        }
+    }
+
+    private func mapBucketedExercises(_ buckets: [String: [RemoteExerciseMinimal]]) -> [Workout] {
+        var result: [Workout] = []
+        let mapping: [(key: String, category: WorkoutCategory)] = [
+            ("upper", .upperBody),
+            ("lower", .lowerBody),
+            ("full", .fullBody)
+        ]
+        for (key, category) in mapping {
+            guard let list = buckets[key] else { continue }
+            list.enumerated().forEach { idx, ex in
+                let id = "remote_\(key)_\(idx)"
+                result.append(
+                    Workout(
+                        id: id,
+                        name: ex.name,
+                        description: "",
+                        imageUrl: ex.image ?? "",
+                        category: category,
+                        isSelected: false,
+                        targetSets: nil,
+                        targetReps: nil
+                    )
+                )
+            }
+        }
+        return result
+    }
+
+    private func mapCategory(_ raw: String?) -> WorkoutCategory {
+        switch raw?.lowercased() {
+        case "upper_body", "upper": return .upperBody
+        case "lower_body", "lower": return .lowerBody
+        default: return .fullBody
         }
     }
     

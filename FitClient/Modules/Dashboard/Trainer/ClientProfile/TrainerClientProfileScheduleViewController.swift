@@ -367,13 +367,16 @@ class TrainerClientProfileScheduleViewController: UIViewController {
                         selectedDietItems: []
                     )
 
+                    let remoteWorkoutDetails = plan?.workoutDetails ?? existing.workoutDetails
+                    let remoteWorkoutIds = remoteWorkoutDetails.map { $0.workoutId }
+
                     let mergedDay = DayScheduleData(
                         isActive: existing.isActive,
                         sleepHours: plan?.sleepHours ?? existing.sleepHours,
                         waterIntake: plan?.waterLiters ?? existing.waterIntake,
                         cardioNotes: plan?.cardioNotes ?? existing.cardioNotes,
-                        selectedWorkoutIds: existing.selectedWorkoutIds,
-                        workoutDetails: existing.workoutDetails,
+                        selectedWorkoutIds: remoteWorkoutIds.isEmpty ? existing.selectedWorkoutIds : remoteWorkoutIds,
+                        workoutDetails: remoteWorkoutDetails.isEmpty ? existing.workoutDetails : remoteWorkoutDetails,
                         selectedDietItems: existing.selectedDietItems
                     )
 
@@ -488,10 +491,11 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         // Also persist the cleared state to Supabase so it stays cleared
         DayPlanService.shared.savePlan(
             for: uuid,
-            dayOfWeek: selectedDay.index + 1,
+            dayOfWeek: selectedDay.index,
             sleepHours: 0,
             waterLiters: 0,
-            cardioNotes: ""
+            cardioNotes: "",
+            workoutDetails: []
         ) { [weak self] error in
             DispatchQueue.main.async {
                 if let error = error {
@@ -531,7 +535,8 @@ class TrainerClientProfileScheduleViewController: UIViewController {
             dayOfWeek: dayNumber,
             sleepHours: dayData.sleepHours,
             waterLiters: dayData.waterIntake,
-            cardioNotes: dayData.cardioNotes
+            cardioNotes: dayData.cardioNotes,
+            workoutDetails: dayData.workoutDetails
         ) { [weak self] error in
             DispatchQueue.main.async {
                 if let error = error {
