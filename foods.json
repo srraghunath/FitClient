@@ -320,7 +320,7 @@
     "diet_type": "veg"
   },
   {
-    "id": "Saute_Tofu",
+    "id": "Saute_Tofu_1",
     "name": "Saute Tofu",
     "protein": 5,
     "carbs": 2,
@@ -350,7 +350,7 @@
     "diet_type": "veg"
   },
   {
-    "id": "Soya_Flour_Cheela",
+    "id": "Soya_Flour_Cheela_1",
     "name": "Soya Flour Cheela",
     "protein": 540,
     "carbs": 310,
@@ -4240,7 +4240,7 @@
     "diet_type": "veg"
   },
   {
-    "id": "Upma",
+    "id": "Upma_1",
     "name": "Upma",
     "protein": 3,
     "carbs": 8,
@@ -4330,7 +4330,7 @@
     "diet_type": "nonveg"
   },
   {
-    "id": "Cucumber",
+    "id": "Cucumber_1",
     "name": "\"Cucumber",
     "protein": 0,
     "carbs": 0,
@@ -4360,7 +4360,7 @@
     "diet_type": "veg"
   },
   {
-    "id": "Jowar_Cheela",
+    "id": "Jowar_Cheela_1",
     "name": "Jowar Cheela",
     "protein": 0,
     "carbs": 0,
@@ -5910,7 +5910,7 @@
     "diet_type": "eggetarian"
   },
   {
-    "id": "Carrot",
+    "id": "Carrot_1",
     "name": "\"Carrot",
     "protein": 0,
     "carbs": 0,
@@ -7380,7 +7380,7 @@
     "diet_type": "veg"
   },
   {
-    "id": "Hung_Curd_Salad",
+    "id": "Hung_Curd_Salad_1",
     "name": "Hung Curd Salad",
     "protein": 3,
     "carbs": 6,
