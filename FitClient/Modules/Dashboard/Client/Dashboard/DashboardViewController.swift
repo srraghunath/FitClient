@@ -39,7 +39,6 @@ class DashboardViewController: UIViewController {
     
     private var dayTrackerItems: [DayTrackerItem] = []
     private var scheduledWorkouts: [TodayWorkout] = []
-    private var todayDiet: [TodayMeal] = []
     private var todayDietDetails: [Diet] = [] // mapped Diet models to render with DietCell
     private var dayActivityRecord: DayActivityDTO?
     private var currentDayPlan: DayPlan?
@@ -315,70 +314,31 @@ class DashboardViewController: UIViewController {
             }
         }
 
-        // Load diet for the selected date (dashboard todayDiet)
-        DataService.shared.loadDietForDate(date) { [weak self] result in
+        // Load scheduled diet plan for the selected date
+        DataService.shared.loadDietPlanForDate(date) { [weak self] result in
             switch result {
-            case .success(let meals):
-                var logMsg = "✅ [Dashboard] Loaded \(meals.count) diet items for \(dateString)\n"
-                meals.forEach { meal in
-                    logMsg += "   - \(meal.mealType): \(meal.name) @ \(meal.time)\n"
+            case .success(let diets):
+                var logMsg = "✅ [Dashboard] Loaded \(diets.count) scheduled diet items for \(dateString)\n"
+                diets.forEach { diet in
+                    logMsg += "   - \(diet.name) x\(diet.quantity)\n"
                 }
                 if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                     try? (existingLog + logMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
                 }
                 print(logMsg)
-                self?.todayDiet = meals
 
-                // Now load full diet details to render with DietCell (for macros, grams, image sizing)
-                DataService.shared.loadDiets { dietsResult in
-                    switch dietsResult {
-                    case .success(let allDiets):
-                        // Map TodayMeal list to Diets by id; default selection/quantity for dashboard view
-                        let dict = Dictionary(uniqueKeysWithValues: allDiets.map { ($0.id, $0) })
-                        let mapped: [Diet] = meals.compactMap { meal in
-                            if var diet = dict[meal.id] {
-                                // Display-only on client; do not mark selected or show stepper
-                                diet.isSelected = false
-                                if diet.quantity <= 0 { diet.quantity = 1 }
-                                return diet
-                            } else {
-                                // Fallback minimal Diet using TodayMeal info if not found
-                                return Diet(
-                                    id: meal.id,
-                                    name: meal.name,
-                                    grams: 0,
-                                    protein: 0,
-                                    carbs: 0,
-                                    fat: 0,
-                                    calories: Int(meal.calories.filter({ $0.isNumber })) ?? 0,
-                                    imageUrl: meal.imageUrl,
-                                    mealType: MealType(rawValue: meal.mealType.lowercased()) ?? .breakfast,
-                                    dietType: .veg,
-                                    quantity: 1,
-                                    isSelected: false
-                                )
-                            }
-                        }
-                        DispatchQueue.main.async {
-                            self?.todayDietDetails = mapped
-                            self?.updateUI()
-                        }
-                    case .failure:
-                        DispatchQueue.main.async {
-                            self?.todayDietDetails = []
-                            self?.updateUI()
-                        }
-                    }
+                DispatchQueue.main.async {
+                    self?.todayDietDetails = diets
+                    self?.updateUI()
                 }
             case .failure(let error):
-                let errMsg = "❌ [Dashboard] Error loading diet: \(error)\n"
+                let errMsg = "❌ [Dashboard] Error loading scheduled diet: \(error)\n"
                 if let existingLog = try? String(contentsOfFile: logPath, encoding: .utf8) {
                     try? (existingLog + errMsg).write(toFile: logPath, atomically: true, encoding: .utf8)
                 }
                 print(errMsg)
 
                 DispatchQueue.main.async {
-                    self?.todayDiet = []
                     self?.todayDietDetails = []
                     self?.updateUI()
                 }
@@ -447,6 +407,13 @@ class DashboardViewController: UIViewController {
             return "Water: Not set"
         }()
 
+        let dietSubtitle: String = {
+            let count = plan?.dietPlan?.count ?? 0
+            if count == 0 { return "Diet: Not set" }
+            if count == 1 { return "Diet: 1 item" }
+            return "Diet: \(count) items"
+        }()
+
         let sleepSubtitle: String = {
             if let sleep = plan?.sleepHours {
                 return "Sleep: \(formatDouble(sleep)) hrs"
@@ -458,7 +425,7 @@ class DashboardViewController: UIViewController {
             DayTrackerItem(icon: "🏋️", title: "Workout", subtitle: workoutSubtitle, isCompleted: record.workoutDone),
             DayTrackerItem(icon: "❤️", title: "Cardio", subtitle: cardioSubtitle, isCompleted: record.cardioDone),
             DayTrackerItem(icon: "💧", title: "Water Intake", subtitle: waterSubtitle, isCompleted: record.waterDone),
-            DayTrackerItem(icon: "🍽", title: "Diet Plan", subtitle: "Balanced", isCompleted: record.dietDone),
+            DayTrackerItem(icon: "🍽", title: "Diet Plan", subtitle: dietSubtitle, isCompleted: record.dietDone),
             DayTrackerItem(icon: "🌙", title: "Sleep Cycle", subtitle: sleepSubtitle, isCompleted: record.sleepDone)
         ]
     }

@@ -631,7 +631,7 @@ class DataService {
                         switch result {
                         case .success(let workouts):
                             let dict = Dictionary(
-                                uniqueKeysWithValues: workouts.map { ($0.id, $0) })
+                                workouts.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
                             cont.resume(returning: dict)
                         case .failure(let error):
                             cont.resume(throwing: error)
@@ -656,6 +656,61 @@ class DataService {
                 }
 
                 completion(.success(todayWorkouts))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func loadDietPlanForDate(
+        _ date: Date, completion: @escaping (Result<[Diet], Error>) -> Void
+    ) {
+        Task {
+            do {
+                // Fetch trainer-scheduled diet plan for this date from Supabase
+                let plan = try await DayPlanService.shared.fetchPlanForClient(date: date)
+                let items = plan?.dietPlan ?? []
+                if items.isEmpty {
+                    completion(.success([]))
+                    return
+                }
+
+                // Load diet catalog (remote JSON) to hydrate names/macros/images
+                let catalog: [String: Diet] = try await withCheckedThrowingContinuation { cont in
+                    self.loadDiets { result in
+                        switch result {
+                        case .success(let diets):
+                            let dict = Dictionary(diets.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+                            cont.resume(returning: dict)
+                        case .failure(let error):
+                            cont.resume(throwing: error)
+                        }
+                    }
+                }
+
+                let mapped: [Diet] = items.compactMap { item in
+                    if var diet = catalog[item.dietId] {
+                        diet.quantity = item.quantity
+                        return diet
+                    }
+                    // Fallback minimal Diet if not found in catalog
+                    return Diet(
+                        id: item.dietId,
+                        name: item.dietId,
+                        grams: 0,
+                        protein: 0,
+                        carbs: 0,
+                        fat: 0,
+                        calories: 0,
+                        imageUrl: "",
+                        mealType: .breakfast,
+                        dietType: .veg,
+                        quantity: item.quantity,
+                        isSelected: false
+                    )
+                }
+
+                completion(.success(mapped))
             } catch {
                 completion(.failure(error))
             }

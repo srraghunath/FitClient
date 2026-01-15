@@ -387,6 +387,8 @@ class TrainerClientProfileScheduleViewController: UIViewController {
 
                     let remoteWorkoutDetails = plan?.workoutDetails ?? existing.workoutDetails
                     let remoteWorkoutIds = remoteWorkoutDetails.map { $0.workoutId }
+                    let remoteDietItems: [(dietId: String, quantity: Int)] = (plan?.dietPlan ?? [])
+                        .map { ($0.dietId, $0.quantity) }
 
                     let mergedDay = DayScheduleData(
                         isActive: existing.isActive,
@@ -395,7 +397,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
                         cardioNotes: plan?.cardioNotes ?? existing.cardioNotes,
                         selectedWorkoutIds: remoteWorkoutIds.isEmpty ? existing.selectedWorkoutIds : remoteWorkoutIds,
                         workoutDetails: remoteWorkoutDetails.isEmpty ? existing.workoutDetails : remoteWorkoutDetails,
-                        selectedDietItems: existing.selectedDietItems
+                        selectedDietItems: remoteDietItems.isEmpty ? existing.selectedDietItems : remoteDietItems
                     )
 
                     let updatedDay = DayScheduleData(
@@ -543,7 +545,8 @@ class TrainerClientProfileScheduleViewController: UIViewController {
             sleepHours: 0,
             waterLiters: 0,
             cardioNotes: "",
-            workoutDetails: []
+            workoutDetails: [],
+            dietPlan: []
         ) { [weak self] error in
             DispatchQueue.main.async {
                 if let error = error {
@@ -584,7 +587,8 @@ class TrainerClientProfileScheduleViewController: UIViewController {
             sleepHours: dayData.sleepHours,
             waterLiters: dayData.waterIntake,
             cardioNotes: dayData.cardioNotes,
-            workoutDetails: dayData.workoutDetails
+            workoutDetails: dayData.workoutDetails,
+            dietPlan: dayData.selectedDietItems
         ) { [weak self] error in
             DispatchQueue.main.async {
                 if let error = error {

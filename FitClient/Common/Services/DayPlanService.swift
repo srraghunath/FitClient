@@ -7,6 +7,7 @@ struct DayPlan: Codable {
     let waterLiters: Double?
     let cardioNotes: String?
     let workoutDetails: [WorkoutScheduleDetail]?
+    let dietPlan: [DietItem]?
 
     enum CodingKeys: String, CodingKey {
         case dayOfWeek = "day_of_week"
@@ -14,6 +15,7 @@ struct DayPlan: Codable {
         case waterLiters = "water_intake_liters"
         case cardioNotes = "cardio_notes"
         case workoutDetails = "workout_details"
+        case dietPlan = "diet_plan"
     }
 }
 
@@ -28,7 +30,7 @@ final class DayPlanService {
             do {
                 let rows: [DayPlan] = try await supabase
                     .from("sessions")
-                    .select("day_of_week,sleep_hours,water_intake_liters,cardio_notes,workout_details")
+                    .select("day_of_week,sleep_hours,water_intake_liters,cardio_notes,workout_details,diet_plan")
                     .eq("client_id", value: clientId.uuidString)
                     .eq("day_of_week", value: dayOfWeek)
                     .limit(1)
@@ -56,6 +58,7 @@ final class DayPlanService {
         waterLiters: Double,
         cardioNotes: String,
         workoutDetails: [WorkoutScheduleDetail],
+        dietPlan: [(dietId: String, quantity: Int)],
         completion: @escaping (Error?) -> Void
     ) {
         Task {
@@ -73,11 +76,13 @@ final class DayPlanService {
                     .execute()
 
                 // Persist workout targets to the new JSONB column
-                struct WorkoutDetailsUpdate: Encodable {
+                struct PlanDetailsUpdate: Encodable {
                     let workout_details: [WorkoutScheduleDetail]
+                    let diet_plan: [DietItem]
                 }
 
-                let updatePayload = WorkoutDetailsUpdate(workout_details: workoutDetails)
+                let dietItems = dietPlan.map { DietItem(dietId: $0.dietId, quantity: $0.quantity) }
+                let updatePayload = PlanDetailsUpdate(workout_details: workoutDetails, diet_plan: dietItems)
 
                 try await supabase
                     .from("sessions")
@@ -119,7 +124,7 @@ final class DayPlanService {
 
         let rows: [DayPlan] = try await supabase
             .from("sessions")
-            .select("day_of_week,sleep_hours,water_intake_liters,cardio_notes,workout_details")
+            .select("day_of_week,sleep_hours,water_intake_liters,cardio_notes,workout_details,diet_plan")
             .eq("client_id", value: clientId)
             .eq("day_of_week", value: weekdayIndex)
             .limit(1)
