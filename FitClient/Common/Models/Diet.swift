@@ -13,7 +13,7 @@ struct Diet: Codable {
     let carbs: Double
     let fat: Double
     let calories: Int
-    let imageUrl: String
+    var imageUrl: String
     let mealType: MealType
     let dietType: DietType
     var quantity: Int

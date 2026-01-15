@@ -323,6 +323,22 @@ extension DietModalViewController: UITableViewDataSource, UITableViewDelegate {
             selectedDietItems[diet.id] = (dietId: diet.id, quantity: quantity)
             displayedDiets[actualIndex].isSelected = true
             logDebug("Selected diet: \(diet.name) with quantity \(quantity)")
+
+            // On-demand image fetch & cache so future searches reuse it
+            DataService.shared.fetchAndCacheDietImage(for: diet) { [weak self] result in
+                DispatchQueue.main.async {
+                    guard let self else { return }
+                    switch result {
+                    case .success(let urlString):
+                        if let idx = self.displayedDiets.firstIndex(where: { $0.id == diet.id }) {
+                            self.displayedDiets[idx].imageUrl = urlString
+                            self.tableView.reloadRows(at: [indexPath], with: .none)
+                        }
+                    case .failure:
+                        break
+                    }
+                }
+            }
         }
         
         tableView.reloadRows(at: [indexPath], with: .none)

@@ -22,6 +22,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
     private var expandedIndexPaths: Set<IndexPath> = []
     private var currentDayData: DayScheduleData?
     private var workoutCatalog: [String: Workout] = [:]
+    private var dietCatalog: [String: Diet] = [:]
     
     // DEBUG: when true, automatically open workout modal once on viewDidAppear (temporary)
     // Set to false for production / normal behavior so the modal only opens on explicit user tap.
@@ -34,7 +35,8 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         setupUI()
         setupTableView()
         loadScheduleData()
-    loadWorkoutCatalog()
+        loadWorkoutCatalog()
+        loadDietCatalog()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -329,6 +331,22 @@ class TrainerClientProfileScheduleViewController: UIViewController {
             }
         }
     }
+
+    private func loadDietCatalog() {
+        DataService.shared.loadDiets { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let diets):
+                    var lookup: [String: Diet] = [:]
+                    diets.forEach { lookup[$0.id] = $0 }
+                    self?.dietCatalog = lookup
+                    self?.scheduleTableView.reloadSections(IndexSet(integer: 0), with: .none)
+                case .failure(let error):
+                    self?.logDebug("Failed to load diet catalog: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
     
     private func loadDayData(for weekday: Weekday) {
         guard let scheduleData = clientScheduleData else { return }
@@ -426,8 +444,8 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         if workoutCatalog.isEmpty {
             return "\(selectedCount) workouts selected"
         }
-    var detailLookup: [String: WorkoutScheduleDetail] = [:]
-    dayData.workoutDetails.forEach { detailLookup[$0.workoutId] = $0 }
+        var detailLookup: [String: WorkoutScheduleDetail] = [:]
+        dayData.workoutDetails.forEach { detailLookup[$0.workoutId] = $0 }
         let summaries: [String] = dayData.selectedWorkoutIds.compactMap { workoutId in
             guard let workout = workoutCatalog[workoutId] else { return nil }
             if let detail = detailLookup[workoutId], detail.hasTargets {
@@ -439,6 +457,36 @@ class TrainerClientProfileScheduleViewController: UIViewController {
         if summaries.isEmpty {
             return "\(selectedCount) workouts selected"
         }
+        let preview = summaries.prefix(2).joined(separator: " • ")
+        if summaries.count > 2 {
+            return preview + " • +\(summaries.count - 2) more"
+        }
+        return preview
+    }
+
+    private func dietCardDescription() -> String {
+        guard let dayData = currentDayData else {
+            return "Tap to add diet"
+        }
+        let selectedItems = dayData.selectedDietItems
+        if selectedItems.isEmpty {
+            return "Tap to add diet"
+        }
+        if dietCatalog.isEmpty {
+            let count = selectedItems.count
+            return count == 1 ? "1 diet item selected" : "\(count) diet items selected"
+        }
+
+        let summaries: [String] = selectedItems.compactMap { item in
+            guard let diet = dietCatalog[item.dietId] else { return nil }
+            let quantity = item.quantity
+            return quantity > 1 ? "\(diet.name) x\(quantity)" : diet.name
+        }
+        if summaries.isEmpty {
+            let count = selectedItems.count
+            return count == 1 ? "1 diet item selected" : "\(count) diet items selected"
+        }
+
         let preview = summaries.prefix(2).joined(separator: " • ")
         if summaries.count > 2 {
             return preview + " • +\(summaries.count - 2) more"
@@ -655,7 +703,7 @@ extension TrainerClientProfileScheduleViewController: UITableViewDataSource {
                 let item = ScheduleItem(id: "1", title: "Workout", description: workoutCardDescription(), type: .collapsible)
                 cell.configure(with: item)
             } else {
-                let item = ScheduleItem(id: "2", title: "Diet Plan", description: "Tap to view details", type: .collapsible)
+                let item = ScheduleItem(id: "2", title: "Diet Plan", description: dietCardDescription(), type: .collapsible)
                 cell.configure(with: item)
             }
             

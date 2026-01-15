@@ -526,6 +526,41 @@ class DataService {
         }
     }
 
+    // On-demand diet image fetch/store for user taps
+    func fetchAndCacheDietImage(for diet: Diet, completion: @escaping (Result<String, Error>) -> Void) {
+        Task {
+            // 1) If cached file exists, return immediately
+            if let localPath = cachedDietImagePath(for: diet.id), FileManager.default.fileExists(atPath: localPath.path) {
+                completion(.success(localPath.absoluteString))
+                return
+            }
+
+            // 2) If diet.imageUrl is already remote, try downloading and caching
+            if !diet.imageUrl.isEmpty, let remoteURL = URL(string: diet.imageUrl) {
+                if let data = try? Data(contentsOf: remoteURL), let saved = saveDietImageData(data, dietId: diet.id) {
+                    completion(.success(saved.absoluteString))
+                    return
+                }
+            }
+
+            // 3) Fallback to Pexels lookup using the diet name
+            do {
+                if let remoteUrlString = try await fetchPexelsImageURL(query: diet.name), let remoteURL = URL(string: remoteUrlString) {
+                    let (data, response) = try await URLSession.shared.data(from: remoteURL)
+                    if let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode), let saved = saveDietImageData(data, dietId: diet.id) {
+                        completion(.success(saved.absoluteString))
+                    } else {
+                        completion(.success(remoteUrlString))
+                    }
+                } else {
+                    completion(.failure(DataServiceError.fileNotFound("Pexels result not found")))
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+
     // MARK: - Settings (Client & Trainer)
 
     func loadClientSettings(completion: @escaping (Result<ClientSettingsConfig, Error>) -> Void) {
