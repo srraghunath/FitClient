@@ -35,13 +35,13 @@ struct Diet: Codable {
     }
 }
 
-enum MealType: String, Codable {
+enum MealType: String, Codable, Hashable {
     case breakfast = "breakfast"
     case lunch = "lunch"
     case dinner = "dinner"
 }
 
-enum DietType: String, Codable, CaseIterable {
+enum DietType: String, Codable, CaseIterable, Hashable {
     case veg = "veg"
     case nonVeg = "non_veg"
     case vegan = "vegan"

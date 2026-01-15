@@ -69,7 +69,7 @@ class DietCell: UITableViewCell {
         nameLabel.text = diet.name
         
         // Format nutrition info: "150g | P: 25g | C: 40g | F: 10g | 350 cal"
-        nutritionLabel.text = "\(diet.grams)g | P: \(String(format: "%.1f", diet.protein))g | C: \(String(format: "%.1f", diet.carbs))g | F: \(String(format: "%.1f", diet.fat))g | \(diet.calories) cal"
+        nutritionLabel.text = "P: \(String(format: "%.1f", diet.protein))g | C: \(String(format: "%.1f", diet.carbs))g | F: \(String(format: "%.1f", diet.fat))g | \(diet.calories) cal"
         
         // Configure selection state
         if diet.isSelected {
@@ -122,6 +122,16 @@ class DietCell: UITableViewCell {
             return
         }
         
+        if let fileURL = URL(string: urlString), fileURL.isFileURL {
+            if let data = try? Data(contentsOf: fileURL), let image = UIImage(data: data) {
+                ImageCache.shared.setImage(image, forKey: dietId)
+                dietImageView.image = image
+            } else {
+                dietImageView.image = UIImage(systemName: "photo")
+            }
+            return
+        }
+
         // Load from network
         guard let url = URL(string: urlString) else {
             dietImageView.image = UIImage(systemName: "photo")

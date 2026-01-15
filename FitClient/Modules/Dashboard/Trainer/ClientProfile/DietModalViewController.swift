@@ -169,7 +169,11 @@ class DietModalViewController: UIViewController {
         }
         
         // Apply selection state and quantity
-        displayedDiets = diets.map { diet in
+        let cappedByType: [Diet] = DietType.allCases.flatMap { type in
+            diets.filter { $0.dietType == type }.prefix(3)
+        }
+
+        displayedDiets = cappedByType.map { diet in
             var mutableDiet = diet
             if let selectedItem = selectedDietItems[diet.id] {
                 mutableDiet.isSelected = true
@@ -183,7 +187,7 @@ class DietModalViewController: UIViewController {
         }
         
         let selectedCount = displayedDiets.filter { $0.isSelected }.count
-        logDebug("Final filtered diets for \(mealType.rawValue): \(displayedDiets.count) total, \(selectedCount) PRE-SELECTED")
+        logDebug("Final filtered diets for \(mealType.rawValue): \(displayedDiets.count) total (max 3 per type), \(selectedCount) PRE-SELECTED")
         
         // Reload with animation disabled for immediate update
         UIView.setAnimationsEnabled(false)
