@@ -7,6 +7,37 @@
 
 import UIKit
 
+// MARK: - Local Models (namespaced to avoid conflicts)
+private struct ClientProgressDayActivity {
+    let date: Date
+    let activityLevel: Int // 0 = future, 1 = none, 2 = partial, 3 = full
+}
+
+private struct ClientProgressSegment {
+    let title: String
+    let percentage: Double
+    let color: UIColor
+}
+
+private struct ClientDailyActivityItem: Codable {
+    let date: String
+    let workout: Bool
+    let diet: Bool
+    let sleep: Bool
+    let waterIntake: Bool
+    let cardio: Bool
+
+    var totalCompleted: Int {
+        var count = 0
+        if workout { count += 1 }
+        if diet { count += 1 }
+        if sleep { count += 1 }
+        if waterIntake { count += 1 }
+        if cardio { count += 1 }
+        return count
+    }
+}
+
 final class ClientProgressViewController: UIViewController {
     // MARK: - Outlets
     @IBOutlet private weak var monthLabel: UILabel!
@@ -24,10 +55,10 @@ final class ClientProgressViewController: UIViewController {
     
     // MARK: - Properties
     private var currentMonth = Date()
-    private var activities: [DayActivity] = []
-    private var segments: [ProgressSegment] = []
+    private var activities: [ClientProgressDayActivity] = []
+    private var segments: [ClientProgressSegment] = []
     private let calendar = Calendar.current
-    private var clientActivityData: ClientActivityData?
+    private var monthActivities: [ClientDailyActivityItem] = []
     private var uiLabels: UILabelsData?
 
     // MARK: - Lifecycle
@@ -202,42 +233,76 @@ final class ClientProgressViewController: UIViewController {
     
     // MARK: - Data Loading
     private func loadData() {
-        loadClientActivityData()
+        DayActivityService.shared.fetchActivitiesForCurrentClient(month: currentMonth) { [weak self] (result: Result<[DayActivityDTO], Error>) in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                switch result {
+                case .success(let rows):
+                    self.monthActivities = rows.map {
+                        ClientDailyActivityItem(
+                            date: $0.activityDate,
+                            workout: $0.workoutDone,
+                            diet: $0.dietDone,
+                            sleep: $0.sleepDone,
+                            waterIntake: $0.waterDone,
+                            cardio: $0.cardioDone
+                        )
+                    }
+                    self.rebuildData()
+                case .failure(let error):
+                    self.monthActivities = []
+                    self.activities = []
+                    self.segments = self.emptySegments()
+                    self.updateUI()
+                    self.showAlert(title: "Error", message: "Failed to load activity data. Please try again.")
+                    print("❌ Client progress fetch error: \(error)")
+                }
+            }
+        }
+    }
+
+    private func rebuildData() {
         activities.removeAll()
-        
-        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentMonth)) else { return }
-        let range = calendar.range(of: .day, in: .month, for: currentMonth)?.count ?? 0
+
+        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentMonth)),
+              let daysInMonth = calendar.range(of: .day, in: .month, for: currentMonth)?.count else { return }
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
+
         let monthFormatter = DateFormatter()
         monthFormatter.dateFormat = "yyyy-MM"
         let selectedMonthKey = monthFormatter.string(from: currentMonth)
+
         let today = Date()
         let currentMonthKey = monthFormatter.string(from: today)
+
         let isCurrentMonth = selectedMonthKey == currentMonthKey
         let isFutureMonth = currentMonth > today
         let isPastMonth = currentMonth < calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
-    let monthActivities = clientActivityData?.monthlyData[selectedMonthKey]
-    let hasMonthData = (monthActivities?.isEmpty == false)
-        
-        for day in 1...range {
+        let hasMonthData = !monthActivities.isEmpty
+
+        for day in 1...daysInMonth {
             guard let date = calendar.date(byAdding: .day, value: day - 1, to: startOfMonth) else { continue }
             let dateString = dateFormatter.string(from: date)
-            
+
             if isFutureMonth {
-                activities.append(DayActivity(date: date, activityLevel: 0))
+                activities.append(ClientProgressDayActivity(date: date, activityLevel: 0))
                 continue
             }
+
             if isPastMonth && !hasMonthData {
-                activities.append(DayActivity(date: date, activityLevel: 0))
+                activities.append(ClientProgressDayActivity(date: date, activityLevel: 0))
                 continue
             }
+
             let currentDay = calendar.component(.day, from: today)
             if isCurrentMonth && day > currentDay {
-                activities.append(DayActivity(date: date, activityLevel: 0))
+                activities.append(ClientProgressDayActivity(date: date, activityLevel: 0))
                 continue
             }
-            if let dailyActivity = monthActivities?.first(where: { $0.date == dateString }) {
+
+            if let dailyActivity = monthActivities.first(where: { $0.date == dateString }) {
                 let completedCount = dailyActivity.totalCompleted
                 let level: Int
                 if completedCount == 0 {
@@ -247,15 +312,16 @@ final class ClientProgressViewController: UIViewController {
                 } else {
                     level = 3
                 }
-                activities.append(DayActivity(date: date, activityLevel: level))
+                activities.append(ClientProgressDayActivity(date: date, activityLevel: level))
             } else {
-                activities.append(DayActivity(date: date, activityLevel: 1))
+                activities.append(ClientProgressDayActivity(date: date, activityLevel: 1))
             }
         }
-        
+
         calculateProgressSegments()
+        updateUI()
     }
-    
+
     private func calculateProgressSegments() {
         let monthFormatter = DateFormatter()
         monthFormatter.dateFormat = "yyyy-MM"
@@ -263,33 +329,20 @@ final class ClientProgressViewController: UIViewController {
         let today = Date()
         let currentMonthKey = monthFormatter.string(from: today)
         let isFutureMonth = currentMonth > today
-        _ = currentMonth < calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
-        
+
         if isFutureMonth {
-            segments = [
-                ProgressSegment(title: "Workout", percentage: 0, color: UIColor(hex: "#FFD74D")),
-                ProgressSegment(title: "Diet", percentage: 0, color: UIColor(hex: "#FE14A5")),
-                ProgressSegment(title: "Sleep", percentage: 0, color: UIColor(hex: "#A514FE")),
-                ProgressSegment(title: "Water", percentage: 0, color: UIColor(hex: "#14FEFF")),
-                ProgressSegment(title: "Cardio", percentage: 0, color: UIColor(hex: "#FF8C14"))
-            ]
+            segments = emptySegments()
             return
         }
-        
-        guard let monthActivities = clientActivityData?.monthlyData[selectedMonthKey], !monthActivities.isEmpty else {
-            segments = [
-                ProgressSegment(title: "Workout", percentage: 0, color: UIColor(hex: "#FFD74D")),
-                ProgressSegment(title: "Diet", percentage: 0, color: UIColor(hex: "#FE14A5")),
-                ProgressSegment(title: "Sleep", percentage: 0, color: UIColor(hex: "#A514FE")),
-                ProgressSegment(title: "Water", percentage: 0, color: UIColor(hex: "#14FEFF")),
-                ProgressSegment(title: "Cardio", percentage: 0, color: UIColor(hex: "#FF8C14"))
-            ]
+
+        guard !monthActivities.isEmpty else {
+            segments = emptySegments()
             return
         }
-        
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        let validActivities: [DailyActivityItem]
+        let validActivities: [ClientDailyActivityItem]
         if selectedMonthKey == currentMonthKey {
             validActivities = monthActivities.filter { item in
                 guard let date = dateFormatter.date(from: item.date) else { return false }
@@ -298,19 +351,13 @@ final class ClientProgressViewController: UIViewController {
         } else {
             validActivities = monthActivities
         }
-        
+
         let totalDays = Double(validActivities.count)
         guard totalDays > 0 else {
-            segments = [
-                ProgressSegment(title: "Workout", percentage: 0, color: UIColor(hex: "#FFD74D")),
-                ProgressSegment(title: "Diet", percentage: 0, color: UIColor(hex: "#FE14A5")),
-                ProgressSegment(title: "Sleep", percentage: 0, color: UIColor(hex: "#A514FE")),
-                ProgressSegment(title: "Water", percentage: 0, color: UIColor(hex: "#14FEFF")),
-                ProgressSegment(title: "Cardio", percentage: 0, color: UIColor(hex: "#FF8C14"))
-            ]
+            segments = emptySegments()
             return
         }
-        
+
         let workoutCompleted = Double(validActivities.filter { $0.workout }.count)
         let dietCompleted = Double(validActivities.filter { $0.diet }.count)
         let sleepCompleted = Double(validActivities.filter { $0.sleep }.count)
@@ -321,25 +368,24 @@ final class ClientProgressViewController: UIViewController {
         let sleepPct = (sleepCompleted / totalDays) * 100
         let waterPct = (waterCompleted / totalDays) * 100
         let cardioPct = (cardioCompleted / totalDays) * 100
-        
+
         segments = [
-            ProgressSegment(title: "Workout", percentage: workoutPct, color: UIColor(hex: "#FFD74D")),
-            ProgressSegment(title: "Diet", percentage: dietPct, color: UIColor(hex: "#FE14A5")),
-            ProgressSegment(title: "Sleep", percentage: sleepPct, color: UIColor(hex: "#A514FE")),
-            ProgressSegment(title: "Water", percentage: waterPct, color: UIColor(hex: "#14FEFF")),
-            ProgressSegment(title: "Cardio", percentage: cardioPct, color: UIColor(hex: "#FF8C14"))
+            ClientProgressSegment(title: "Workout", percentage: workoutPct, color: UIColor(hex: "#FFD74D")),
+            ClientProgressSegment(title: "Diet", percentage: dietPct, color: UIColor(hex: "#FE14A5")),
+            ClientProgressSegment(title: "Sleep", percentage: sleepPct, color: UIColor(hex: "#A514FE")),
+            ClientProgressSegment(title: "Water", percentage: waterPct, color: UIColor(hex: "#14FEFF")),
+            ClientProgressSegment(title: "Cardio", percentage: cardioPct, color: UIColor(hex: "#FF8C14"))
         ]
     }
-    
-    private func loadClientActivityData() {
-        guard clientActivityData == nil else { return }
-        guard let url = Bundle.main.url(forResource: "clientActivityData", withExtension: "json") else { return }
-        do {
-            let data = try Data(contentsOf: url)
-            clientActivityData = try JSONDecoder().decode(ClientActivityData.self, from: data)
-        } catch {
-            print("Error loading client activity data: \(error)")
-        }
+
+    private func emptySegments() -> [ClientProgressSegment] {
+        return [
+            ClientProgressSegment(title: "Workout", percentage: 0, color: UIColor(hex: "#FFD74D")),
+            ClientProgressSegment(title: "Diet", percentage: 0, color: UIColor(hex: "#FE14A5")),
+            ClientProgressSegment(title: "Sleep", percentage: 0, color: UIColor(hex: "#A514FE")),
+            ClientProgressSegment(title: "Water", percentage: 0, color: UIColor(hex: "#14FEFF")),
+            ClientProgressSegment(title: "Cardio", percentage: 0, color: UIColor(hex: "#FF8C14"))
+        ]
     }
     
     private func updateUI() {
@@ -349,7 +395,8 @@ final class ClientProgressViewController: UIViewController {
         monthLabel.textAlignment = .center
         setupWeekdayHeaders()
         heatmapCollectionView.reloadData()
-        pieChartView.configure(with: segments)
+        let mappedSegments = segments.map { ProgressSegment(title: $0.title, percentage: $0.percentage, color: $0.color) }
+        pieChartView.configure(with: mappedSegments)
     }
     
     // MARK: - Actions

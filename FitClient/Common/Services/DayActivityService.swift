@@ -167,6 +167,22 @@ final class DayActivityService {
                 completion(.failure(error))
             }
         }
+
+    }
+
+    /// Fetch all activity rows for the current client and month
+    func fetchActivitiesForCurrentClient(
+        month: Date,
+        completion: @escaping (Result<[DayActivityDTO], Error>) -> Void
+    ) {
+        Task {
+            do {
+                let clientId = try await ensureClientId()
+                fetchActivities(for: clientId, month: month, completion: completion)
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 
     private func ensureClientId() async throws -> UUID {
