@@ -80,11 +80,11 @@ class HeatmapCell: UICollectionViewCell {
             box.layer.borderColor = UIColor(hex: "#BDBDBD").cgColor
             dayLabel.textColor = UIColor(hex: "#202020")
         case 2:
-            box.backgroundColor = .primaryMildYellow // Mild yellow for partial (1-2 activities)
-            box.layer.borderColor = UIColor(hex: "#C9981E").cgColor
-            dayLabel.textColor = UIColor(hex: "#3A2A00")
+            box.backgroundColor = .primaryGreenSoft // Mild green for 1-2 activities
+            box.layer.borderColor = UIColor(hex: "#7FBF3C").cgColor
+            dayLabel.textColor = UIColor(hex: "#1F2B00")
         case 3:
-            box.backgroundColor = .primaryGreen // Bright primary green (matches schedule for 3-5 activities)
+            box.backgroundColor = .primaryGreen // Bright primary green (3-5 activities)
             box.layer.borderColor = UIColor(hex: "#6EBE00").cgColor
             dayLabel.textColor = UIColor(hex: "#2F3B00")
         default:

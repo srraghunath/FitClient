@@ -218,6 +218,7 @@ class TrainerClientProfileViewController: UIViewController {
         
         // Load progress view controller from XIB
         let progressVC = TrainerClientProgressViewControlller(nibName: "TrainerClientProgressViewControlller", bundle: nil)
+        progressVC.clientId = client?.id.uuidString
         
         // Add as child view controller
         addChild(progressVC)

@@ -77,6 +77,50 @@ final class DayActivityService {
         }
     }
 
+    /// Fetch all activity rows for a given client and month
+    /// - Parameters:
+    ///   - clientId: Target client UUID (used by trainer views)
+    ///   - month: Any date within the target month
+    func fetchActivities(
+        for clientId: UUID,
+        month: Date,
+        completion: @escaping (Result<[DayActivityDTO], Error>) -> Void
+    ) {
+        Task {
+            do {
+                let calendar = Calendar.current
+                guard
+                    let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: month)),
+                    let endOfMonth = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: startOfMonth)
+                else {
+                    completion(.failure(NSError(
+                        domain: "DayActivityService",
+                        code: -2,
+                        userInfo: [NSLocalizedDescriptionKey: "Unable to compute month boundaries"]
+                    )))
+                    return
+                }
+
+                let startString = isoDate(from: startOfMonth)
+                let endString = isoDate(from: endOfMonth)
+
+                let rows: [DayActivityDTO] = try await supabase
+                    .from("client_day_activity")
+                    .select()
+                    .eq("client_id", value: clientId.uuidString)
+                    .gte("activity_date", value: startString)
+                    .lte("activity_date", value: endString)
+                    .order("activity_date", ascending: true)
+                    .execute()
+                    .value
+
+                completion(.success(rows))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+
     func upsertActivity(
         for date: Date,
         record: DayActivityDTO,

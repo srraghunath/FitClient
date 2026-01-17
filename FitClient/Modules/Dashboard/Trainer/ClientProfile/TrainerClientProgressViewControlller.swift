@@ -65,9 +65,8 @@ class TrainerClientProgressViewControlller: UIViewController {
     private var currentMonth = Date()
     private var activities: [DayActivity] = []
     private var segments: [ProgressSegment] = []
-    private var selectedDate = Date()
     private let calendar = Calendar.current
-    private var clientActivityData: ClientActivityData?
+    private var monthActivities: [DailyActivityItem] = []
     private var uiLabels: UILabelsData?
 
     override func viewDidLoad() {
@@ -239,185 +238,151 @@ class TrainerClientProgressViewControlller: UIViewController {
     
     // MARK: - Data Loading
     private func loadData() {
-        // Load JSON data
-        loadClientActivityData()
-        
-        activities.removeAll()
-        
-        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentMonth))!
-        let range = calendar.range(of: .day, in: .month, for: currentMonth)!.count
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        
-        let monthFormatter = DateFormatter()
-        monthFormatter.dateFormat = "yyyy-MM"
-        let selectedMonthKey = monthFormatter.string(from: currentMonth)
-        
-        let today = Date()
-        let currentMonthKey = monthFormatter.string(from: today)
-        
-        // Determine if this is current month, future month, or past month
-        let isCurrentMonth = selectedMonthKey == currentMonthKey
-        let isFutureMonth = currentMonth > today
-        let isPastMonth = currentMonth < calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
-        
-        print("Selected month: \(selectedMonthKey)")
-        print("Current month: \(currentMonthKey)")
-        print("Is current: \(isCurrentMonth), Is future: \(isFutureMonth), Is past: \(isPastMonth)")
-        
-    // Get activity data for this specific month
-    let monthActivities = clientActivityData?.monthlyData[selectedMonthKey]
-    let hasMonthData = (monthActivities?.isEmpty == false)
-        
-        // NO EMPTY BOXES - just add the actual days starting from day 1
-        for day in 1...range {
-            if let date = calendar.date(byAdding: .day, value: day - 1, to: startOfMonth) {
-                let dateString = dateFormatter.string(from: date)
-                
-                if isFutureMonth {
-                    // FUTURE MONTH: All boxes grey (level 0)
-                    activities.append(DayActivity(date: date, activityLevel: 0))
-                    if day <= 3 {
-                        print("   Day \(day): FUTURE MONTH (grey)")
+        guard let clientId = clientId, let clientUUID = UUID(uuidString: clientId) else {
+            showAlert(title: "Error", message: "Missing client ID for this profile.")
+            return
+        }
+
+        DayActivityService.shared.fetchActivities(for: clientUUID, month: currentMonth) { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                switch result {
+                case .success(let rows):
+                    self.monthActivities = rows.map {
+                        DailyActivityItem(
+                            date: $0.activityDate,
+                            workout: $0.workoutDone,
+                            diet: $0.dietDone,
+                            sleep: $0.sleepDone,
+                            waterIntake: $0.waterDone,
+                            cardio: $0.cardioDone
+                        )
                     }
-                } else if isPastMonth && !hasMonthData {
-                    // Past month without data: grey boxes
-                    activities.append(DayActivity(date: date, activityLevel: 0))
-                    if day <= 3 {
-                        print("   Day \(day): PAST MONTH NO DATA (grey)")
-                    }
-                } else {
-                    // CURRENT MONTH or PAST MONTH WITH DATA: Show actual data
-                    let todayComponents = calendar.dateComponents([.day], from: today)
-                    let currentDay = todayComponents.day ?? 0
-                    
-                    if isCurrentMonth && day > currentDay {
-                        // Future days in current month are grey
-                        activities.append(DayActivity(date: date, activityLevel: 0))
-                        if day <= currentDay + 3 {
-                            print("   Day \(day): FUTURE (grey)")
-                        }
-                    } else {
-                        // Find activity data for this date
-                        if let dailyActivity = monthActivities?.first(where: { $0.date == dateString }) {
-                            let completedCount = dailyActivity.totalCompleted
-                            let level: Int
-                            if completedCount == 0 {
-                                level = 1 // WHITE - nothing completed
-                            } else if completedCount >= 1 && completedCount <= 2 {
-                                level = 2 // MILD GREEN - 1-2 activities
-                            } else {
-                                level = 3 // FULL GREEN - 3-5 activities
-                            }
-                            activities.append(DayActivity(date: date, activityLevel: level))
-                            if day <= 5 {
-                                print("   Day \(day) (\(dateString)): \(completedCount) activities -> level \(level)")
-                            }
-                        } else {
-                            // No data - treat as nothing completed
-                            activities.append(DayActivity(date: date, activityLevel: 1))
-                            if day <= 5 {
-                                print("   Day \(day) (\(dateString)): NO DATA -> level 1 (WHITE)")
-                            }
-                        }
-                    }
+                    self.rebuildData()
+                case .failure(let error):
+                    self.monthActivities = []
+                    self.activities = []
+                    self.segments = self.emptySegments()
+                    self.updateUI()
+                    self.showAlert(title: "Error", message: "Failed to load activity data. Please try again.")
+                    print("❌ Trainer progress fetch error: \(error)")
                 }
             }
         }
-        
-        // Calculate percentages for pie chart from actual data
-        calculateProgressSegments()
     }
-    
+
+    private func rebuildData() {
+        activities.removeAll()
+
+        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentMonth)),
+              let daysInMonth = calendar.range(of: .day, in: .month, for: currentMonth)?.count else { return }
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+
+        let monthFormatter = DateFormatter()
+        monthFormatter.dateFormat = "yyyy-MM"
+        let selectedMonthKey = monthFormatter.string(from: currentMonth)
+
+        let today = Date()
+        let currentMonthKey = monthFormatter.string(from: today)
+
+        let isCurrentMonth = selectedMonthKey == currentMonthKey
+        let isFutureMonth = currentMonth > today
+        let isPastMonth = currentMonth < calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
+        let hasMonthData = !monthActivities.isEmpty
+
+        for day in 1...daysInMonth {
+            guard let date = calendar.date(byAdding: .day, value: day - 1, to: startOfMonth) else { continue }
+            let dateString = dateFormatter.string(from: date)
+
+            if isFutureMonth {
+                activities.append(DayActivity(date: date, activityLevel: 0))
+                continue
+            }
+
+            if isPastMonth && !hasMonthData {
+                activities.append(DayActivity(date: date, activityLevel: 0))
+                continue
+            }
+
+            let currentDay = calendar.component(.day, from: today)
+            if isCurrentMonth && day > currentDay {
+                activities.append(DayActivity(date: date, activityLevel: 0))
+                continue
+            }
+
+            if let dailyActivity = monthActivities.first(where: { $0.date == dateString }) {
+                let completedCount = dailyActivity.totalCompleted
+                let level: Int
+                if completedCount == 0 {
+                    level = 1
+                } else if completedCount <= 2 {
+                    level = 2
+                } else {
+                    level = 3
+                }
+                activities.append(DayActivity(date: date, activityLevel: level))
+            } else {
+                activities.append(DayActivity(date: date, activityLevel: 1))
+            }
+        }
+
+        calculateProgressSegments()
+        updateUI()
+    }
+
     private func calculateProgressSegments() {
         let monthFormatter = DateFormatter()
         monthFormatter.dateFormat = "yyyy-MM"
         let selectedMonthKey = monthFormatter.string(from: currentMonth)
-        
+
         let today = Date()
         let currentMonthKey = monthFormatter.string(from: today)
-        
+
         let isFutureMonth = currentMonth > today
-        
+
         if isFutureMonth {
-            segments = [
-                ProgressSegment(title: "Workout", percentage: 0, color: UIColor(hex: "#FFD74D")),
-                ProgressSegment(title: "Diet", percentage: 0, color: UIColor(hex: "#FE14A5")),
-                ProgressSegment(title: "Sleep", percentage: 0, color: UIColor(hex: "#A514FE")),
-                ProgressSegment(title: "Water", percentage: 0, color: UIColor(hex: "#14FEFF")),
-                ProgressSegment(title: "Cardio", percentage: 0, color: UIColor(hex: "#FF8C14"))
-            ]
-            print("Future month - showing 0% for all activities")
+            segments = emptySegments()
             return
         }
-        
-        // Get activity data for this specific month
-        guard let monthActivities = clientActivityData?.monthlyData[selectedMonthKey], !monthActivities.isEmpty else {
-            segments = [
-                ProgressSegment(title: "Workout", percentage: 0, color: UIColor(hex: "#FFD74D")),
-                ProgressSegment(title: "Diet", percentage: 0, color: UIColor(hex: "#FE14A5")),
-                ProgressSegment(title: "Sleep", percentage: 0, color: UIColor(hex: "#A514FE")),
-                ProgressSegment(title: "Water", percentage: 0, color: UIColor(hex: "#14FEFF")),
-                ProgressSegment(title: "Cardio", percentage: 0, color: UIColor(hex: "#FF8C14"))
-            ]
-            print("No activity data for this month")
+
+        guard !monthActivities.isEmpty else {
+            segments = emptySegments()
             return
         }
-        
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        
-        // Count only days up to today for current month, all days for past months
+
         let validActivities: [DailyActivityItem]
         if selectedMonthKey == currentMonthKey {
-            validActivities = monthActivities.filter { activityItem in
-                if let date = dateFormatter.date(from: activityItem.date) {
-                    return calendar.compare(date, to: today, toGranularity: .day) != .orderedDescending
-                }
-                return false
+            validActivities = monthActivities.filter { item in
+                guard let date = dateFormatter.date(from: item.date) else { return false }
+                return calendar.compare(date, to: today, toGranularity: .day) != .orderedDescending
             }
         } else {
-            // For past months, use all recorded days
             validActivities = monthActivities
         }
-        
+
         let totalDays = Double(validActivities.count)
-        
-        print("Calculating pie chart from \(Int(totalDays)) days of data:")
-        
-        if totalDays == 0 {
-            segments = [
-                ProgressSegment(title: "Workout", percentage: 0, color: UIColor(hex: "#FFD74D")),
-                ProgressSegment(title: "Diet", percentage: 0, color: UIColor(hex: "#FE14A5")),
-                ProgressSegment(title: "Sleep", percentage: 0, color: UIColor(hex: "#A514FE")),
-                ProgressSegment(title: "Water", percentage: 0, color: UIColor(hex: "#14FEFF")),
-                ProgressSegment(title: "Cardio", percentage: 0, color: UIColor(hex: "#FF8C14"))
-            ]
-            print("   No days, showing 0% each")
+        guard totalDays > 0 else {
+            segments = emptySegments()
             return
         }
-        
-        // Calculate actual percentages from JSON
+
         let workoutCompleted = Double(validActivities.filter { $0.workout }.count)
         let dietCompleted = Double(validActivities.filter { $0.diet }.count)
         let sleepCompleted = Double(validActivities.filter { $0.sleep }.count)
         let waterCompleted = Double(validActivities.filter { $0.waterIntake }.count)
         let cardioCompleted = Double(validActivities.filter { $0.cardio }.count)
-        
+
         let workoutPct = (workoutCompleted / totalDays) * 100
         let dietPct = (dietCompleted / totalDays) * 100
         let sleepPct = (sleepCompleted / totalDays) * 100
         let waterPct = (waterCompleted / totalDays) * 100
         let cardioPct = (cardioCompleted / totalDays) * 100
-        
-        print("   Workout: \(Int(workoutCompleted))/\(Int(totalDays)) = \(Int(workoutPct))%")
-        print("   Diet: \(Int(dietCompleted))/\(Int(totalDays)) = \(Int(dietPct))%")
-        print("   Sleep: \(Int(sleepCompleted))/\(Int(totalDays)) = \(Int(sleepPct))%")
-        print("   Water: \(Int(waterCompleted))/\(Int(totalDays)) = \(Int(waterPct))%")
-        print("   Cardio: \(Int(cardioCompleted))/\(Int(totalDays)) = \(Int(cardioPct))%")
-        
-        // PIE CHART ORDER: WORKOUT, DIET, SLEEP, WATER, CARDIO (percentages are ACTUAL from JSON)
+
         segments = [
             ProgressSegment(title: "Workout", percentage: workoutPct, color: UIColor(hex: "#FFD74D")),
             ProgressSegment(title: "Diet", percentage: dietPct, color: UIColor(hex: "#FE14A5")),
@@ -425,33 +390,16 @@ class TrainerClientProgressViewControlller: UIViewController {
             ProgressSegment(title: "Water", percentage: waterPct, color: UIColor(hex: "#14FEFF")),
             ProgressSegment(title: "Cardio", percentage: cardioPct, color: UIColor(hex: "#FF8C14"))
         ]
-        
-        print("All 5 segments created with actual percentages from JSON")
     }
-    
-    private func loadClientActivityData() {
-        guard let url = Bundle.main.url(forResource: "clientActivityData", withExtension: "json") else {
-            print("JSON file not found")
-            return
-        }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            clientActivityData = try JSONDecoder().decode(ClientActivityData.self, from: data)
-            let totalMonths = clientActivityData?.monthlyData.count ?? 0
-            print("Successfully loaded activity data: \(totalMonths) months")
-            if let monthData = clientActivityData?.monthlyData["2025-11"]?.first {
-                print("   November first entry: \(monthData.date) - workout:\(monthData.workout) diet:\(monthData.diet)")
-            }
-            if let octoberData = clientActivityData?.monthlyData["2025-10"] {
-                print("October has \(octoberData.count) days of data")
-            }
-            if let septemberData = clientActivityData?.monthlyData["2025-09"] {
-                print("   September has \(septemberData.count) days of data (all 100%)")
-            }
-        } catch {
-            print("Error loading JSON: \(error)")
-        }
+
+    private func emptySegments() -> [ProgressSegment] {
+        return [
+            ProgressSegment(title: "Workout", percentage: 0, color: UIColor(hex: "#FFD74D")),
+            ProgressSegment(title: "Diet", percentage: 0, color: UIColor(hex: "#FE14A5")),
+            ProgressSegment(title: "Sleep", percentage: 0, color: UIColor(hex: "#A514FE")),
+            ProgressSegment(title: "Water", percentage: 0, color: UIColor(hex: "#14FEFF")),
+            ProgressSegment(title: "Cardio", percentage: 0, color: UIColor(hex: "#FF8C14"))
+        ]
     }
     
     private func updateUI() {
