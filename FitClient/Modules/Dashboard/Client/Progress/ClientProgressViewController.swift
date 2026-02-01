@@ -9,8 +9,9 @@ import UIKit
 
 // MARK: - Local Models (namespaced to avoid conflicts)
 private struct ClientProgressDayActivity {
-    let date: Date
-    let activityLevel: Int // 0 = future, 1 = none, 2 = partial, 3 = full
+    let date: Date?
+    let dayNumber: Int?
+    let activityLevel: Int // 0 = future/placeholder, 1 = none, 2 = partial, 3 = full
 }
 
 private struct ClientProgressSegment {
@@ -60,15 +61,24 @@ final class ClientProgressViewController: UIViewController {
     private let calendar = Calendar.current
     private var monthActivities: [ClientDailyActivityItem] = []
     private var uiLabels: UILabelsData?
+    private var heatmapContainerHeightConstraint: NSLayoutConstraint?
+    private var heatmapCollectionHeightConstraint: NSLayoutConstraint?
+    private var heatmapCollectionBottomConstraint: NSLayoutConstraint?
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         configureNavigationBar()
         setupUI()
+        cacheLayoutConstraints()
         loadUILabels()
         loadData()
         updateUI()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateHeatmapSizing()
     }
     
     private func loadUILabels() {
@@ -132,6 +142,12 @@ final class ClientProgressViewController: UIViewController {
         applyHeatmapLegend()
         setupLegend()
     }
+
+    private func cacheLayoutConstraints() {
+        heatmapContainerHeightConstraint = heatmapContainerView.constraints.first { $0.identifier == "hc-height" }
+        heatmapCollectionHeightConstraint = heatmapCollectionView.constraints.first { $0.identifier == "cv-height" }
+        heatmapCollectionBottomConstraint = heatmapContainerView.constraints.first { $0.identifier == "cv-bottom" }
+    }
     
     private func setupWeekdayHeaders() {
         weekdayHeaderStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
@@ -143,16 +159,9 @@ final class ClientProgressViewController: UIViewController {
             cvTopConstraint.constant = 8
         }
         
-        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentMonth)) else { return }
-        let firstWeekday = calendar.component(.weekday, from: startOfMonth)
-        let allWeekdays = uiLabels?.weekdays.short ?? ["S", "M", "T", "W", "T", "F", "S"]
-        let firstDayIndex = (firstWeekday - 1) % 7
-        var rotated: [String] = []
-        for i in 0..<7 {
-            rotated.append(allWeekdays[(firstDayIndex + i) % 7])
-        }
-        
-        for symbol in rotated {
+        let weekdaySymbols = weekdaysStartingMonday(from: uiLabels?.weekdays.short)
+
+        for symbol in weekdaySymbols {
             let label = UILabel()
             label.text = symbol
             label.font = .systemFont(ofSize: 11, weight: .medium)
@@ -161,12 +170,26 @@ final class ClientProgressViewController: UIViewController {
             weekdayHeaderStackView.addArrangedSubview(label)
         }
     }
+
+    private func weekdaysStartingMonday(from symbols: [String]?) -> [String] {
+        guard var symbols = symbols, symbols.count == 7 else {
+            return ["M", "T", "W", "T", "F", "S", "S"]
+        }
+        if let mondayIndex = symbols.firstIndex(where: { $0.lowercased().hasPrefix("m") }) {
+            var mondayFirst: [String] = []
+            for offset in 0..<7 {
+                mondayFirst.append(symbols[(mondayIndex + offset) % 7])
+            }
+            return mondayFirst
+        }
+        return ["M", "T", "W", "T", "F", "S", "S"]
+    }
     
     private func applyHeatmapLegend() {
         let entries: [(UIColor, String)] = [
             (.primaryGreen, "All 5 Done"),
             (.primaryGreenSoft, "1-2 Done"),
-            (UIColor(hex: "#E0E0E0"), "None Done"),
+            (UIColor(hex: "#E0E0E0"), "Did Nothing"),
             (UIColor(hex: "#1A1A1A"), "Upcoming")
         ]
         let font = heatmapSubtitleLabel.font ?? UIFont.systemFont(ofSize: 12, weight: .semibold)
@@ -267,6 +290,12 @@ final class ClientProgressViewController: UIViewController {
         guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentMonth)),
               let daysInMonth = calendar.range(of: .day, in: .month, for: currentMonth)?.count else { return }
 
+        let firstWeekday = calendar.component(.weekday, from: startOfMonth)
+        let leadingPlaceholders = (firstWeekday + 5) % 7 // shift so Monday (2) yields 0
+        for _ in 0..<leadingPlaceholders {
+            activities.append(ClientProgressDayActivity(date: nil, dayNumber: nil, activityLevel: 0))
+        }
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
 
@@ -287,18 +316,18 @@ final class ClientProgressViewController: UIViewController {
             let dateString = dateFormatter.string(from: date)
 
             if isFutureMonth {
-                activities.append(ClientProgressDayActivity(date: date, activityLevel: 0))
+                activities.append(ClientProgressDayActivity(date: date, dayNumber: calendar.component(.day, from: date), activityLevel: 0))
                 continue
             }
 
             if isPastMonth && !hasMonthData {
-                activities.append(ClientProgressDayActivity(date: date, activityLevel: 0))
+                activities.append(ClientProgressDayActivity(date: date, dayNumber: calendar.component(.day, from: date), activityLevel: 0))
                 continue
             }
 
             let currentDay = calendar.component(.day, from: today)
             if isCurrentMonth && day > currentDay {
-                activities.append(ClientProgressDayActivity(date: date, activityLevel: 0))
+                activities.append(ClientProgressDayActivity(date: date, dayNumber: calendar.component(.day, from: date), activityLevel: 0))
                 continue
             }
 
@@ -312,9 +341,18 @@ final class ClientProgressViewController: UIViewController {
                 } else {
                     level = 3
                 }
-                activities.append(ClientProgressDayActivity(date: date, activityLevel: level))
+                let dayNumber = calendar.component(.day, from: date)
+                activities.append(ClientProgressDayActivity(date: date, dayNumber: dayNumber, activityLevel: level))
             } else {
-                activities.append(ClientProgressDayActivity(date: date, activityLevel: 1))
+                activities.append(ClientProgressDayActivity(date: date, dayNumber: calendar.component(.day, from: date), activityLevel: 1))
+            }
+        }
+
+        let remainder = activities.count % 7
+        if remainder != 0 {
+            let trailingPlaceholders = 7 - remainder
+            for _ in 0..<trailingPlaceholders {
+                activities.append(ClientProgressDayActivity(date: nil, dayNumber: nil, activityLevel: 0))
             }
         }
 
@@ -397,6 +435,7 @@ final class ClientProgressViewController: UIViewController {
         heatmapCollectionView.reloadData()
         let mappedSegments = segments.map { ProgressSegment(title: $0.title, percentage: $0.percentage, color: $0.color) }
         pieChartView.configure(with: mappedSegments)
+        updateHeatmapSizing()
     }
     
     // MARK: - Actions
@@ -473,8 +512,7 @@ extension ClientProgressViewController: UICollectionViewDataSource, UICollection
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HeatmapCell.id, for: indexPath) as! HeatmapCell
         if indexPath.item < activities.count {
             let activity = activities[indexPath.item]
-            let dayNumber = calendar.component(.day, from: activity.date)
-            cell.configure(day: dayNumber, level: activity.activityLevel)
+            cell.configure(day: activity.dayNumber, level: activity.activityLevel)
         } else {
             cell.configure(day: nil, level: 0)
         }
@@ -482,16 +520,8 @@ extension ClientProgressViewController: UICollectionViewDataSource, UICollection
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        // FORCE 7 columns EXACTLY - ALL CELLS MUST BE PERFECT SQUARES
-        let layout = collectionViewLayout as! UICollectionViewFlowLayout
-        let totalSpacing: CGFloat = 6 * layout.minimumInteritemSpacing // 6 gaps × 3px spacing
-        let availableWidth = collectionView.bounds.width - layout.sectionInset.left - layout.sectionInset.right - totalSpacing
-        let cellSize = floor(availableWidth / 7.0) // Divide by exactly 7 columns
-        
-        // CRITICAL: Return square size (width == height) to ensure circles
-        let squareSize = CGSize(width: cellSize, height: cellSize)
-        
-        return squareSize
+        let cellSide = calculateCellSide(for: collectionView)
+        return CGSize(width: cellSide, height: cellSide)
     }
 }
 
@@ -514,5 +544,32 @@ extension ClientProgressViewController: UIPickerViewDataSource, UIPickerViewDele
     
     func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
         component == 0 ? 200 : 80
+    }
+}
+
+// MARK: - Layout Helpers
+private extension ClientProgressViewController {
+    func calculateCellSide(for collectionView: UICollectionView) -> CGFloat {
+        guard let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return 0 }
+        let totalSpacing = 6 * layout.minimumInteritemSpacing
+        let availableWidth = collectionView.bounds.width - layout.sectionInset.left - layout.sectionInset.right - totalSpacing
+        return floor(availableWidth / 7.0)
+    }
+
+    func updateHeatmapSizing() {
+        guard heatmapCollectionView.bounds.width > 0 else { return }
+        let cellSide = calculateCellSide(for: heatmapCollectionView)
+        let rows = max(1, Int(ceil(Double(max(activities.count, 1)) / 7.0)))
+        let layout = heatmapCollectionView.collectionViewLayout as? UICollectionViewFlowLayout
+        let rowSpacing = CGFloat(max(rows - 1, 0)) * (layout?.minimumLineSpacing ?? 0)
+        let collectionHeight = CGFloat(rows) * cellSide + rowSpacing
+
+        heatmapCollectionHeightConstraint?.constant = collectionHeight
+
+        let topPadding = heatmapCollectionView.frame.minY
+        let bottomPadding = heatmapCollectionBottomConstraint?.constant ?? 15
+        heatmapContainerHeightConstraint?.constant = topPadding + collectionHeight + bottomPadding
+
+        view.layoutIfNeeded()
     }
 }

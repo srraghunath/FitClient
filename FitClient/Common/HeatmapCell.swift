@@ -48,17 +48,21 @@ class HeatmapCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         dayLabel.text = nil
+        box.isHidden = false
     }
 
     func configure(day: Int?, level: Int) {
-        if let day = day {
-            dayLabel.text = "\(day)"
-        } else {
+        guard let day = day else {
+            box.isHidden = true // Leave blank space for placeholders
             dayLabel.text = ""
+            return
         }
+
+        box.isHidden = false
+        dayLabel.text = "\(day)"
         dayLabel.textAlignment = .center
         dayLabel.adjustsFontSizeToFitWidth = true
-        
+
         // CRITICAL: Set corner radius immediately after configure to ensure circles
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
