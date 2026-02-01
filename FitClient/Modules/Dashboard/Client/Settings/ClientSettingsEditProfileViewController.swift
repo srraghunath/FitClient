@@ -1,7 +1,10 @@
-
 import UIKit
 
-class ClientSettingsEditProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class ClientSettingsEditProfileViewController: UIViewController,
+                                               UIImagePickerControllerDelegate,
+                                               UINavigationControllerDelegate,
+                                               UIPickerViewDelegate,
+                                               UIPickerViewDataSource {
 
     // MARK: - IBOutlets
     @IBOutlet weak var profileImageView: UIImageView!
@@ -27,6 +30,11 @@ class ClientSettingsEditProfileViewController: UIViewController, UIImagePickerCo
         setupPickers()
         loadClientProfile()
         hideKeyboardWhenTappedAround()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        profileImageView.layer.cornerRadius = profileImageView.frame.height / 2
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -61,31 +69,39 @@ class ClientSettingsEditProfileViewController: UIViewController, UIImagePickerCo
     }
 
     private func setupUI() {
-        view.backgroundColor = .black
+        view.backgroundColor = .backgroundBlack
 
-        profileImageView.layer.cornerRadius = 60
         profileImageView.clipsToBounds = true
         profileImageView.layer.borderWidth = 2
         profileImageView.layer.borderColor = UIColor.primaryGreen.cgColor
         profileImageView.contentMode = .scaleAspectFill
         profileImageView.backgroundColor = UIColor(hex: "#212121")
 
-        setupTextField(nameTextField)
-        setupTextField(emailTextField)
-        setupTextField(phoneTextField)
-        setupTextField(goalTextField)
-        setupTextField(genderTextField)
+        profileImageView.isUserInteractionEnabled = true
+        profileImageView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(profileImageTapped))
+        )
 
+        configureTextFields()
         phoneTextField.keyboardType = .numberPad
         emailTextField.isUserInteractionEnabled = false
+        saveButton.applyPrimaryStyle(title: "Save Changes")
     }
 
-    private func setupTextField(_ textField: UITextField) {
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
-        textField.leftView = paddingView
-        textField.leftViewMode = .always
-        textField.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
-        textField.rightViewMode = .always
+    private func configureTextFields() {
+        let fields: [(UITextField, String)] = [
+            (nameTextField, "Full Name"),
+            (emailTextField, "Email"),
+            (phoneTextField, "Age"),
+            (genderTextField, "Gender"),
+            (goalTextField, "Goal")
+        ]
+
+        fields.forEach { field, placeholder in
+            field.borderStyle = .none
+            field.applyAppStyle(placeholder: placeholder)
+            field.keyboardAppearance = .dark
+        }
     }
 
     private func setupPickers() {
@@ -144,6 +160,8 @@ class ClientSettingsEditProfileViewController: UIViewController, UIImagePickerCo
                     self?.goalOptions = options.goalOptions
                     self?.genderPicker.reloadAllComponents()
                     self?.goalPicker.reloadAllComponents()
+                    self?.alignGenderPickerWithCurrentSelection()
+                    self?.alignGoalPickerWithCurrentSelection()
                 case .failure(let error):
                     print("[ClientSettingsEditProfile] Failed to load signup options: \(error)")
                 }
@@ -158,6 +176,9 @@ class ClientSettingsEditProfileViewController: UIViewController, UIImagePickerCo
         genderTextField.text = profile.gender
         goalTextField.text = profile.goal
 
+        alignGenderPickerWithCurrentSelection()
+        alignGoalPickerWithCurrentSelection()
+
         if let urlString = profile.profileImageURL, let url = URL(string: urlString) {
             URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
                 guard let data, let image = UIImage(data: data) else { return }
@@ -171,11 +192,30 @@ class ClientSettingsEditProfileViewController: UIViewController, UIImagePickerCo
     // MARK: - IBActions
 
     @IBAction func changePhotoTapped(_ sender: Any) {
+        profileImageTapped()
+    }
+
+    @objc private func profileImageTapped() {
         let picker = UIImagePickerController()
         picker.delegate = self
         picker.allowsEditing = true
-        picker.sourceType = .photoLibrary
-        present(picker, animated: true)
+
+        let alert = UIAlertController(title: "Select Image", message: nil, preferredStyle: .actionSheet)
+
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            alert.addAction(UIAlertAction(title: "Camera", style: .default) { _ in
+                picker.sourceType = .camera
+                self.present(picker, animated: true)
+            })
+        }
+
+        alert.addAction(UIAlertAction(title: "Photo Library", style: .default) { _ in
+            picker.sourceType = .photoLibrary
+            self.present(picker, animated: true)
+        })
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
     }
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -254,7 +294,7 @@ class ClientSettingsEditProfileViewController: UIViewController, UIImagePickerCo
 
 // MARK: - Picker Delegates
 
-extension ClientSettingsEditProfileViewController: UIPickerViewDelegate, UIPickerViewDataSource {
+extension ClientSettingsEditProfileViewController {
     func numberOfComponents(in pickerView: UIPickerView) -> Int { 1 }
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
@@ -267,23 +307,61 @@ extension ClientSettingsEditProfileViewController: UIPickerViewDelegate, UIPicke
 
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView.tag == 1 {
+            guard genderOptions.indices.contains(row) else { return }
             genderTextField.text = genderOptions[row]
         } else {
+            guard goalOptions.indices.contains(row) else { return }
             goalTextField.text = goalOptions[row]
         }
     }
 
     @objc private func donePickingGender() {
         let selectedRow = genderPicker.selectedRow(inComponent: 0)
-        guard genderOptions.indices.contains(selectedRow) else { return }
+        guard genderOptions.indices.contains(selectedRow) else {
+            view.endEditing(true)
+            return
+        }
         genderTextField.text = genderOptions[selectedRow]
         view.endEditing(true)
     }
 
     @objc private func donePickingGoal() {
         let selectedRow = goalPicker.selectedRow(inComponent: 0)
-        guard goalOptions.indices.contains(selectedRow) else { return }
+        guard goalOptions.indices.contains(selectedRow) else {
+            view.endEditing(true)
+            return
+        }
         goalTextField.text = goalOptions[selectedRow]
         view.endEditing(true)
+    }
+
+    private func alignGenderPickerWithCurrentSelection() {
+        guard !genderOptions.isEmpty else { return }
+        let current = genderTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let current,
+           let index = genderOptions.firstIndex(where: { $0.caseInsensitiveCompare(current) == .orderedSame }) {
+            genderPicker.selectRow(index, inComponent: 0, animated: false)
+            genderTextField.text = genderOptions[index]
+        } else {
+            genderPicker.selectRow(0, inComponent: 0, animated: false)
+            if (current ?? "").isEmpty {
+                genderTextField.text = genderOptions.first
+            }
+        }
+    }
+
+    private func alignGoalPickerWithCurrentSelection() {
+        guard !goalOptions.isEmpty else { return }
+        let current = goalTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let current,
+           let index = goalOptions.firstIndex(where: { $0.caseInsensitiveCompare(current) == .orderedSame }) {
+            goalPicker.selectRow(index, inComponent: 0, animated: false)
+            goalTextField.text = goalOptions[index]
+        } else {
+            goalPicker.selectRow(0, inComponent: 0, animated: false)
+            if (current ?? "").isEmpty {
+                goalTextField.text = goalOptions.first
+            }
+        }
     }
 }

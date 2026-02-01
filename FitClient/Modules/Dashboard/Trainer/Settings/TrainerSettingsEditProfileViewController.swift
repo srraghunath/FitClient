@@ -2,7 +2,9 @@ import UIKit
 
 final class TrainerSettingsEditProfileViewController: UIViewController,
                                                      UIImagePickerControllerDelegate,
-                                                     UINavigationControllerDelegate {
+                                                     UINavigationControllerDelegate,
+                                                     UIPickerViewDelegate,
+                                                     UIPickerViewDataSource {
 
     // MARK: - IBOutlets
     @IBOutlet private weak var profileImageView: UIImageView!
@@ -13,10 +15,16 @@ final class TrainerSettingsEditProfileViewController: UIViewController,
     @IBOutlet private weak var specializationTextField: UITextField!
     @IBOutlet private weak var saveButton: UIButton!
 
+    // MARK: - Properties
+    private let genderPicker = UIPickerView()
+    private var genderOptions: [String] = []
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupGenderPicker()
+        loadGenderOptions()
         fetchProfile()
     }
 
@@ -56,6 +64,24 @@ final class TrainerSettingsEditProfileViewController: UIViewController,
         }
     }
 
+    private func setupGenderPicker() {
+        genderPicker.delegate = self
+        genderPicker.dataSource = self
+        genderTextField.inputView = genderPicker
+
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        toolbar.setItems(
+            [
+                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+                UIBarButtonItem(
+                    title: "Done", style: .done, target: self, action: #selector(donePickingGender))
+            ],
+            animated: false
+        )
+        genderTextField.inputAccessoryView = toolbar
+    }
+
     // MARK: - Fetch Profile
     private func fetchProfile() {
         print("[TrainerSettingsEditProfile] Fetching trainer profile via Supabase...")
@@ -76,12 +102,29 @@ final class TrainerSettingsEditProfileViewController: UIViewController,
         }
     }
 
+    private func loadGenderOptions() {
+        DataService.shared.loadSignupOptions { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let options):
+                    self?.genderOptions = options.genderOptions
+                    self?.genderPicker.reloadAllComponents()
+                    self?.alignGenderPickerWithCurrentSelection()
+                case .failure(let error):
+                    print("[TrainerSettingsEditProfile] Failed to load gender options: \(error)")
+                }
+            }
+        }
+    }
+
     private func populateUI(with profile: TrainerProfile) {
         nameTextField.text = profile.fullName
         emailTextField.text = AuthService.shared.supabase.auth.currentUser?.email
         if let age = profile.age { ageTextField.text = String(age) }
         genderTextField.text = profile.gender
         specializationTextField.text = profile.specialization
+
+        alignGenderPickerWithCurrentSelection()
 
         if let urlString = profile.profileImageURL,
            let url = URL(string: urlString) {
@@ -244,5 +287,52 @@ final class TrainerSettingsEditProfileViewController: UIViewController,
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true)
+    }
+
+    @objc private func donePickingGender() {
+        let selectedRow = genderPicker.selectedRow(inComponent: 0)
+        guard genderOptions.indices.contains(selectedRow) else {
+            view.endEditing(true)
+            return
+        }
+
+        genderTextField.text = genderOptions[selectedRow]
+        view.endEditing(true)
+    }
+
+    private func alignGenderPickerWithCurrentSelection() {
+        guard !genderOptions.isEmpty else { return }
+
+        let currentGender = genderTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if let currentGender,
+           let index = genderOptions.firstIndex(where: { $0.caseInsensitiveCompare(currentGender) == .orderedSame }) {
+            genderPicker.selectRow(index, inComponent: 0, animated: false)
+            genderTextField.text = genderOptions[index]
+        } else {
+            genderPicker.selectRow(0, inComponent: 0, animated: false)
+            if (currentGender ?? "").isEmpty {
+                genderTextField.text = genderOptions.first
+            }
+        }
+    }
+}
+
+// MARK: - UIPickerViewDataSource
+
+extension TrainerSettingsEditProfileViewController {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int { 1 }
+
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        genderOptions.count
+    }
+
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        genderOptions[row]
+    }
+
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        guard genderOptions.indices.contains(row) else { return }
+        genderTextField.text = genderOptions[row]
     }
 }
