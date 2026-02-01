@@ -121,6 +121,44 @@ final class DayActivityService {
         }
     }
 
+    /// Fetch all activity rows for a given client (no date filtering)
+    /// - Parameters:
+    ///   - clientId: Target client UUID (used by trainer views)
+    func fetchAllActivities(
+        for clientId: UUID,
+        completion: @escaping (Result<[DayActivityDTO], Error>) -> Void
+    ) {
+        Task {
+            do {
+                let rows: [DayActivityDTO] = try await supabase
+                    .from("client_day_activity")
+                    .select()
+                    .eq("client_id", value: clientId.uuidString)
+                    .order("activity_date", ascending: true)
+                    .execute()
+                    .value
+
+                completion(.success(rows))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+
+    /// Fetch all activity rows for the current authenticated client
+    func fetchAllActivitiesForCurrentClient(
+        completion: @escaping (Result<[DayActivityDTO], Error>) -> Void
+    ) {
+        Task {
+            do {
+                let clientId = try await ensureClientId()
+                fetchAllActivities(for: clientId, completion: completion)
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+
     func upsertActivity(
         for date: Date,
         record: DayActivityDTO,

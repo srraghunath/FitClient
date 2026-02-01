@@ -73,16 +73,30 @@ class DietCell: UITableViewCell {
         
         // Configure selection state
         if diet.isSelected {
-            containerView.backgroundColor = UIColor.primaryGreen.withAlphaComponent(0.15)
+            // Keep card dark; only the border and stepper pop
+            containerView.backgroundColor = UIColor(hex: "#1a1a1a")
             containerView.layer.borderColor = UIColor.primaryGreen.cgColor
             containerView.layer.borderWidth = 1.5
             quantityStepper.isHidden = false
             quantityLabel.isHidden = false
             quantityStepper.value = Double(diet.quantity)
+
+            // High-contrast quantity UI when selected: only the control is white
+            quantityStepper.isEnabled = true
+            quantityStepper.tintColor = .black
+            quantityStepper.backgroundColor = .white
+            quantityStepper.layer.cornerRadius = 6
+            quantityStepper.clipsToBounds = true
+            quantityLabel.textColor = .white
             quantityLabel.text = "Qty: \(diet.quantity)"
         } else {
             containerView.backgroundColor = UIColor(hex: "#1a1a1a")
             containerView.layer.borderWidth = 0
+            // Dim when not selected
+            quantityStepper.isEnabled = false
+            quantityStepper.tintColor = .gray
+            quantityStepper.backgroundColor = .clear
+            quantityLabel.textColor = .primaryGreen
             quantityStepper.isHidden = true
             quantityLabel.isHidden = true
         }

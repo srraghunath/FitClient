@@ -15,6 +15,8 @@ class TrainerClientProfileViewController: UIViewController {
     @IBOutlet private weak var specialtyLabel: UILabel!
     @IBOutlet private weak var goalsLabel: UILabel!
     @IBOutlet private weak var segmentedControl: UISegmentedControl!
+    @IBOutlet private weak var scrollView: UIScrollView!
+    @IBOutlet private weak var contentView: UIView!
     @IBOutlet private weak var totalActiveDaysLabel: UILabel!
     @IBOutlet private weak var consecutiveActiveDaysLabel: UILabel!
     @IBOutlet private weak var recentActivitiesTableView: UITableView!
@@ -24,7 +26,15 @@ class TrainerClientProfileViewController: UIViewController {
     var client: Client?
     private var clientProfile: ClientProfile?
     private var currentChildViewController: UIViewController?
+    private var recentCompletedItems: [DayTrackerItem] = []
     private let activityTableMaxHeight: CGFloat = 360
+    private let isoFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter
+    }()
     
     // MARK: - View Lifecycle
     override func viewDidLoad() {
@@ -47,6 +57,9 @@ class TrainerClientProfileViewController: UIViewController {
     
     // MARK: - Private Methods
     private func setupUI() {
+        scrollView?.alwaysBounceVertical = true
+        scrollView?.showsVerticalScrollIndicator = true
+        contentView?.translatesAutoresizingMaskIntoConstraints = false
         setupProfileUI()
         setupSegmentedControl()
     }
@@ -105,15 +118,15 @@ class TrainerClientProfileViewController: UIViewController {
     }
     
     private func setupTableView() {
-        recentActivitiesTableView.register(UINib(nibName: "ActivityTableViewCell", bundle: nil), forCellReuseIdentifier: "ActivityCell")
+        recentActivitiesTableView.register(UITableViewCell.self, forCellReuseIdentifier: "CompletedTrackerCell")
         recentActivitiesTableView.delegate = self
         recentActivitiesTableView.dataSource = self
         recentActivitiesTableView.backgroundColor = .black
         recentActivitiesTableView.separatorStyle = .none
-        recentActivitiesTableView.rowHeight = UITableView.automaticDimension
-        recentActivitiesTableView.estimatedRowHeight = 88
-        recentActivitiesTableView.isScrollEnabled = false
-        recentActivitiesTableView.showsVerticalScrollIndicator = false
+        recentActivitiesTableView.rowHeight = 72
+        recentActivitiesTableView.estimatedRowHeight = 72
+        recentActivitiesTableView.isScrollEnabled = true
+        recentActivitiesTableView.showsVerticalScrollIndicator = true
     }
     
     private func loadClientProfile() {
@@ -122,21 +135,26 @@ class TrainerClientProfileViewController: UIViewController {
             return
         }
         
-        print("Loading profile for client ID: \(clientId)")  // Debug log
-        
-        DataService.shared.loadClientProfile(forClientId: clientId.uuidString) { [weak self] result in
+        print("[TrainerProfile] Loading activity profile for client ID: \(clientId)")
+
+        DayActivityService.shared.fetchAllActivities(for: clientId) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
-                case .success(let profile):
+                case .success(let activities):
+                    let profile = self?.buildProfile(from: activities)
                     self?.clientProfile = profile
-                case .failure:
-                    // Graceful fallback for Supabase-backed clients without local JSON profile
+                    self?.recentCompletedItems = self?.buildCompletedItemsForToday(from: activities) ?? []
+                case .failure(let error):
+                    print("[TrainerProfile] Failed to fetch activities: \(error)")
                     let placeholder = ClientProfile(
                         totalActiveDays: 0,
                         consecutiveActiveDays: 0,
                         recentActivities: []
                     )
                     self?.clientProfile = placeholder
+                    self?.recentCompletedItems = [
+                        DayTrackerItem(icon: "–", title: "None", subtitle: "No activity completed", isCompleted: false)
+                    ]
                 }
                 self?.updateProfileUI()
                 self?.recentActivitiesTableView.reloadData()
@@ -148,10 +166,14 @@ class TrainerClientProfileViewController: UIViewController {
     private func updateTableHeight() {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
+            if let constraint = self.tableHeightConstraint {
+                // Cap the intrinsic height so the scroll view can scroll the rest
+                let rows = CGFloat(max(self.recentCompletedItems.count, 1))
+                let targetHeight = min(rows * 80, self.activityTableMaxHeight)
+                constraint.constant = targetHeight
+            }
             self.recentActivitiesTableView.layoutIfNeeded()
-            let shouldScroll = true
-            self.recentActivitiesTableView.isScrollEnabled = shouldScroll
-            self.recentActivitiesTableView.alwaysBounceVertical = shouldScroll
+            self.scrollView?.layoutIfNeeded()
         }
     }
     
@@ -159,6 +181,84 @@ class TrainerClientProfileViewController: UIViewController {
         guard let profile = clientProfile else { return }
         totalActiveDaysLabel.text = "\(profile.totalActiveDays) Days"
         consecutiveActiveDaysLabel.text = "\(profile.consecutiveActiveDays) Days"
+    }
+
+    private func buildProfile(from activities: [DayActivityDTO]) -> ClientProfile {
+        let activeDates = extractActiveDates(from: activities)
+        let totalActiveDays = activeDates.count
+        let longestStreak = computeLongestStreak(from: activeDates)
+        return ClientProfile(
+            totalActiveDays: totalActiveDays,
+            consecutiveActiveDays: longestStreak,
+            recentActivities: []
+        )
+    }
+
+    private func extractActiveDates(from activities: [DayActivityDTO]) -> [Date] {
+        let calendar = Calendar.current
+        var uniqueDates: Set<Date> = []
+
+        for activity in activities {
+            guard activity.workoutDone || activity.cardioDone || activity.waterDone || activity.dietDone || activity.sleepDone else {
+                continue
+            }
+
+            if let date = isoFormatter.date(from: activity.activityDate) {
+                let start = calendar.startOfDay(for: date)
+                uniqueDates.insert(start)
+            }
+        }
+
+        return uniqueDates.sorted()
+    }
+
+    private func computeLongestStreak(from dates: [Date]) -> Int {
+        guard !dates.isEmpty else { return 0 }
+        let calendar = Calendar.current
+        var longest = 1
+        var current = 1
+
+        for idx in 1..<dates.count {
+            if let previousDay = calendar.date(byAdding: .day, value: 1, to: dates[idx - 1]), calendar.isDate(previousDay, inSameDayAs: dates[idx]) {
+                current += 1
+            } else {
+                current = 1
+            }
+            longest = max(longest, current)
+        }
+
+        return longest
+    }
+
+    private func buildCompletedItemsForToday(from activities: [DayActivityDTO]) -> [DayTrackerItem] {
+        let todayString = isoFormatter.string(from: Date())
+        guard let record = activities.last(where: { $0.activityDate == todayString }) else {
+            return [DayTrackerItem(icon: "–", title: "None", subtitle: "No activity completed", isCompleted: false)]
+        }
+
+        var items: [DayTrackerItem] = []
+
+        if record.workoutDone {
+            items.append(DayTrackerItem(icon: "🏋️", title: "Workout", subtitle: "Completed today", isCompleted: true))
+        }
+        if record.cardioDone {
+            items.append(DayTrackerItem(icon: "❤️", title: "Cardio", subtitle: "Completed today", isCompleted: true))
+        }
+        if record.waterDone {
+            items.append(DayTrackerItem(icon: "💧", title: "Water Intake", subtitle: "Completed today", isCompleted: true))
+        }
+        if record.dietDone {
+            items.append(DayTrackerItem(icon: "🍽", title: "Diet Plan", subtitle: "Completed today", isCompleted: true))
+        }
+        if record.sleepDone {
+            items.append(DayTrackerItem(icon: "🌙", title: "Sleep Cycle", subtitle: "Completed today", isCompleted: true))
+        }
+
+        let completed = Array(items.prefix(5))
+        if completed.isEmpty {
+            return [DayTrackerItem(icon: "–", title: "None", subtitle: "No activity completed", isCompleted: false)]
+        }
+        return completed
     }
     
     @objc private func backButtonTapped() {
@@ -250,20 +350,70 @@ class TrainerClientProfileViewController: UIViewController {
 // MARK: - UITableViewDelegate & UITableViewDataSource
 extension TrainerClientProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return clientProfile?.recentActivities.count ?? 0
+        return recentCompletedItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ActivityCell", for: indexPath) as? ActivityTableViewCell,
-              let activity = clientProfile?.recentActivities[indexPath.row] else {
-            return UITableViewCell()
-        }
-        
-        cell.configure(with: activity)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CompletedTrackerCell", for: indexPath)
+        cell.selectionStyle = .none
+        cell.backgroundColor = .clear
+        cell.contentView.backgroundColor = .clear
+
+        // Remove existing subviews to avoid stacking when reused
+        cell.contentView.subviews.forEach { $0.removeFromSuperview() }
+
+        let containerView = UIView()
+        containerView.backgroundColor = UIColor(red: 0.19, green: 0.19, blue: 0.19, alpha: 1.0)
+        containerView.layer.cornerRadius = 24
+        containerView.clipsToBounds = true
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+
+        cell.contentView.addSubview(containerView)
+
+        let item = recentCompletedItems[indexPath.row]
+
+        let iconLabel = UILabel()
+        iconLabel.text = item.icon
+        iconLabel.font = .systemFont(ofSize: 24)
+        iconLabel.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(iconLabel)
+
+        let titleLabel = UILabel()
+        titleLabel.text = item.title
+        titleLabel.textColor = .white
+        titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(titleLabel)
+
+        let subtitleLabel = UILabel()
+        subtitleLabel.text = item.subtitle
+        subtitleLabel.textColor = .textSecondary
+        subtitleLabel.font = .systemFont(ofSize: 14, weight: .regular)
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(subtitleLabel)
+
+        NSLayoutConstraint.activate([
+            containerView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 4),
+            containerView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -4),
+
+            iconLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
+            iconLabel.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+            iconLabel.widthAnchor.constraint(equalToConstant: 24),
+
+            titleLabel.leadingAnchor.constraint(equalTo: iconLabel.trailingAnchor, constant: 16),
+            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
+
+            subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 2),
+            subtitleLabel.trailingAnchor.constraint(lessThanOrEqualTo: containerView.trailingAnchor, constant: -16)
+        ])
+
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
+        return 72
     }
 }

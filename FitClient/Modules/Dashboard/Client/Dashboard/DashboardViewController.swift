@@ -42,6 +42,31 @@ class DashboardViewController: UIViewController {
     private var todayDietDetails: [Diet] = [] // mapped Diet models to render with DietCell
     private var dayActivityRecord: DayActivityDTO?
     private var currentDayPlan: DayPlan?
+    private lazy var workoutsEmptyLabel: UILabel = {
+        let label = UILabel()
+        label.text = "No scheduled workouts for today"
+        label.textColor = .textSecondary
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        return label
+    }()
+    private let isoFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter
+    }()
+    private lazy var dietEmptyLabel: UILabel = {
+        let label = UILabel()
+        label.text = "No diet items scheduled for today"
+        label.textColor = .textSecondary
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        return label
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -232,10 +257,11 @@ class DashboardViewController: UIViewController {
         let log = "📅 [Dashboard] Loading data for date: \(dateString)\n"
         try? log.write(toFile: logPath, atomically: true, encoding: .utf8)
         print(log)
-        
-        // Set stat values
-        totalActiveDaysValueLabel.text = "12 Days"
-        consecutiveDaysValueLabel.text = "7 Days"
+
+        // Reset stat values while loading
+        totalActiveDaysValueLabel.text = "–"
+        consecutiveDaysValueLabel.text = "–"
+        loadActivityStats()
 
         fetchDayPlan(for: date)
         
@@ -450,6 +476,62 @@ class DashboardViewController: UIViewController {
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter.string(from: date)
     }
+
+    private func loadActivityStats() {
+        DayActivityService.shared.fetchAllActivitiesForCurrentClient { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let activities):
+                    let activeDates = self?.extractActiveDates(from: activities) ?? []
+                    let total = activeDates.count
+                    let longestStreak = self?.computeLongestStreak(from: activeDates) ?? 0
+
+                    self?.totalActiveDaysValueLabel.text = total == 1 ? "1 Day" : "\(total) Days"
+                    self?.consecutiveDaysValueLabel.text = longestStreak == 1 ? "1 Day" : "\(longestStreak) Days"
+                case .failure(let error):
+                    print("❌ [Dashboard] Failed to load activity stats: \(error)")
+                    self?.totalActiveDaysValueLabel.text = "–"
+                    self?.consecutiveDaysValueLabel.text = "–"
+                }
+            }
+        }
+    }
+
+    private func extractActiveDates(from activities: [DayActivityDTO]) -> [Date] {
+        let calendar = Calendar.current
+        var uniqueDates: Set<Date> = []
+
+        for activity in activities {
+            guard activity.workoutDone || activity.cardioDone || activity.waterDone || activity.dietDone || activity.sleepDone else {
+                continue
+            }
+
+            if let date = isoFormatter.date(from: activity.activityDate) {
+                let start = calendar.startOfDay(for: date)
+                uniqueDates.insert(start)
+            }
+        }
+
+        return uniqueDates.sorted()
+    }
+
+    private func computeLongestStreak(from dates: [Date]) -> Int {
+        guard !dates.isEmpty else { return 0 }
+        let calendar = Calendar.current
+        var longest = 1
+        var current = 1
+
+        for idx in 1..<dates.count {
+            if let previousDay = calendar.date(byAdding: .day, value: 1, to: dates[idx - 1]), calendar.isDate(previousDay, inSameDayAs: dates[idx]) {
+                current += 1
+            } else {
+                current = 1
+            }
+            longest = max(longest, current)
+        }
+
+        return longest
+    }
     
     func updateUI() {
         dayTrackerTableView.reloadData()
@@ -458,9 +540,30 @@ class DashboardViewController: UIViewController {
         
         // Update table heights - 72pt + 8pt spacing per cell
         dayTrackerTableHeight.constant = CGFloat(dayTrackerItems.count) * 80
-    scheduledWorkoutsTableHeight.constant = CGFloat(scheduledWorkouts.count) * 72
-    // Diet cells match DietCell.xib height (96)
-    dietTableHeight.constant = CGFloat(todayDietDetails.count) * 96
+
+        // Keep workouts area visible even when empty so the empty state is readable
+        let workoutsHeight = CGFloat(scheduledWorkouts.count) * 72
+        scheduledWorkoutsTableHeight.constant = max(workoutsHeight, 120)
+
+        // Diet cells match DietCell.xib height (96)
+        let dietHeight = CGFloat(todayDietDetails.count) * 96
+        dietTableHeight.constant = max(dietHeight, 120)
+
+        // Empty state for scheduled workouts
+        if scheduledWorkouts.isEmpty {
+            workoutsEmptyLabel.frame = scheduledWorkoutsTableView.bounds
+            scheduledWorkoutsTableView.backgroundView = workoutsEmptyLabel
+        } else {
+            scheduledWorkoutsTableView.backgroundView = nil
+        }
+
+        // Empty state for diet plan
+        if todayDietDetails.isEmpty {
+            dietEmptyLabel.frame = dietTableView.bounds
+            dietTableView.backgroundView = dietEmptyLabel
+        } else {
+            dietTableView.backgroundView = nil
+        }
         
         // Log for debugging
         print("📊 [Dashboard] Day tracker items: \(dayTrackerItems.count), height: \(dayTrackerTableHeight.constant)")

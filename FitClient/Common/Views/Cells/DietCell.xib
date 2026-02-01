@@ -45,15 +45,6 @@
                                 <color key="textColor" red="0.84313725490196079" green="0.80000000000000004" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Qty" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qty-lbl-head">
-                                <rect key="frame" x="268" y="8" width="94" height="16"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="16" id="qty-h-const"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="11"/>
-                                <color key="textColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minimumValue="1" maximumValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="8QJ-qd-T4H">
                                 <rect key="frame" x="268" y="48" width="94" height="32"/>
                                 <color key="backgroundColor" red="0.192156862745098" green="0.192156862745098" blue="0.192156862745098" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -77,17 +68,17 @@
                             <constraint firstAttribute="bottom" secondItem="cLf-dH-v4k" secondAttribute="bottom" constant="12" id="MCl-Ed-l8C"/>
                             <constraint firstItem="LwT-5Q-bwM" firstAttribute="top" secondItem="ctn-vw-123" secondAttribute="top" constant="12" id="O1m-wf-gMa"/>
                             <constraint firstAttribute="trailing" secondItem="8QJ-qd-T4H" secondAttribute="trailing" constant="12" id="P0E-Qb-y4A"/>
-                            <constraint firstItem="qty-lbl-head" firstAttribute="top" secondItem="ctn-vw-123" secondAttribute="top" constant="8" id="SOX-9q-gu4"/>
+                            
                             <constraint firstItem="LwT-5Q-bwM" firstAttribute="leading" secondItem="cLf-dH-v4k" secondAttribute="trailing" constant="12" id="evY-M5-iWl"/>
                             <constraint firstItem="LKb-uH-Cdu" firstAttribute="leading" secondItem="cLf-dH-v4k" secondAttribute="trailing" constant="12" id="evY-M5-nutrition"/>
-                            <constraint firstAttribute="trailing" secondItem="qty-lbl-head" secondAttribute="trailing" constant="12" id="hXq-uA-Xxn"/>
+                            
                             <constraint firstAttribute="bottom" secondItem="8QJ-qd-T4H" secondAttribute="bottom" constant="8" id="hzv-Yk-g1s"/>
-                            <constraint firstItem="Wrv-g7-heN" firstAttribute="top" secondItem="qty-lbl-head" secondAttribute="bottom" constant="2" id="kRt-fZ-gZl"/>
-                            <constraint firstItem="8QJ-qd-T4H" firstAttribute="leading" secondItem="qty-lbl-head" secondAttribute="leading" id="mXy-fZ-gZl"/>
-                            <constraint firstItem="Wrv-g7-heN" firstAttribute="leading" secondItem="qty-lbl-head" secondAttribute="leading" id="nXy-fZ-gZl"/>
-                            <constraint firstItem="Wrv-g7-heN" firstAttribute="trailing" secondItem="qty-lbl-head" secondAttribute="trailing" id="oXy-fZ-gZl"/>
-                            <constraint firstItem="8QJ-qd-T4H" firstAttribute="trailing" secondItem="qty-lbl-head" secondAttribute="trailing" id="pXy-fZ-gZl"/>
-                            <constraint firstItem="8QJ-qd-T4H" firstAttribute="top" secondItem="Wrv-g7-heN" secondAttribute="bottom" constant="2" id="qXy-fZ-gZl"/>
+                            <constraint firstItem="Wrv-g7-heN" firstAttribute="top" secondItem="ctn-vw-123" secondAttribute="top" constant="8" id="qty-top-container"/>
+                            <constraint firstAttribute="trailing" secondItem="Wrv-g7-heN" secondAttribute="trailing" constant="12" id="qty-trailing-container"/>
+                            <constraint firstItem="Wrv-g7-heN" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="LKb-uH-Cdu" secondAttribute="trailing" constant="12" id="qty-leading-min"/>
+                            <constraint firstItem="8QJ-qd-T4H" firstAttribute="top" secondItem="Wrv-g7-heN" secondAttribute="bottom" constant="2" id="stepper-top-qty"/>
+                            <constraint firstItem="8QJ-qd-T4H" firstAttribute="centerX" secondItem="Wrv-g7-heN" secondAttribute="centerX" id="stepper-center-qty"/>
+                            <constraint firstItem="8QJ-qd-T4H" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="LKb-uH-Cdu" secondAttribute="trailing" constant="12" id="stepper-leading-min"/>
                         </constraints>
                     </view>
                 </subviews>

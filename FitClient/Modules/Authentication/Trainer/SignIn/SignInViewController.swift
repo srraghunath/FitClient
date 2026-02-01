@@ -9,6 +9,7 @@ class SignInViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupKeyboardDismiss()
     }
     
     func setupUI() {
@@ -19,7 +20,6 @@ class SignInViewController: UIViewController {
         emailTextField.applyAppStyle(placeholder: "Email")
         emailTextField.autocapitalizationType = .none
         emailTextField.keyboardType = .emailAddress
-
         
         // Password text field
         passwordTextField.applyAppStyle(placeholder: "Password")
@@ -28,6 +28,23 @@ class SignInViewController: UIViewController {
         // Sign In button
         signInButton.applyPrimaryStyle(title: "Sign In")
     }
+    
+    // MARK: - Keyboard Dismiss
+    
+    func setupKeyboardDismiss() {
+        let tapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(dismissKeyboard)
+        )
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    // MARK: - Actions
     
     @IBAction func signInButtonTapped(_ sender: UIButton) {
         guard let email = emailTextField.text, !email.isEmpty,
@@ -48,12 +65,18 @@ class SignInViewController: UIViewController {
     }
     
     @IBAction func signUpButtonTapped(_ sender: UIButton) {
-        let signUpVC = SignUpViewController(nibName: "SignUpViewController", bundle: nil)
+        let signUpVC = SignUpViewController(
+            nibName: "SignUpViewController",
+            bundle: nil
+        )
         navigationController?.pushViewController(signUpVC, animated: true)
     }
     
     @IBAction func forgotPasswordTapped(_ sender: UIButton) {
-        let forgotVC = ForgotPassword(nibName: "ForgotPassword", bundle: nil)
+        let forgotVC = ForgotPassword(
+            nibName: "ForgotPassword",
+            bundle: nil
+        )
         navigationController?.pushViewController(forgotVC, animated: true)
     }
     

@@ -604,41 +604,7 @@ class TrainerClientProfileScheduleViewController: UIViewController {
     }
 
     private func showSaveBanner() {
-        // Lightweight success banner with primaryGreen background
-        let banner = UIView()
-        banner.backgroundColor = .primaryGreen
-        banner.layer.cornerRadius = 12
-        banner.layer.masksToBounds = true
-        banner.alpha = 0.0
-
-        let label = UILabel()
-        label.text = "Saved"
-        label.textColor = .black
-        label.font = UIFont.boldSystemFont(ofSize: 14)
-        label.translatesAutoresizingMaskIntoConstraints = false
-
-        banner.translatesAutoresizingMaskIntoConstraints = false
-        banner.addSubview(label)
-        view.addSubview(banner)
-
-        NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: banner.centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: banner.centerYAnchor),
-            banner.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-            banner.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-            banner.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            banner.heightAnchor.constraint(equalToConstant: 44)
-        ])
-
-        UIView.animate(withDuration: 0.2, animations: {
-            banner.alpha = 1.0
-        }, completion: { _ in
-            UIView.animate(withDuration: 0.2, delay: 1.2, options: [], animations: {
-                banner.alpha = 0.0
-            }, completion: { _ in
-                banner.removeFromSuperview()
-            })
-        })
+        showAlert(title: "Success", message: "Schedule saved successfully.")
     }
     
     // MARK: - Debug Logging

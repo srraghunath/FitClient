@@ -1,10 +1,3 @@
-//
-//  SignInClientViewController.swift
-//  FitClient
-//
-//  Created by admin6 on 12/11/25.
-//
-
 import UIKit
 
 class SignInClientViewController: UIViewController {
@@ -16,6 +9,7 @@ class SignInClientViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupKeyboardDismiss()
     }
     
     func setupUI() {
@@ -26,7 +20,6 @@ class SignInClientViewController: UIViewController {
         emailTextField.applyAppStyle(placeholder: "Email")
         emailTextField.autocapitalizationType = .none
         emailTextField.keyboardType = .emailAddress
-
         
         // Password text field
         passwordTextField.applyAppStyle(placeholder: "Password")
@@ -34,6 +27,20 @@ class SignInClientViewController: UIViewController {
         
         // Sign In button
         signInButton.applyPrimaryStyle(title: "Sign In")
+    }
+    
+    // MARK: - Keyboard Dismiss
+    func setupKeyboardDismiss() {
+        let tapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(dismissKeyboard)
+        )
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     @IBAction func signInButtonTapped(_ sender: UIButton) {
@@ -55,12 +62,18 @@ class SignInClientViewController: UIViewController {
     }
     
     @IBAction func signUpButtonTapped(_ sender: UIButton) {
-        let signUpVC = SignUpClientViewController(nibName: "SignUpClientViewController", bundle: nil)
+        let signUpVC = SignUpClientViewController(
+            nibName: "SignUpClientViewController",
+            bundle: nil
+        )
         navigationController?.pushViewController(signUpVC, animated: true)
     }
     
     @IBAction func forgotPasswordTapped(_ sender: UIButton) {
-        let forgotVC = ForgotPasswordClientViewController(nibName: "ForgotPasswordClientViewController", bundle: nil)
+        let forgotVC = ForgotPasswordClientViewController(
+            nibName: "ForgotPasswordClientViewController",
+            bundle: nil
+        )
         navigationController?.pushViewController(forgotVC, animated: true)
     }
     
