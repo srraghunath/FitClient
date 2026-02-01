@@ -55,7 +55,7 @@ class SignInClientViewController: UIViewController {
                 if let error = error {
                     self?.showAlert(message: "Error signing in: \(error.localizedDescription)")
                 } else {
-                    self?.navigateToDashboard()
+                    self?.validateClientConnectionAndProceed()
                 }
             }
         }
@@ -82,5 +82,43 @@ class SignInClientViewController: UIViewController {
         tabBarController.modalPresentationStyle = .fullScreen
         tabBarController.modalTransitionStyle = .crossDissolve
         present(tabBarController, animated: true)
+    }
+
+    private func validateClientConnectionAndProceed() {
+        Task { [weak self] in
+            do {
+                guard let role = try await AuthService.shared.resolveCurrentRole() else {
+                    await MainActor.run {
+                        self?.showAlert(message: "Unable to verify account. Please try again.")
+                    }
+                    return
+                }
+
+                switch role {
+                case .client(_, _, let trainerId):
+                    guard trainerId != nil else {
+                        await MainActor.run { [weak self] in
+                            self?.showAlert(message: "Your account is not connected to a trainer yet. Please connect before signing in.") {
+                                AuthService.shared.signOut { _ in }
+                            }
+                        }
+                        return
+                    }
+                    await MainActor.run { [weak self] in
+                        self?.navigateToDashboard()
+                    }
+                case .trainer:
+                    await MainActor.run { [weak self] in
+                        self?.showAlert(message: "Please use the trainer sign-in flow.")
+                        AuthService.shared.signOut { _ in }
+                    }
+                }
+            } catch {
+                await MainActor.run { [weak self] in
+                    self?.showAlert(message: "Error validating account: \(error.localizedDescription)")
+                    AuthService.shared.signOut { _ in }
+                }
+            }
+        }
     }
 }
