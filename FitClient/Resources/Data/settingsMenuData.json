@@ -23,6 +23,13 @@
       "iconBackgroundColor": "#AEFD14"
     },
     {
+      "id": "disconnect",
+      "title": "Disconnect Trainer",
+      "subtitle": "Remove trainer access and shared data",
+      "icon": "person.crop.circle.badge.xmark",
+      "iconBackgroundColor": "#FF3B30"
+    },
+    {
       "id": "logout",
       "title": "Logout",
       "subtitle": null,

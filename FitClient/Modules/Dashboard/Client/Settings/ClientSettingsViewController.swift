@@ -155,6 +155,8 @@ extension ClientSettingsViewController: UITableViewDataSource, UITableViewDelega
         case "help":
             let helpVC = ClientHelpViewController(nibName: "ClientHelpViewController", bundle: nil)
             navigationController?.pushViewController(helpVC, animated: true)
+        case "disconnect":
+            promptDisconnectTrainer()
         case "logout":
             print("Logout tapped")
             handleLogout()
@@ -173,6 +175,66 @@ extension ClientSettingsViewController: UITableViewDataSource, UITableViewDelega
                 let window = UIApplication.shared.connectedScenes.first as? UIWindowScene
                 window?.windows.first?.rootViewController = UIStoryboard(name: "Main", bundle: nil)
                     .instantiateInitialViewController()
+            }
+        }
+    }
+
+    private func promptDisconnectTrainer() {
+        let alert = UIAlertController(
+            title: "Disconnect Trainer",
+            message: "This will remove your trainer connection and delete shared sessions, chats, and activity data from the trainer's view. You will be signed out.",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Disconnect", style: .destructive) { [weak self] _ in
+            self?.disconnectTrainer()
+        })
+
+        present(alert, animated: true)
+    }
+
+    private func disconnectTrainer() {
+        Task { [weak self] in
+            guard let self else { return }
+
+            do {
+                guard let role = try await AuthService.shared.resolveCurrentRole() else {
+                    await MainActor.run {
+                        self.showAlert(message: "Unable to verify your account. Please try again.")
+                    }
+                    return
+                }
+
+                guard case let .client(_, clientId, trainerId) = role else {
+                    await MainActor.run {
+                        self.showAlert(message: "Only clients can disconnect from a trainer.")
+                    }
+                    return
+                }
+
+                guard trainerId != nil else {
+                    await MainActor.run {
+                        self.showAlert(message: "You are not currently connected to a trainer.")
+                    }
+                    return
+                }
+
+                try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
+                    ClientService.shared.disconnectClientAndPurgeData(clientId: clientId) { error in
+                        if let error { cont.resume(throwing: error) } else { cont.resume() }
+                    }
+                }
+
+                await MainActor.run {
+                    self.showAlert(title: "Disconnected", message: "Your trainer connection and shared data have been removed. You will be signed out.") {
+                        self.handleLogout()
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    self.showAlert(message: "Failed to disconnect: \(error.localizedDescription)")
+                }
             }
         }
     }
@@ -366,7 +428,8 @@ class SettingsCell: UITableViewCell {
             profileImageView.isHidden = true
             iconContainer.isHidden = false
             iconContainer.backgroundColor = item.iconBgColor
-            iconImageView.image = UIImage(systemName: item.icon)
+            let symbol = UIImage(systemName: item.icon) ?? UIImage(systemName: "exclamationmark.triangle.fill")
+            iconImageView.image = symbol
         }
     }
 
