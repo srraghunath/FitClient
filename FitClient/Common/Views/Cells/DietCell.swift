@@ -68,8 +68,8 @@ class DietCell: UITableViewCell {
         
         nameLabel.text = diet.name
         
-        // Format nutrition info: "150g | P: 25g | C: 40g | F: 10g | 350 cal"
-        nutritionLabel.text = "100 gn | P: \(String(format: "%.1f", diet.protein))g | C: \(String(format: "%.1f", diet.carbs))g | F: \(String(format: "%.1f", diet.fat))g | \(diet.calories) cal"
+    // Format nutrition info: "<grams> g | P: 25g | C: 40g | F: 10g | 350 cal"
+    nutritionLabel.text = "\(diet.grams) g | P: \(String(format: "%.1f", diet.protein))g | C: \(String(format: "%.1f", diet.carbs))g | F: \(String(format: "%.1f", diet.fat))g | \(diet.calories) cal"
         
         // Configure selection state
         if diet.isSelected {
