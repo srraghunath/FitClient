@@ -80,7 +80,7 @@
                                             <rect key="frame" x="-111" y="109" width="353" height="276"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="276" id="cv-height"/>
+                                                <constraint identifier="cv-height" firstAttribute="height" relation="greaterThanOrEqual" constant="0.0" priority="999" id="cv-height"/>
                                             </constraints>
                                             <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="3" minimumInteritemSpacing="3" id="cv-layout">
                                                 <size key="itemSize" width="40" height="40"/>
@@ -92,11 +92,11 @@
                                     </subviews>
                                     <color key="backgroundColor" red="0.18823529411764706" green="0.19215686274509805" blue="0.19215686274509805" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <constraints>
-                                        <constraint firstAttribute="bottom" secondItem="heatmap-cv" secondAttribute="bottom" constant="15" id="cv-bottom"/>
+                                        <constraint identifier="cv-bottom" firstAttribute="bottom" secondItem="heatmap-cv" secondAttribute="bottom" constant="15" id="cv-bottom"/>
                                         <constraint firstItem="heatmap-cv" firstAttribute="leading" secondItem="heatmap-container" secondAttribute="leading" constant="12" id="cv-leading"/>
-                                        <constraint firstItem="heatmap-cv" firstAttribute="top" secondItem="weekday-header" secondAttribute="bottom" constant="8" id="cv-top"/>
+                                        <constraint identifier="cv-top" firstItem="heatmap-cv" firstAttribute="top" secondItem="weekday-header" secondAttribute="bottom" constant="8" id="cv-top"/>
                                         <constraint firstAttribute="trailing" secondItem="heatmap-cv" secondAttribute="trailing" constant="12" id="cv-trailing"/>
-                                        <constraint firstAttribute="height" constant="400" id="hc-height"/>
+                                        <constraint identifier="hc-height" firstAttribute="height" relation="greaterThanOrEqual" constant="0.0" priority="999" id="hc-height"/>
                                         <constraint firstItem="heatmap-subtitle" firstAttribute="leading" secondItem="heatmap-container" secondAttribute="leading" constant="12" id="hs-leading"/>
                                         <constraint firstItem="heatmap-subtitle" firstAttribute="top" secondItem="heatmap-title" secondAttribute="bottom" constant="5" id="hs-top"/>
                                         <constraint firstAttribute="trailing" secondItem="heatmap-subtitle" secondAttribute="trailing" constant="12" id="hs-trailing"/>

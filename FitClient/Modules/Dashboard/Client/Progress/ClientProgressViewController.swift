@@ -75,11 +75,6 @@ final class ClientProgressViewController: UIViewController {
         loadData()
         updateUI()
     }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        updateHeatmapSizing()
-    }
     
     private func loadUILabels() {
         DataService.shared.loadUILabels { [weak self] result in
@@ -427,16 +422,22 @@ final class ClientProgressViewController: UIViewController {
     }
     
     private func updateUI() {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM yyyy"
-        monthLabel.text = formatter.string(from: currentMonth)
-        monthLabel.textAlignment = .center
-        setupWeekdayHeaders()
-        heatmapCollectionView.reloadData()
-        let mappedSegments = segments.map { ProgressSegment(title: $0.title, percentage: $0.percentage, color: $0.color) }
-        pieChartView.configure(with: mappedSegments)
-        updateHeatmapSizing()
+    let formatter = DateFormatter()
+    formatter.dateFormat = "MMMM yyyy"
+    monthLabel.text = formatter.string(from: currentMonth)
+    monthLabel.textAlignment = .center
+
+    setupWeekdayHeaders()
+
+    heatmapCollectionView.reloadData()
+    heatmapCollectionView.layoutIfNeeded()
+    updateHeatmapSizing()
+
+    let mappedSegments = segments.map {
+        ProgressSegment(title: $0.title, percentage: $0.percentage, color: $0.color)
     }
+    pieChartView.configure(with: mappedSegments)
+}
     
     // MARK: - Actions
     @IBAction private func calendarButtonTapped(_ sender: UIButton) {
@@ -556,20 +557,24 @@ private extension ClientProgressViewController {
         return floor(availableWidth / 7.0)
     }
 
-    func updateHeatmapSizing() {
-        guard heatmapCollectionView.bounds.width > 0 else { return }
-        let cellSide = calculateCellSide(for: heatmapCollectionView)
-        let rows = max(1, Int(ceil(Double(max(activities.count, 1)) / 7.0)))
-        let layout = heatmapCollectionView.collectionViewLayout as? UICollectionViewFlowLayout
-        let rowSpacing = CGFloat(max(rows - 1, 0)) * (layout?.minimumLineSpacing ?? 0)
-        let collectionHeight = CGFloat(rows) * cellSide + rowSpacing
+func updateHeatmapSizing() {
+    guard heatmapCollectionView.bounds.width > 0 else { return }
 
-        heatmapCollectionHeightConstraint?.constant = collectionHeight
+    let cellSide = calculateCellSide(for: heatmapCollectionView)
+    let rows = Int(ceil(Double(max(activities.count, 1)) / 7.0))
 
-        let topPadding = heatmapCollectionView.frame.minY
-        let bottomPadding = heatmapCollectionBottomConstraint?.constant ?? 15
-        heatmapContainerHeightConstraint?.constant = topPadding + collectionHeight + bottomPadding
+    guard let layout = heatmapCollectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
 
-        view.layoutIfNeeded()
-    }
+    let rowSpacing = CGFloat(max(rows - 1, 0)) * layout.minimumLineSpacing
+    let collectionHeight = CGFloat(rows) * cellSide + rowSpacing
+
+    heatmapCollectionHeightConstraint?.constant = collectionHeight
+
+    let headerBottomY = weekdayHeaderStackView.frame.maxY
+    let topPadding = headerBottomY + 8
+    let bottomPadding = heatmapCollectionBottomConstraint?.constant ?? 15
+
+    heatmapContainerHeightConstraint?.constant =
+        topPadding + collectionHeight + bottomPadding
+}
 }
