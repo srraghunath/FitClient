@@ -294,19 +294,24 @@ extension TrainerClientsChatViewController: UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let message = messages[indexPath.row]
 
+        // On trainer side: trainer's own messages should appear on the right (green),
+        // and client messages on the left (dark). So we invert which bubble we use
+        // compared to the client app.
         if message.isClient {
+            // Message from client → left, dark bubble
             guard
                 let cell = tableView.dequeueReusableCell(
-                    withIdentifier: "ClientMessageCell", for: indexPath) as? ClientMessageCell
+                    withIdentifier: "TrainerMessageCell", for: indexPath) as? TrainerMessageCell
             else {
                 return UITableViewCell()
             }
             cell.configure(with: message)
             return cell
         } else {
+            // Message from trainer → right, green bubble
             guard
                 let cell = tableView.dequeueReusableCell(
-                    withIdentifier: "TrainerMessageCell", for: indexPath) as? TrainerMessageCell
+                    withIdentifier: "ClientMessageCell", for: indexPath) as? ClientMessageCell
             else {
                 return UITableViewCell()
             }

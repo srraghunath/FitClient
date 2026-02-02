@@ -14,6 +14,7 @@ class ClientchatViewController: UIViewController {
     @IBOutlet weak var messageInputTextField: UITextField!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var inputContainerView: UIView!
+    @IBOutlet weak var inputContainerBottom: NSLayoutConstraint!
 
     private var messages: [ChatMessage] = []
     private var conversation: Conversation?
@@ -27,6 +28,17 @@ class ClientchatViewController: UIViewController {
         setupMessageInput()
         loadConversationAndMessages()
         addKeyboardObservers()
+        addDismissTapGesture()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
     deinit {
@@ -92,6 +104,7 @@ class ClientchatViewController: UIViewController {
         messagesTableView.separatorStyle = .none
         messagesTableView.estimatedRowHeight = 80
         messagesTableView.rowHeight = UITableView.automaticDimension
+        messagesTableView.contentInsetAdjustmentBehavior = .never
 
         messagesTableView.register(
             TrainerMessageCell.self, forCellReuseIdentifier: "TrainerMessageCell")
@@ -101,6 +114,12 @@ class ClientchatViewController: UIViewController {
 
     private func setupMessageInput() {
         messageInputTextField.returnKeyType = .send
+    }
+
+    private func addDismissTapGesture() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
     }
 
     private func loadConversationAndMessages() {
@@ -229,22 +248,21 @@ class ClientchatViewController: UIViewController {
             self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
-    @objc private func keyboardWillShow(notification: NSNotification) {
-        if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey]
-            as? CGRect
-        {
-            let keyboardHeight = keyboardFrame.height
-            let bottomInset = keyboardHeight - view.safeAreaInsets.bottom
-            messagesTableView.contentInset.bottom = bottomInset
-            messagesTableView.verticalScrollIndicatorInsets.bottom = bottomInset
-            scrollToBottom()
-        }
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
     }
 
-    @objc private func keyboardWillHide(notification: NSNotification) {
-        messagesTableView.contentInset.bottom = 0
-        messagesTableView.verticalScrollIndicatorInsets.bottom = 0
-    }
+    @objc private func keyboardWillShow(notification: NSNotification) {
+    guard let frame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+    inputContainerBottom.constant = frame.height - view.safeAreaInsets.bottom
+    UIView.animate(withDuration: 0.25) { self.view.layoutIfNeeded() }
+    scrollToBottom()
+}
+
+@objc private func keyboardWillHide(notification: NSNotification) {
+    inputContainerBottom.constant = 0
+    UIView.animate(withDuration: 0.25) { self.view.layoutIfNeeded() }
+}
 }
 
 // MARK: - Realtime

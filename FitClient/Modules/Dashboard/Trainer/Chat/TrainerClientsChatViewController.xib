@@ -135,7 +135,7 @@
                 <constraint firstItem="inputContainer" firstAttribute="top" secondItem="messagesTableView" secondAttribute="bottom" id="container-top"/>
                 <constraint firstItem="inputContainer" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="container-leading"/>
                 <constraint firstItem="inputContainer" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="input-trailing"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="inputContainer" secondAttribute="bottom" id="inputContainer-bottom"/>
+                <constraint firstItem="i5M-Pr-FkT" firstAttribute="bottom" secondItem="inputContainer" secondAttribute="bottom" id="inputContainer-bottom"/>
             </constraints>
             <point key="canvasLocation" x="0.0" y="0.0"/>
         </view>
