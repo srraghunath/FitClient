@@ -4,25 +4,26 @@ import UIKit
 import Supabase
 
 class TrainerClientsChatViewController: UIViewController {
-    
+
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var messageInputField: UITextField!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var inputContainerBottom: NSLayoutConstraint!
-    
+    @IBOutlet weak var inputContainerView: UIView!
+
     var clientId: String?
     var clientName: String?
     var clientImage: String?
-    private var messages: [Message] = []
+    private var messages: [ChatMessage] = []
     private var conversation: Conversation?
     private var realtimeChannel: RealtimeChannelV2?
     private var pollingTask: Task<Void, Never>?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavigationBar()
+        setupUI()
         setupTableView()
-        setupInputField()
+        setupMessageInput()
         loadMessages()
         hideKeyboardWhenTappedAround()
     }
@@ -32,12 +33,18 @@ class TrainerClientsChatViewController: UIViewController {
         tabBarController?.tabBar.isHidden = true
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
         NotificationCenter.default.removeObserver(self)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+
+    @IBAction private func backTapped(_ sender: UIButton) {
+        navigationController?.popViewController(animated: true)
     }
 
     deinit {
@@ -48,25 +55,64 @@ class TrainerClientsChatViewController: UIViewController {
         pollingTask?.cancel()
         pollingTask = nil
     }
-    
-    private func setupNavigationBar() {
-        title = clientName ?? "Chat"
-        navigationController?.navigationBar.tintColor = .primaryGreen
+
+    private func setupUI() {
+        view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
+        navigationController?.navigationBar.isHidden = true
+
+        // Input styling to mirror the client chat screen
+        messageInputField.backgroundColor = UIColor(
+            red: 0.18823529411764706, green: 0.19215686274509802, blue: 0.19215686274509802,
+            alpha: 1.0)
+        messageInputField.textColor = UIColor(
+            red: 0.96078431372549, green: 0.96078431372549, blue: 0.96078431372549, alpha: 1.0)
+        messageInputField.layer.cornerRadius = 12
+        messageInputField.clipsToBounds = true
+        messageInputField.delegate = self
+
+        let paddingView = UIView(
+            frame: CGRect(x: 0, y: 0, width: 16, height: messageInputField.frame.height))
+        messageInputField.leftView = paddingView
+        messageInputField.leftViewMode = .always
+
+        if let placeholder = messageInputField.placeholder {
+            messageInputField.attributedPlaceholder = NSAttributedString(
+                string: placeholder,
+                attributes: [
+                    .foregroundColor: UIColor(
+                        red: 0.84705882352941, green: 0.80000000000000,
+                        blue: 0.78431372549019, alpha: 1.0)
+                ]
+            )
+        }
+
+        sendButton.backgroundColor = UIColor(
+            red: 0.18823529411764706, green: 0.19215686274509802, blue: 0.19215686274509802,
+            alpha: 1.0)
+        sendButton.tintColor = UIColor(
+            red: 0.84705882352941, green: 0.80000000000000, blue: 0.78431372549019, alpha: 1.0)
+        sendButton.layer.cornerRadius = 12
+        sendButton.clipsToBounds = true
+        sendButton.setImage(UIImage(systemName: "paperplane.fill"), for: .normal)
+        sendButton.setTitle(nil, for: .normal)
+        sendButton.addTarget(self, action: #selector(sendTapped), for: .touchUpInside)
+
+        inputContainerView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
     }
-    
+
     private func setupTableView() {
-        tableView.register(UINib(nibName: "MessageTableViewCell", bundle: nil), forCellReuseIdentifier: "MessageTableViewCell")
+        tableView.register(TrainerMessageCell.self, forCellReuseIdentifier: "TrainerMessageCell")
+        tableView.register(ClientMessageCell.self, forCellReuseIdentifier: "ClientMessageCell")
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.backgroundColor = .black
-        tableView.transform = CGAffineTransform(scaleX: 1, y: -1)
+        tableView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
+        tableView.estimatedRowHeight = 80
+        tableView.rowHeight = UITableView.automaticDimension
     }
-    
-    private func setupInputField() {
-        messageInputField.applyAppStyle(placeholder: "Type a message...")
-        sendButton.applyPrimaryStyle(title: "Send")
-        sendButton.addTarget(self, action: #selector(sendTapped), for: .touchUpInside)
+
+    private func setupMessageInput() {
+        messageInputField.returnKeyType = .send
     }
     
     private func loadMessages() {
@@ -76,21 +122,12 @@ class TrainerClientsChatViewController: UIViewController {
             do {
                 let conversation = try await ChatService.shared.ensureConversationForTrainer(clientId: clientUUID)
                 let dbMessages = try await ChatService.shared.fetchMessages(conversationId: conversation.id)
-                let mapped: [Message] = dbMessages.map { db in
-                    Message(
-                        id: db.id.uuidString,
-                        senderId: db.senderId.uuidString,
-                        senderName: db.senderName ?? "",
-                        senderImage: db.senderImage ?? "",
-                        text: db.text,
-                        timestamp: ChatService.shared.isoString(from: db.timestamp),
-                        isFromTrainer: db.isFromTrainer
-                    )
-                }
+                let mapped: [ChatMessage] = dbMessages.map { self.mapDBMessage($0) }
                 await MainActor.run {
                     self.conversation = conversation
-                    self.messages = mapped.reversed()
+                    self.messages = mapped
                     self.tableView.reloadData()
+                    self.scrollToBottom()
                     self.startRealtime(for: conversation.id)
                 }
             } catch {
@@ -119,23 +156,21 @@ class TrainerClientsChatViewController: UIViewController {
                     senderName: trainerContext.name,
                     senderImage: trainerContext.imageURL
                 )
-                let message = Message(
+                let message = ChatMessage(
                     id: dbMessage.id.uuidString,
                     senderId: dbMessage.senderId.uuidString,
                     senderName: dbMessage.senderName ?? trainerContext.name,
                     senderImage: dbMessage.senderImage ?? trainerContext.imageURL ?? "",
-                    text: dbMessage.text,
+                    message: dbMessage.text,
                     timestamp: ChatService.shared.isoString(from: dbMessage.timestamp),
-                    isFromTrainer: true
+                    isClient: false
                 )
 
                 await MainActor.run {
                     if self.messages.contains(where: { $0.id == message.id }) == false {
-                        self.messages.insert(message, at: 0)
-                        self.tableView.beginUpdates()
-                        let indexPath = IndexPath(row: 0, section: 0)
-                        self.tableView.insertRows(at: [indexPath], with: .automatic)
-                        self.tableView.endUpdates()
+                        self.messages.append(message)
+                        self.tableView.reloadData()
+                        self.scrollToBottom()
                     }
                 }
 
@@ -183,22 +218,12 @@ private extension TrainerClientsChatViewController {
                 // Avoid duplicates when the sender is this trainer
                 if self.messages.contains(where: { $0.id == dbMessage.id.uuidString }) { return }
 
-                let message = Message(
-                    id: dbMessage.id.uuidString,
-                    senderId: dbMessage.senderId.uuidString,
-                    senderName: dbMessage.senderName ?? "",
-                    senderImage: dbMessage.senderImage ?? "",
-                    text: dbMessage.text,
-                    timestamp: ChatService.shared.isoString(from: dbMessage.timestamp),
-                    isFromTrainer: dbMessage.isFromTrainer
-                )
+                let message = self.mapDBMessage(dbMessage)
 
                 Task { @MainActor in
-                    self.messages.insert(message, at: 0)
-                    self.tableView.beginUpdates()
-                    let indexPath = IndexPath(row: 0, section: 0)
-                    self.tableView.insertRows(at: [indexPath], with: .automatic)
-                    self.tableView.endUpdates()
+                    self.messages.append(message)
+                    self.tableView.reloadData()
+                    self.scrollToBottom()
                 }
             case .failure(let error):
                 print("[TrainerClientsChatViewController] Realtime error: \(error)")
@@ -210,7 +235,7 @@ private extension TrainerClientsChatViewController {
     func startPolling(for conversationId: UUID) {
         pollingTask?.cancel()
 
-        let latestDate = messages.first.flatMap { ISO8601DateFormatter().date(from: $0.timestamp) }
+        let latestDate = messages.last?.timestampDate
 
         pollingTask = ChatService.shared.startPollingMessages(
             conversationId: conversationId,
@@ -221,37 +246,41 @@ private extension TrainerClientsChatViewController {
 
             switch result {
             case .success(let dbMessages):
-                let newMessages: [Message] = dbMessages
+                let newMessages: [ChatMessage] = dbMessages
                     .filter { db in
                         self.messages.contains(where: { $0.id == db.id.uuidString }) == false
                     }
-                    .map { db in
-                        Message(
-                            id: db.id.uuidString,
-                            senderId: db.senderId.uuidString,
-                            senderName: db.senderName ?? "",
-                            senderImage: db.senderImage ?? "",
-                            text: db.text,
-                            timestamp: ChatService.shared.isoString(from: db.timestamp),
-                            isFromTrainer: db.isFromTrainer
-                        )
-                    }
+                    .map { self.mapDBMessage($0) }
 
                 if newMessages.isEmpty { return }
 
                 Task { @MainActor in
-                    for message in newMessages.reversed() {
-                        self.messages.insert(message, at: 0)
-                        let indexPath = IndexPath(row: 0, section: 0)
-                        self.tableView.beginUpdates()
-                        self.tableView.insertRows(at: [indexPath], with: .automatic)
-                        self.tableView.endUpdates()
-                    }
+                    self.messages.append(contentsOf: newMessages)
+                    self.tableView.reloadData()
+                    self.scrollToBottom()
                 }
             case .failure(let error):
                 print("[TrainerClientsChatViewController] Polling error: \(error)")
             }
         }
+    }
+
+    func scrollToBottom() {
+        guard messages.count > 0 else { return }
+        let indexPath = IndexPath(row: messages.count - 1, section: 0)
+        tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+    }
+
+    func mapDBMessage(_ db: DBMessage) -> ChatMessage {
+        ChatMessage(
+            id: db.id.uuidString,
+            senderId: db.senderId.uuidString,
+            senderName: db.senderName ?? "",
+            senderImage: db.senderImage ?? "",
+            message: db.text,
+            timestamp: ChatService.shared.isoString(from: db.timestamp),
+            isClient: db.isFromTrainer == false
+        )
     }
 }
 
@@ -263,13 +292,35 @@ extension TrainerClientsChatViewController: UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "MessageTableViewCell", for: indexPath) as? MessageTableViewCell else {
-            return UITableViewCell()
-        }
-        
         let message = messages[indexPath.row]
-        cell.configure(with: message)
-        cell.transform = CGAffineTransform(scaleX: 1, y: -1)
-        return cell
+
+        if message.isClient {
+            guard
+                let cell = tableView.dequeueReusableCell(
+                    withIdentifier: "ClientMessageCell", for: indexPath) as? ClientMessageCell
+            else {
+                return UITableViewCell()
+            }
+            cell.configure(with: message)
+            return cell
+        } else {
+            guard
+                let cell = tableView.dequeueReusableCell(
+                    withIdentifier: "TrainerMessageCell", for: indexPath) as? TrainerMessageCell
+            else {
+                return UITableViewCell()
+            }
+            cell.configure(with: message)
+            return cell
+        }
+    }
+}
+
+// MARK: - UITextFieldDelegate
+
+extension TrainerClientsChatViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        sendMessage()
+        return false
     }
 }

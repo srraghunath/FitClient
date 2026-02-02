@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <device id="retina6_12" orientation="portrait" appearance="dark"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -9,10 +9,11 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TrainerClientsChatViewController" customModule="FitClient" customModuleProvider="target">
             <connections>
-                <outlet property="inputContainerBottom" destination="input-container-bottom" id="input-container-bottom-outlet"/>
-                <outlet property="messageInputField" destination="message-input-field" id="message-input-field-outlet"/>
-                <outlet property="sendButton" destination="send-button" id="send-button-outlet"/>
-                <outlet property="tableView" destination="table-view" id="table-view-outlet"/>
+                <outlet property="inputContainerBottom" destination="inputContainer-bottom" id="inputContainer-bottom-outlet"/>
+                <outlet property="inputContainerView" destination="inputContainer" id="inputContainer-outlet"/>
+                <outlet property="messageInputField" destination="messageInputField" id="messageInputField-outlet"/>
+                <outlet property="sendButton" destination="sendButton" id="sendButton-outlet"/>
+                <outlet property="tableView" destination="messagesTableView" id="tableView-outlet"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -21,81 +22,126 @@
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="table-view">
-                    <rect key="frame" x="0.0" y="59" width="393" height="683"/>
-                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                </tableView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="input-container">
-                    <rect key="frame" x="0.0" y="742" width="393" height="76"/>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="statusBarBg">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="62"/>
+                    <color key="backgroundColor" red="0" green="0" blue="0.00392156862745098" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="62" id="statusBar-height"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="navbarView">
+                    <rect key="frame" x="0.0" y="62" width="393" height="46"/>
                     <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="separator-line">
-                            <rect key="frame" x="0.0" y="0.0" width="393" height="0.5"/>
-                            <color key="backgroundColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="backButton">
+                            <rect key="frame" x="16" y="9" width="24" height="28"/>
+                            <color key="tintColor" red="0.84705882352941" green="0.80000000000000" blue="0.78431372549019" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <state key="normal" image="chevron.left" catalog="system">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <connections>
+                                <action selector="backTapped:" destination="-1" eventType="touchUpInside" id="backButton-action"/>
+                            </connections>
+                        </button>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Chat" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="chatTitle">
+                            <rect key="frame" x="76.5" y="11" width="220" height="24"/>
+                            <fontDescription key="fontDescription" name="SFProDisplay-Medium" family="SF Pro Display" pointSize="16"/>
+                            <color key="textColor" red="0.96078431372549" green="0.96078431372549" blue="0.96078431372549" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" red="0" green="0.00392156862745098" blue="0.00392156862745098" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="46" id="navbar-height"/>
+                        <constraint firstItem="chatTitle" firstAttribute="centerX" secondItem="navbarView" secondAttribute="centerX" id="title-centerX"/>
+                        <constraint firstItem="chatTitle" firstAttribute="centerY" secondItem="navbarView" secondAttribute="centerY" id="title-centerY"/>
+                        <constraint firstItem="backButton" firstAttribute="leading" secondItem="navbarView" secondAttribute="leading" constant="16" id="back-leading"/>
+                        <constraint firstItem="backButton" firstAttribute="centerY" secondItem="navbarView" secondAttribute="centerY" id="back-centerY"/>
+                        <constraint firstItem="backButton" firstAttribute="width" constant="24" id="back-width"/>
+                        <constraint firstItem="backButton" firstAttribute="height" constant="28" id="back-height"/>
+                    </constraints>
+                </view>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="80" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="messagesTableView">
+                    <rect key="frame" x="0.0" y="108" width="393" height="580"/>
+                    <color key="backgroundColor" red="0" green="0" blue="0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                </tableView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="inputContainer">
+                    <rect key="frame" x="0.0" y="688" width="393" height="82"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="inputStack">
+                            <rect key="frame" x="16" y="12" width="361" height="48"/>
+                            <subviews>
+                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Write a message" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="messageInputField">
+                                    <rect key="frame" x="0.0" y="0.0" width="313" height="48"/>
+                                    <color key="backgroundColor" red="0.18823529411764706" green="0.19215686274509802" blue="0.19215686274509802" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="textColor" red="0.96078431372549" green="0.96078431372549" blue="0.96078431372549" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                    <textInputTraits key="textInputTraits" returnKeyType="send"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="12"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                </textField>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sendButton">
+                                    <rect key="frame" x="321" y="8" width="40" height="32"/>
+                                    <color key="backgroundColor" red="0.18823529411764706" green="0.19215686274509802" blue="0.19215686274509802" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="40" id="send-width"/>
+                                        <constraint firstAttribute="height" constant="32" id="send-height"/>
+                                    </constraints>
+                                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="paperplane.fill" catalog="system"/>
+                                    <color key="tintColor" red="0.84705882352941" green="0.80000000000000" blue="0.78431372549019" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="12"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                </button>
+                            </subviews>
+                            <color key="backgroundColor" red="0" green="0" blue="0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="0.5" id="separator-line-height"/>
+                                <constraint firstItem="messageInputField" firstAttribute="leading" secondItem="inputStack" secondAttribute="leading" constant="0" id="textfield-leading"/>
+                                <constraint firstItem="messageInputField" firstAttribute="top" secondItem="inputStack" secondAttribute="top" constant="0" id="textfield-top"/>
+                                <constraint firstItem="messageInputField" firstAttribute="height" constant="48" id="input-height"/>
+                                <constraint firstItem="sendButton" firstAttribute="leading" secondItem="messageInputField" secondAttribute="trailing" constant="8" id="send-leading"/>
+                                <constraint firstItem="sendButton" firstAttribute="centerY" secondItem="inputStack" secondAttribute="centerY" id="send-centerY"/>
+                                <constraint firstItem="sendButton" firstAttribute="trailing" secondItem="inputStack" secondAttribute="trailing" constant="0" id="send-trailing"/>
+                                <constraint firstAttribute="height" constant="48" id="stack-height"/>
                             </constraints>
                         </view>
-                        <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Type a message..." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="message-input-field">
-                            <rect key="frame" x="16" y="16" width="273" height="44"/>
-                            <color key="backgroundColor" red="0.12941176470588237" green="0.12941176470588237" blue="0.12941176470588237" alpha="1" colorSpace="calibratedRGB"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="44" id="message-input-field-height"/>
-                            </constraints>
-                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                            <textInputTraits key="textInputTraits"/>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                    <integer key="value" value="22"/>
-                                </userDefinedRuntimeAttribute>
-                            </userDefinedRuntimeAttributes>
-                        </textField>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="send-button">
-                            <rect key="frame" x="305" y="16" width="72" height="44"/>
-                            <color key="backgroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="calibratedRGB"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="44" id="send-button-height"/>
-                                <constraint firstAttribute="width" constant="72" id="send-button-width"/>
-                            </constraints>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
-                            <state key="normal" title="Send">
-                                <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </state>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                    <integer key="value" value="22"/>
-                                </userDefinedRuntimeAttribute>
-                            </userDefinedRuntimeAttributes>
-                        </button>
                     </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <color key="backgroundColor" red="0" green="0" blue="0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="76" id="input-container-height"/>
-                        <constraint firstItem="separator-line" firstAttribute="leading" secondItem="input-container" secondAttribute="leading" id="separator-line-leading"/>
-                        <constraint firstItem="separator-line" firstAttribute="top" secondItem="input-container" secondAttribute="top" id="separator-line-top"/>
-                        <constraint firstAttribute="trailing" secondItem="separator-line" secondAttribute="trailing" id="separator-line-trailing"/>
-                        <constraint firstItem="message-input-field" firstAttribute="leading" secondItem="input-container" secondAttribute="leading" constant="16" id="message-input-field-leading"/>
-                        <constraint firstItem="message-input-field" firstAttribute="top" secondItem="input-container" secondAttribute="top" constant="16" id="message-input-field-top"/>
-                        <constraint firstItem="send-button" firstAttribute="leading" secondItem="message-input-field" secondAttribute="trailing" constant="16" id="send-button-leading"/>
-                        <constraint firstAttribute="trailing" secondItem="send-button" secondAttribute="trailing" constant="16" id="send-button-trailing"/>
-                        <constraint firstItem="send-button" firstAttribute="top" secondItem="input-container" secondAttribute="top" constant="16" id="send-button-top"/>
-                        <constraint firstAttribute="bottom" secondItem="send-button" secondAttribute="bottom" constant="16" id="send-button-bottom"/>
-                        <constraint firstItem="message-input-field" firstAttribute="centerY" secondItem="send-button" secondAttribute="centerY" id="message-input-field-centerY"/>
+                        <constraint firstItem="inputStack" firstAttribute="leading" secondItem="inputContainer" secondAttribute="leading" constant="16" id="stack-leading"/>
+                        <constraint firstItem="inputStack" firstAttribute="top" secondItem="inputContainer" secondAttribute="top" constant="12" id="stack-top"/>
+                        <constraint firstItem="inputStack" firstAttribute="trailing" secondItem="inputContainer" secondAttribute="trailing" constant="-16" id="stack-trailing"/>
+                        <constraint firstAttribute="height" constant="82" id="inputContainer-height"/>
                     </constraints>
                 </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
-            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <color key="backgroundColor" red="0" green="0" blue="0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="table-view" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="table-view-leading"/>
-                <constraint firstItem="table-view" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="table-view-top"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="table-view" secondAttribute="trailing" id="table-view-trailing"/>
-                <constraint firstItem="input-container" firstAttribute="top" secondItem="table-view" secondAttribute="bottom" id="input-container-top"/>
-                <constraint firstItem="input-container" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="input-container-leading"/>
-                <constraint firstItem="input-container" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="input-container-trailing"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="input-container" secondAttribute="bottom" id="input-container-bottom"/>
+                <constraint firstItem="statusBarBg" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="statusBar-leading"/>
+                <constraint firstItem="statusBarBg" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="statusBar-top"/>
+                <constraint firstItem="statusBarBg" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="statusBar-trailing"/>
+                <constraint firstItem="navbarView" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="navbar-leading"/>
+                <constraint firstItem="navbarView" firstAttribute="top" secondItem="statusBarBg" secondAttribute="bottom" id="navbar-top"/>
+                <constraint firstItem="navbarView" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="navbar-trailing"/>
+                <constraint firstItem="messagesTableView" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="table-leading"/>
+                <constraint firstItem="messagesTableView" firstAttribute="top" secondItem="navbarView" secondAttribute="bottom" id="table-top"/>
+                <constraint firstItem="messagesTableView" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="table-trailing"/>
+                <constraint firstItem="inputContainer" firstAttribute="top" secondItem="messagesTableView" secondAttribute="bottom" id="container-top"/>
+                <constraint firstItem="inputContainer" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="container-leading"/>
+                <constraint firstItem="inputContainer" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="input-trailing"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="inputContainer" secondAttribute="bottom" id="inputContainer-bottom"/>
             </constraints>
-            <point key="canvasLocation" x="136.64122137404578" y="19.718309859154932"/>
+            <point key="canvasLocation" x="0.0" y="0.0"/>
         </view>
     </objects>
+    <resources>
+        <image name="chevron.left" catalog="system" width="104" height="128"/>
+        <image name="paperplane.fill" catalog="system" width="128" height="120"/>
+    </resources>
 </document>
