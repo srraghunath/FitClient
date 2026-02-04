@@ -7,6 +7,7 @@ struct Session: Codable {
     let clientId: String
     let clientName: String
     let clientProfileImage: String
+    let goal: String?
     let startTime: String?
     let endTime: String?
     let date: String
@@ -32,6 +33,7 @@ struct Session: Codable {
         case clientId = "client_id"
         case clientName = "client_name"
         case clientProfileImage = "client_profile_image"
+        case goal
         case startTime = "start_time"
         case endTime = "end_time"
         case date

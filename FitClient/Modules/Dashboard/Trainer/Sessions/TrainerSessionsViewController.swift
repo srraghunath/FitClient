@@ -211,6 +211,7 @@ class TrainerSessionsViewController: UIViewController {
                 clientId: row.clientId.uuidString,
                 clientName: row.clientName,
                 clientProfileImage: row.clientProfileImageUrl ?? "",
+                goal: row.goal,
                 startTime: displayTime(from: row.startTime),
                 endTime: displayTime(from: row.endTime),
                 date: row.sessionDate,

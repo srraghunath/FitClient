@@ -14,6 +14,7 @@ class TrainerClientsChatViewController: UIViewController {
     var clientId: String?
     var clientName: String?
     var clientImage: String?
+    private var trainerContext: ParticipantContext?
     private var messages: [ChatMessage] = []
     private var conversation: Conversation?
     private var realtimeChannel: RealtimeChannelV2?
@@ -24,6 +25,9 @@ class TrainerClientsChatViewController: UIViewController {
         setupUI()
         setupTableView()
         setupMessageInput()
+        Task { [weak self] in
+            self?.trainerContext = try? await ChatService.shared.fetchTrainerContextForCurrentUser()
+        }
         loadMessages()
         hideKeyboardWhenTappedAround()
     }
@@ -272,11 +276,25 @@ private extension TrainerClientsChatViewController {
     }
 
     func mapDBMessage(_ db: DBMessage) -> ChatMessage {
-        ChatMessage(
+        let resolvedName: String
+        if let senderName = db.senderName, senderName.isEmpty == false {
+            resolvedName = senderName
+        } else {
+            resolvedName = db.isFromTrainer ? (trainerContext?.name ?? "Trainer") : (clientName ?? "Client")
+        }
+
+        let resolvedImage: String
+        if let image = db.senderImage, image.isEmpty == false {
+            resolvedImage = image
+        } else {
+            resolvedImage = db.isFromTrainer ? (trainerContext?.imageURL ?? "") : (clientImage ?? "")
+        }
+
+        return ChatMessage(
             id: db.id.uuidString,
             senderId: db.senderId.uuidString,
-            senderName: db.senderName ?? "",
-            senderImage: db.senderImage ?? "",
+            senderName: resolvedName,
+            senderImage: resolvedImage,
             message: db.text,
             timestamp: ChatService.shared.isoString(from: db.timestamp),
             isClient: db.isFromTrainer == false

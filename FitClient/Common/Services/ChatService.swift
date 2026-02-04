@@ -56,12 +56,14 @@ struct ClientRow: Decodable {
     let userId: UUID
     let trainerId: UUID?
     let fullName: String?
+    let profileImageURL: String?
 
     enum CodingKeys: String, CodingKey {
         case id
         case userId = "user_id"
         case trainerId = "trainer_id"
         case fullName = "full_name"
+        case profileImageURL = "profile_image_url"
     }
 }
 
@@ -208,7 +210,7 @@ final class ChatService {
         }
 
         let name = client.fullName ?? "Client"
-        let imageURL = defaultProfileImageURL(for: client.userId)
+        let imageURL = client.profileImageURL ?? defaultProfileImageURL(for: client.userId)
         return ParticipantContext(
             userId: client.userId, name: name, imageURL: imageURL, trainerId: client.trainerId,
             clientId: client.id)
@@ -241,6 +243,42 @@ final class ChatService {
         return ParticipantContext(
             userId: trainer.id, name: name, imageURL: imageURL, trainerId: trainer.id, clientId: nil
         )
+    }
+
+    // MARK: - Lightweight fetch helpers
+
+    func fetchTrainer(by id: UUID) async throws -> TrainerRow {
+        let rows: [TrainerRow] = try await supabase
+            .from("trainers")
+            .select()
+            .eq("id", value: id.uuidString)
+            .limit(1)
+            .execute()
+            .value
+
+        guard let trainer = rows.first else {
+            throw NSError(
+                domain: "ChatService", code: 404,
+                userInfo: [NSLocalizedDescriptionKey: "Trainer not found"])
+        }
+        return trainer
+    }
+
+    func fetchClient(by id: UUID) async throws -> ClientRow {
+        let rows: [ClientRow] = try await supabase
+            .from("clients")
+            .select()
+            .eq("id", value: id.uuidString)
+            .limit(1)
+            .execute()
+            .value
+
+        guard let client = rows.first else {
+            throw NSError(
+                domain: "ChatService", code: 404,
+                userInfo: [NSLocalizedDescriptionKey: "Client not found"])
+        }
+        return client
     }
 
     // MARK: - Private

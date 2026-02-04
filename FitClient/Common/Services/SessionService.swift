@@ -6,6 +6,7 @@ struct TrainerSessionDTO: Decodable {
     let clientId: UUID
     let clientName: String
     let clientProfileImageUrl: String?
+    let goal: String?
     let startTime: String?
     let endTime: String?
     let note: String?
@@ -17,6 +18,7 @@ struct TrainerSessionDTO: Decodable {
         case clientId = "client_id"
         case clientName = "client_name"
         case clientProfileImageUrl = "client_profile_image_url"
+        case goal
         case startTime = "start_time"
         case endTime = "end_time"
         case note

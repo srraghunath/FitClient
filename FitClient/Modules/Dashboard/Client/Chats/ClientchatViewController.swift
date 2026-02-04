@@ -20,6 +20,11 @@ class ClientchatViewController: UIViewController {
     private var conversation: Conversation?
     private var realtimeChannel: RealtimeChannelV2?
     private var pollingTask: Task<Void, Never>?
+    private var clientContext: ParticipantContext?
+    private var trainerDisplayName: String?
+    private var trainerImageURL: String?
+    private var clientDisplayName: String?
+    private var clientImageURL: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -127,19 +132,30 @@ class ClientchatViewController: UIViewController {
             guard let self else { return }
             do {
                 let conversation = try await ChatService.shared.ensureConversationForCurrentClient()
-                let dbMessages = try await ChatService.shared.fetchMessages(
-                    conversationId: conversation.id)
-                let mapped = dbMessages.map { db in
-                    ChatMessage(
-                        id: db.id.uuidString,
-                        senderId: db.senderId.uuidString,
-                        senderName: db.senderName ?? "",
-                        senderImage: db.senderImage ?? "",
-                        message: db.text,
-                        timestamp: ChatService.shared.isoString(from: db.timestamp),
-                        isClient: db.isFromTrainer == false
-                    )
+                let dbMessages = try await ChatService.shared.fetchMessages(conversationId: conversation.id)
+
+                // Best-effort participant details; do not fail if missing
+                if let clientCtx = try? await ChatService.shared.fetchClientContextForCurrentUser() {
+                    self.clientContext = clientCtx
+                    self.clientDisplayName = clientCtx.name
+                    self.clientImageURL = clientCtx.imageURL
                 }
+
+                if let trainerRow = try? await ChatService.shared.fetchTrainer(by: conversation.trainerId) {
+                    self.trainerDisplayName = trainerRow.fullName ?? "Trainer"
+                    self.trainerImageURL = trainerRow.profileImageURL
+                        ?? ChatService.shared.defaultProfileImageURL(for: trainerRow.id)
+                }
+
+                if let clientRow = try? await ChatService.shared.fetchClient(by: conversation.clientId) {
+                    self.clientDisplayName = clientRow.fullName ?? self.clientDisplayName ?? "Client"
+                    if self.clientImageURL == nil {
+                        self.clientImageURL = clientRow.profileImageURL
+                            ?? ChatService.shared.defaultProfileImageURL(for: clientRow.userId)
+                    }
+                }
+
+                let mapped = dbMessages.map { self.mapDBMessage($0) }
                 await MainActor.run {
                     self.conversation = conversation
                     self.messages = mapped
@@ -177,7 +193,14 @@ class ClientchatViewController: UIViewController {
 
         Task {
             do {
-                let clientContext = try await ChatService.shared.fetchClientContextForCurrentUser()
+                let clientContext: ParticipantContext
+                if let cached = self.clientContext {
+                    clientContext = cached
+                } else {
+                    let fetched = try await ChatService.shared.fetchClientContextForCurrentUser()
+                    self.clientContext = fetched
+                    clientContext = fetched
+                }
                 print("🟡 [ClientChat] Client context loaded:", clientContext.userId)
 
                 let dbMessage = try await ChatService.shared.sendMessage(
@@ -192,15 +215,7 @@ class ClientchatViewController: UIViewController {
                 print("   ↳ id:", dbMessage.id)
                 print("   ↳ text:", dbMessage.text)
 
-                let chatMessage = ChatMessage(
-                    id: dbMessage.id.uuidString,
-                    senderId: dbMessage.senderId.uuidString,
-                    senderName: dbMessage.senderName ?? clientContext.name,
-                    senderImage: (dbMessage.senderImage ?? clientContext.imageURL)!,
-                    message: dbMessage.text,
-                    timestamp: ChatService.shared.isoString(from: dbMessage.timestamp),
-                    isClient: dbMessage.isFromTrainer == false
-                )
+                let chatMessage = self.mapDBMessage(dbMessage)
 
                 await MainActor.run {
                     // Optimistic insert to avoid waiting on realtime echo.
@@ -221,6 +236,28 @@ class ClientchatViewController: UIViewController {
         guard messages.count > 0 else { return }
         let indexPath = IndexPath(row: messages.count - 1, section: 0)
         messagesTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+    }
+
+    private func mapDBMessage(_ db: DBMessage) -> ChatMessage {
+        let name = nonEmpty(db.senderName)
+            ?? (db.isFromTrainer ? (trainerDisplayName ?? "Trainer") : (clientDisplayName ?? "Client"))
+        let image = nonEmpty(db.senderImage)
+            ?? (db.isFromTrainer ? (trainerImageURL ?? "") : (clientImageURL ?? ""))
+
+        return ChatMessage(
+            id: db.id.uuidString,
+            senderId: db.senderId.uuidString,
+            senderName: name,
+            senderImage: image,
+            message: db.text,
+            timestamp: ChatService.shared.isoString(from: db.timestamp),
+            isClient: db.isFromTrainer == false
+        )
+    }
+
+    private func nonEmpty(_ value: String?) -> String? {
+        guard let value, value.isEmpty == false else { return nil }
+        return value
     }
 
     // MARK: - Keyboard Handling
@@ -287,15 +324,7 @@ extension ClientchatViewController {
                     return
                 }
 
-                let chatMessage = ChatMessage(
-                    id: dbMessage.id.uuidString,
-                    senderId: dbMessage.senderId.uuidString,
-                    senderName: dbMessage.senderName ?? "",
-                    senderImage: dbMessage.senderImage ?? "",
-                    message: dbMessage.text,
-                    timestamp: ChatService.shared.isoString(from: dbMessage.timestamp),
-                    isClient: dbMessage.isFromTrainer == false
-                )
+                let chatMessage = self.mapDBMessage(dbMessage)
 
                 Task { @MainActor in
                     print("🧵 [ClientChat] Updating UI with message:", chatMessage.id)
@@ -328,17 +357,7 @@ extension ClientchatViewController {
                     .filter { db in
                         self.messages.contains(where: { $0.id == db.id.uuidString }) == false
                     }
-                    .map { db in
-                        ChatMessage(
-                            id: db.id.uuidString,
-                            senderId: db.senderId.uuidString,
-                            senderName: db.senderName ?? "",
-                            senderImage: db.senderImage ?? "",
-                            message: db.text,
-                            timestamp: ChatService.shared.isoString(from: db.timestamp),
-                            isClient: db.isFromTrainer == false
-                        )
-                    }
+                    .map { self.mapDBMessage($0) }
 
                 if newMessages.isEmpty { return }
 
