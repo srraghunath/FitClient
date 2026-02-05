@@ -27,7 +27,6 @@ class TrainerClientProfileViewController: UIViewController {
     private var clientProfile: ClientProfile?
     private var currentChildViewController: UIViewController?
     private var recentCompletedItems: [DayTrackerItem] = []
-    private let activityTableMaxHeight: CGFloat = 360
     private let isoFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
@@ -125,8 +124,9 @@ class TrainerClientProfileViewController: UIViewController {
         recentActivitiesTableView.separatorStyle = .none
         recentActivitiesTableView.rowHeight = 72
         recentActivitiesTableView.estimatedRowHeight = 72
-        recentActivitiesTableView.isScrollEnabled = true
-        recentActivitiesTableView.showsVerticalScrollIndicator = true
+        recentActivitiesTableView.isScrollEnabled = false
+        recentActivitiesTableView.alwaysBounceVertical = false
+        recentActivitiesTableView.showsVerticalScrollIndicator = false
     }
     
     private func loadClientProfile() {
@@ -167,9 +167,8 @@ class TrainerClientProfileViewController: UIViewController {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             if let constraint = self.tableHeightConstraint {
-                // Cap the intrinsic height so the scroll view can scroll the rest
                 let rows = CGFloat(max(self.recentCompletedItems.count, 1))
-                let targetHeight = min(rows * 80, self.activityTableMaxHeight)
+                let targetHeight = rows * 80
                 constraint.constant = targetHeight
             }
             self.recentActivitiesTableView.layoutIfNeeded()

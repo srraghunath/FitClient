@@ -10,12 +10,15 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TrainerClientProfileViewController" customModule="FitClient" customModuleProvider="target">
             <connections>
                 <outlet property="consecutiveActiveDaysLabel" destination="vGk-YA-opZ" id="SDa-hv-q3K"/>
+                <outlet property="contentView" destination="content-view" id="uwg-D1-K61"/>
                 <outlet property="goalsLabel" destination="fnT-nZ-l6j" id="Xwu-hA-84G"/>
                 <outlet property="nameLabel" destination="h3r-ZP-7n2" id="gR6-QB-xAs"/>
                 <outlet property="profileImageView" destination="bHa-hu-3Vs" id="Ezm-Xw-1ur"/>
                 <outlet property="recentActivitiesTableView" destination="wzA-6z-0hu" id="Ecc-6M-gjm"/>
+                <outlet property="scrollView" destination="scroll-view" id="kqO-OA-hD8"/>
                 <outlet property="segmentedControl" destination="YbR-Z4-udg" id="Lbh-h6-U5l"/>
                 <outlet property="specialtyLabel" destination="kPP-zh-Tpe" id="rWe-kk-oiy"/>
+                <outlet property="tableHeightConstraint" destination="tkQ-u8-sVW" id="Zcv-6h-3H6"/>
                 <outlet property="totalActiveDaysLabel" destination="1xW-ms-RJk" id="yYg-nI-fmO"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -155,6 +158,9 @@
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceVertical="YES" scrollEnabled="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="wzA-6z-0hu">
                                     <rect key="frame" x="0.0" y="258.66666666666663" width="393" height="334"/>
                                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="334" id="tkQ-u8-sVW"/>
+                                    </constraints>
                                 </tableView>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
