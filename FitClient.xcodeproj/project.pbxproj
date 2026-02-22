@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BE266B402F4B6A16007F513F /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BE266B3F2F4B6A16007F513F /* FirebaseAnalytics */; };
+		BE266B422F4B6A16007F513F /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = BE266B412F4B6A16007F513F /* FirebaseAuth */; };
+		BE266B442F4B6A16007F513F /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = BE266B432F4B6A16007F513F /* FirebaseCrashlytics */; };
 		BEC4FC4A2F0784DA005D69B4 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = BEC4FC492F0784DA005D69B4 /* Auth */; };
 		BEC4FC4C2F0784DA005D69B4 /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = BEC4FC4B2F0784DA005D69B4 /* Functions */; };
 		BEC4FC4E2F0784DA005D69B4 /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = BEC4FC4D2F0784DA005D69B4 /* PostgREST */; };
@@ -45,12 +48,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE266B402F4B6A16007F513F /* FirebaseAnalytics in Frameworks */,
 				BEC4FC4E2F0784DA005D69B4 /* PostgREST in Frameworks */,
 				BEC4FC4C2F0784DA005D69B4 /* Functions in Frameworks */,
 				BEC4FC552F0785B0005D69B4 /* Supabase in Frameworks */,
 				BEC4FC4A2F0784DA005D69B4 /* Auth in Frameworks */,
 				BEC4FC522F0784DA005D69B4 /* Storage in Frameworks */,
+				BE266B442F4B6A16007F513F /* FirebaseCrashlytics in Frameworks */,
 				BEC4FC502F0784DA005D69B4 /* Realtime in Frameworks */,
+				BE266B422F4B6A16007F513F /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +97,7 @@
 				BECA34EE2EB8F99B0052F628 /* Sources */,
 				BECA34EF2EB8F99B0052F628 /* Frameworks */,
 				BECA34F02EB8F99B0052F628 /* Resources */,
+				BE266B452F4B6C97007F513F /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -107,6 +114,9 @@
 				BEC4FC4F2F0784DA005D69B4 /* Realtime */,
 				BEC4FC512F0784DA005D69B4 /* Storage */,
 				BEC4FC542F0785B0005D69B4 /* Supabase */,
+				BE266B3F2F4B6A16007F513F /* FirebaseAnalytics */,
+				BE266B412F4B6A16007F513F /* FirebaseAuth */,
+				BE266B432F4B6A16007F513F /* FirebaseCrashlytics */,
 			);
 			productName = FitClient;
 			productReference = BECA34F22EB8F99B0052F628 /* FitClient.app */;
@@ -138,6 +148,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				BEC4FC482F0782B7005D69B4 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				BE266B3E2F4B6A16007F513F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BECA34F32EB8F99B0052F628 /* Products */;
@@ -159,6 +170,31 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		BE266B452F4B6C97007F513F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"$(SRCROOT)/${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"$(SRCROOT)/${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"${PROJECT_DIR}/FitClient/GoogleService-Info.plist",
+				"$(SRCROOT)/$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		BECA34EE2EB8F99B0052F628 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -177,7 +213,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 594NG2X9L2;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FitClient/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -207,6 +245,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 594NG2X9L2;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FitClient/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -371,6 +410,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		BE266B3E2F4B6A16007F513F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = exactVersion;
+				version = 12.9.0;
+			};
+		};
 		BEC4FC482F0782B7005D69B4 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/supabase/supabase-swift.git";
@@ -382,6 +429,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		BE266B3F2F4B6A16007F513F /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BE266B3E2F4B6A16007F513F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		BE266B412F4B6A16007F513F /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BE266B3E2F4B6A16007F513F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		BE266B432F4B6A16007F513F /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BE266B3E2F4B6A16007F513F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
 		BEC4FC492F0784DA005D69B4 /* Auth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = BEC4FC482F0782B7005D69B4 /* XCRemoteSwiftPackageReference "supabase-swift" */;

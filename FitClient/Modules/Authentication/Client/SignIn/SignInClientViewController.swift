@@ -44,6 +44,8 @@ class SignInClientViewController: UIViewController {
     }
     
     @IBAction func signInButtonTapped(_ sender: UIButton) {
+        let numbers = [0]
+        let _ = numbers[1]
         guard let email = emailTextField.text, !email.isEmpty,
               let password = passwordTextField.text, !password.isEmpty else {
             showAlert(message: "Please enter email and password")
