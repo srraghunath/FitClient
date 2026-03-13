@@ -5,6 +5,7 @@ class SignInViewController: UIViewController {
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var signInButton: UIButton!
+    private var loader: ActivityLoader?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,9 +53,12 @@ class SignInViewController: UIViewController {
             showAlert(message: "Please enter email and password")
             return
         }
+
+        loader = ActivityLoader.show(over: view)
         
         AuthService.shared.signIn(email: email, password: password) { [weak self] error in
             DispatchQueue.main.async {
+                self?.loader?.hide()
                 if let error = error {
                     self?.showAlert(message: "Error signing in: \(error.localizedDescription)")
                 } else {

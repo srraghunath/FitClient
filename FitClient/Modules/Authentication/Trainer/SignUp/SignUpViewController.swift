@@ -10,6 +10,7 @@ class SignUpViewController: UIViewController {
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var confirmPasswordTextField: UITextField!
     @IBOutlet weak var createAccountButton: UIButton!
+    private var loader: ActivityLoader?
     
     let genderPicker = UIPickerView()
     var genderOptions: [String] = []
@@ -98,8 +99,11 @@ class SignUpViewController: UIViewController {
             return
         }
 
+        loader = ActivityLoader.show(over: view)
+
         AuthService.shared.signUp(email: email, password: password, fullName: fullName, age: age, gender: gender, specialization: specialization) { [weak self] error in
             DispatchQueue.main.async {
+                self?.loader?.hide()
                 if let error = error {
                     self?.showAlert(message: "Error signing up: \(error.localizedDescription)")
                 } else {

@@ -72,6 +72,7 @@ class TrainerClientProgressViewControlller: UIViewController {
     private var heatmapContainerHeightConstraint: NSLayoutConstraint?
     private var heatmapCollectionHeightConstraint: NSLayoutConstraint?
     private var heatmapCollectionBottomConstraint: NSLayoutConstraint?
+    private var loader: ActivityLoader?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -256,15 +257,20 @@ class TrainerClientProgressViewControlller: UIViewController {
     }
     
     // MARK: - Data Loading
-    private func loadData() {
+    private func loadData(showLoader: Bool = false) {
         guard let clientId = clientId, let clientUUID = UUID(uuidString: clientId) else {
             showAlert(title: "Error", message: "Missing client ID for this profile.")
             return
         }
 
+        if showLoader {
+            loader = ActivityLoader.show(over: view)
+        }
+
         DayActivityService.shared.fetchActivities(for: clientUUID, month: currentMonth) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self else { return }
+                self.loader?.hide()
                 switch result {
                 case .success(let rows):
                     self.monthActivities = rows.map {
@@ -492,7 +498,7 @@ class TrainerClientProgressViewControlller: UIViewController {
             
             if let newDate = self.calendar.date(from: components) {
                 self.currentMonth = newDate
-                self.loadData()
+                self.loadData(showLoader: true)
                 self.updateUI()
             }
         })

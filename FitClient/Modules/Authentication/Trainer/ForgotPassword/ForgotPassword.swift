@@ -3,6 +3,7 @@ import UIKit
 class ForgotPassword: UIViewController {
 
     @IBOutlet weak var forgotPasswordTextfeild: UITextField!
+    private var loader: ActivityLoader?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,8 +28,10 @@ class ForgotPassword: UIViewController {
         }
 
         if email.isValidEmail {
+            loader = ActivityLoader.show(over: view)
             AuthService.shared.forgotPassword(email: email) { [weak self] error in
                 DispatchQueue.main.async {
+                    self?.loader?.hide()
                     if let error = error {
                         self?.showAlert(message: "Error sending reset link: \(error.localizedDescription)")
                     } else {

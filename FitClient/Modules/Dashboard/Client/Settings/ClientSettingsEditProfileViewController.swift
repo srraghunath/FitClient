@@ -22,6 +22,7 @@ class ClientSettingsEditProfileViewController: UIViewController,
     private var genderOptions: [String] = []
     private var goalOptions: [String] = []
     private var selectedImage: UIImage?
+    private var loader: ActivityLoader?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -241,6 +242,8 @@ class ClientSettingsEditProfileViewController: UIViewController,
             return
         }
 
+        loader = ActivityLoader.show(over: view)
+
         func performSave(with imageURL: String?) {
             let finalUpdate = ClientProfileUpdatePayload(
                 full_name: fullName,
@@ -252,6 +255,7 @@ class ClientSettingsEditProfileViewController: UIViewController,
 
             ClientProfileService.shared.updateProfile(finalUpdate) { [weak self] error in
                 DispatchQueue.main.async {
+                    self?.loader?.hide()
                     if let error {
                         self?.showAlert(title: "Error", message: error.localizedDescription)
                     } else {
@@ -270,6 +274,7 @@ class ClientSettingsEditProfileViewController: UIViewController,
                     performSave(with: url)
                 case .failure(let error):
                     DispatchQueue.main.async {
+                        self?.loader?.hide()
                         self?.showAlert(title: "Error", message: error.localizedDescription)
                     }
                 }

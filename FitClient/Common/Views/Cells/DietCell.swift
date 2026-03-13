@@ -28,6 +28,8 @@ class DietCell: UITableViewCell {
         imageLoadTask?.cancel()
         currentDietId = nil
         onQuantityChanged = nil
+        dietImageView.image = UIImage(systemName: "photo")
+        dietImageView.tintColor = .secondaryLabel
     }
     
     private func setupUI() {
@@ -67,6 +69,8 @@ class DietCell: UITableViewCell {
         self.onQuantityChanged = onQuantityChanged
         
         nameLabel.text = diet.name
+        dietImageView.image = UIImage(systemName: "photo")
+        dietImageView.tintColor = .secondaryLabel
         
     // Format nutrition info: "<grams> g | P: 25g | C: 40g | F: 10g | 350 cal"
     nutritionLabel.text = "\(diet.grams) g | P: \(String(format: "%.1f", diet.protein))g | C: \(String(format: "%.1f", diet.carbs))g | F: \(String(format: "%.1f", diet.fat))g | \(diet.calories) cal"
@@ -112,6 +116,8 @@ class DietCell: UITableViewCell {
 
         nameLabel.text = diet.name
         nutritionLabel.text = "\(diet.grams)g | P: \(String(format: "%.1f", diet.protein))g | C: \(String(format: "%.1f", diet.carbs))g | F: \(String(format: "%.1f", diet.fat))g | \(diet.calories) cal"
+        dietImageView.image = UIImage(systemName: "photo")
+        dietImageView.tintColor = .secondaryLabel
 
     // Always plain card for client; hide stepper but SHOW quantity value
         containerView.backgroundColor = UIColor(hex: "#1a1a1a")

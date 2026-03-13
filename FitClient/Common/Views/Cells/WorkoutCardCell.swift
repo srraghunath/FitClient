@@ -31,6 +31,8 @@ class WorkoutCardCell: UITableViewCell {
         super.prepareForReuse()
         imageLoadTask?.cancel()
         currentWorkoutId = nil
+        workoutImageView.image = UIImage(systemName: "photo")
+        workoutImageView.tintColor = .secondaryLabel
     }
     
     private func setupUI() {
@@ -61,6 +63,8 @@ class WorkoutCardCell: UITableViewCell {
         currentWorkoutId = workout.id
         nameLabel.text = workout.name
         descriptionLabel.text = workout.reps
+        workoutImageView.image = UIImage(systemName: "photo")
+        workoutImageView.tintColor = .secondaryLabel
         
         let logPath = "/tmp/dashboard_debug.log"
         let logMsg = "🏋️ [WorkoutCardCell] Configuring: \(workout.name), URL: \(workout.imageUrl), showCheckbox: \(showCheckbox)\n"
@@ -85,6 +89,8 @@ class WorkoutCardCell: UITableViewCell {
         currentWorkoutId = workout.id
         nameLabel.text = workout.name
         descriptionLabel.text = workout.description
+        workoutImageView.image = UIImage(systemName: "photo")
+        workoutImageView.tintColor = .secondaryLabel
         
         if workout.isSelected {
             checkboxButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .normal)

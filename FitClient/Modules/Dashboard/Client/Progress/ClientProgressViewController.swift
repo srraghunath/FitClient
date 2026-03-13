@@ -64,6 +64,7 @@ final class ClientProgressViewController: UIViewController {
     private var heatmapContainerHeightConstraint: NSLayoutConstraint?
     private var heatmapCollectionHeightConstraint: NSLayoutConstraint?
     private var heatmapCollectionBottomConstraint: NSLayoutConstraint?
+    private var loader: ActivityLoader?
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -250,10 +251,15 @@ final class ClientProgressViewController: UIViewController {
     }
     
     // MARK: - Data Loading
-    private func loadData() {
+    private func loadData(showLoader: Bool = false) {
+        if showLoader {
+            loader = ActivityLoader.show(over: view)
+        }
+
         DayActivityService.shared.fetchActivitiesForCurrentClient(month: currentMonth) { [weak self] (result: Result<[DayActivityDTO], Error>) in
             DispatchQueue.main.async {
                 guard let self else { return }
+                self.loader?.hide()
                 switch result {
                 case .success(let rows):
                     self.monthActivities = rows.map {
@@ -488,7 +494,7 @@ final class ClientProgressViewController: UIViewController {
             guard let newDate = self.calendar.date(from: components) else { return }
 
             self.currentMonth = newDate
-            self.loadData()
+            self.loadData(showLoader: true)
             self.updateUI()
         })
 

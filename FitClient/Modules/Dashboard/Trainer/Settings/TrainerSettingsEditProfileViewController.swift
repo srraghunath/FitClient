@@ -18,6 +18,7 @@ final class TrainerSettingsEditProfileViewController: UIViewController,
     // MARK: - Properties
     private let genderPicker = UIPickerView()
     private var genderOptions: [String] = []
+    private var loader: ActivityLoader?
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -185,6 +186,8 @@ final class TrainerSettingsEditProfileViewController: UIViewController,
         let gender = genderTextField.text
         let specialization = specializationTextField.text
 
+        loader = ActivityLoader.show(over: view)
+
         if let image = profileImageView.image {
             uploadImageAndSave(
                 image: image,
@@ -235,6 +238,7 @@ final class TrainerSettingsEditProfileViewController: UIViewController,
                         title: "Error",
                         message: error.localizedDescription
                     )
+                    self?.loader?.hide()
                 }
             }
         }
@@ -260,6 +264,7 @@ final class TrainerSettingsEditProfileViewController: UIViewController,
 
         TrainerService.shared.updateTrainerProfile(update, for: userId) { [weak self] error in
             DispatchQueue.main.async {
+                self?.loader?.hide()
                 if let error {
                     print("[TrainerSettingsEditProfile] Save failed: \(error)")
                     self?.showAlert(title: "Error", message: error.localizedDescription)
