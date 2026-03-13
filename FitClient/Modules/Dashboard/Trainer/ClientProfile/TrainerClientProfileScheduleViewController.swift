@@ -739,10 +739,12 @@ extension TrainerClientProfileScheduleViewController: UITableViewDataSource {
             let clearButton = UIButton(type: .system)
             clearButton.translatesAutoresizingMaskIntoConstraints = false
             clearButton.setTitle("Clear", for: .normal)
-            clearButton.setTitleColor(.white, for: .normal)
-            clearButton.backgroundColor = UIColor(hex: "#fe1414")
+            clearButton.setTitleColor(.textPrimary, for: .normal)
+            clearButton.backgroundColor = .backgroundGray
             clearButton.titleLabel?.font = UIFont(name: "WorkSans-SemiBold", size: 16)
             clearButton.layer.cornerRadius = 12
+            clearButton.layer.borderWidth = 1
+            clearButton.layer.borderColor = UIColor.backgroundLight.cgColor
             clearButton.addTarget(self, action: #selector(clearButtonTapped(_:)), for: .touchUpInside)
             containerView.addSubview(clearButton)
             
