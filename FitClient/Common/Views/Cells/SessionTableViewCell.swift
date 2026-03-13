@@ -50,7 +50,7 @@ class SessionTableViewCell: UITableViewCell {
     
     func configure(with session: Session) {
         clientNameLabel.text = session.clientName
-        let start = session.startTime?.isEmpty == false ? session.startTime! : (session.goal ?? "")
+        let start = session.startTime?.isEmpty == false ? session.startTime! : "Session planned"
         if let end = session.endTime, !end.isEmpty {
             timeLabel.text = "\(start) - \(end)"
         } else {

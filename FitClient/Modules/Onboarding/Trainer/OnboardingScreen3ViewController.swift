@@ -25,7 +25,7 @@ class OnboardingScreen3ViewController: UIViewController {
         titleLabel.numberOfLines = 0
         
         // Setup description
-        descriptionLabel.text = "Easily update workout, cardio, diet and sleep goals."
+        descriptionLabel.text = "Easily update workout, cardio, diet and sleep progress."
         descriptionLabel.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         descriptionLabel.textColor = .textPrimary
         descriptionLabel.textAlignment = .center
