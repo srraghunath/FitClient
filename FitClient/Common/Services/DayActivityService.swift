@@ -8,6 +8,7 @@ struct DayActivityDTO: Codable {
     let waterDone: Bool
     let dietDone: Bool
     let sleepDone: Bool
+    let updatedAt: String?
 
     enum CodingKeys: String, CodingKey {
         case activityDate = "activity_date"
@@ -16,6 +17,7 @@ struct DayActivityDTO: Codable {
         case waterDone = "water_done"
         case dietDone = "diet_done"
         case sleepDone = "sleep_done"
+        case updatedAt = "updated_at"
     }
 }
 
@@ -68,7 +70,8 @@ final class DayActivityService {
                         cardioDone: false,
                         waterDone: false,
                         dietDone: false,
-                        sleepDone: false
+                        sleepDone: false,
+                        updatedAt: nil
                     )))
                 }
             } catch {

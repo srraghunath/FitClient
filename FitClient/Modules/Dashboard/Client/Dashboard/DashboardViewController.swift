@@ -295,7 +295,8 @@ class DashboardViewController: UIViewController {
                             cardioDone: activity.cardio,
                             waterDone: activity.waterIntake,
                             dietDone: activity.diet,
-                            sleepDone: activity.sleep
+                            sleepDone: activity.sleep,
+                            updatedAt: nil
                         )
                         DispatchQueue.main.async {
                             self?.applyDayActivity(record)
@@ -401,7 +402,8 @@ class DashboardViewController: UIViewController {
             cardioDone: false,
             waterDone: false,
             dietDone: false,
-            sleepDone: false
+            sleepDone: false,
+            updatedAt: nil
         )
         dayTrackerItems = makeDayTrackerItems(from: record, plan: currentDayPlan)
         updateUI()
@@ -718,11 +720,11 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
         let previousRecord = record
 
         switch indexPath.row {
-        case 0: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: !record.workoutDone, cardioDone: record.cardioDone, waterDone: record.waterDone, dietDone: record.dietDone, sleepDone: record.sleepDone)
-        case 1: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: record.workoutDone, cardioDone: !record.cardioDone, waterDone: record.waterDone, dietDone: record.dietDone, sleepDone: record.sleepDone)
-        case 2: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: record.workoutDone, cardioDone: record.cardioDone, waterDone: !record.waterDone, dietDone: record.dietDone, sleepDone: record.sleepDone)
-        case 3: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: record.workoutDone, cardioDone: record.cardioDone, waterDone: record.waterDone, dietDone: !record.dietDone, sleepDone: record.sleepDone)
-        case 4: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: record.workoutDone, cardioDone: record.cardioDone, waterDone: record.waterDone, dietDone: record.dietDone, sleepDone: !record.sleepDone)
+        case 0: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: !record.workoutDone, cardioDone: record.cardioDone, waterDone: record.waterDone, dietDone: record.dietDone, sleepDone: record.sleepDone, updatedAt: record.updatedAt)
+        case 1: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: record.workoutDone, cardioDone: !record.cardioDone, waterDone: record.waterDone, dietDone: record.dietDone, sleepDone: record.sleepDone, updatedAt: record.updatedAt)
+        case 2: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: record.workoutDone, cardioDone: record.cardioDone, waterDone: !record.waterDone, dietDone: record.dietDone, sleepDone: record.sleepDone, updatedAt: record.updatedAt)
+        case 3: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: record.workoutDone, cardioDone: record.cardioDone, waterDone: record.waterDone, dietDone: !record.dietDone, sleepDone: record.sleepDone, updatedAt: record.updatedAt)
+        case 4: record = DayActivityDTO(activityDate: record.activityDate, workoutDone: record.workoutDone, cardioDone: record.cardioDone, waterDone: record.waterDone, dietDone: record.dietDone, sleepDone: !record.sleepDone, updatedAt: record.updatedAt)
         default: return
         }
 

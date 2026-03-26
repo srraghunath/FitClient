@@ -26,6 +26,8 @@ class TrainerClientProfileViewController: UIViewController {
     var client: Client?
     private var clientProfile: ClientProfile?
     private var currentChildViewController: UIViewController?
+    private var segmentContentView: UIView?
+    private var segmentedTopToSpecialtyConstraint: NSLayoutConstraint?
     private var recentCompletedItems: [DayTrackerItem] = []
     private let isoFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -59,8 +61,26 @@ class TrainerClientProfileViewController: UIViewController {
         scrollView?.alwaysBounceVertical = true
         scrollView?.showsVerticalScrollIndicator = true
         contentView?.translatesAutoresizingMaskIntoConstraints = false
+        setupSegmentContentView()
         setupProfileUI()
         setupSegmentedControl()
+    }
+
+    private func setupSegmentContentView() {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.backgroundColor = .black
+        container.isHidden = true
+        view.addSubview(container)
+
+        NSLayoutConstraint.activate([
+            container.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 0),
+            container.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            container.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            container.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+
+        segmentContentView = container
     }
     
     private func setupProfileUI() {
@@ -69,8 +89,10 @@ class TrainerClientProfileViewController: UIViewController {
         
         guard let client = client else { return }
         nameLabel.text = client.name
-        specialtyLabel.text = client.gender ?? "Client"
-        goalsLabel.text = "Profile: \(client.profileSummary)"
+        specialtyLabel.text = "Last active: --"
+        goalsLabel.isHidden = true
+        goalsLabel.text = nil
+        updateSegmentedControlTopConstraint()
         
         // Center align activity summary labels
         totalActiveDaysLabel.textAlignment = .center
@@ -86,6 +108,23 @@ class TrainerClientProfileViewController: UIViewController {
                 }
             }.resume()
         }
+    }
+
+    private func updateSegmentedControlTopConstraint() {
+        guard segmentedTopToSpecialtyConstraint == nil else { return }
+
+        if let oldConstraint = view.constraints.first(where: {
+            ($0.firstItem as? UISegmentedControl) === segmentedControl &&
+            ($0.secondItem as? UILabel) === goalsLabel &&
+            $0.firstAttribute == .top &&
+            $0.secondAttribute == .bottom
+        }) {
+            oldConstraint.isActive = false
+        }
+
+        let newConstraint = segmentedControl.topAnchor.constraint(equalTo: specialtyLabel.bottomAnchor, constant: 16)
+        newConstraint.isActive = true
+        segmentedTopToSpecialtyConstraint = newConstraint
     }
     
     private func setupSegmentedControl() {
@@ -144,6 +183,7 @@ class TrainerClientProfileViewController: UIViewController {
                     let profile = self?.buildProfile(from: activities)
                     self?.clientProfile = profile
                     self?.recentCompletedItems = self?.buildCompletedItemsForToday(from: activities) ?? []
+                    self?.updateLastActiveLabel(from: activities)
                 case .failure(let error):
                     print("[TrainerProfile] Failed to fetch activities: \(error)")
                     let placeholder = ClientProfile(
@@ -155,12 +195,55 @@ class TrainerClientProfileViewController: UIViewController {
                     self?.recentCompletedItems = [
                         DayTrackerItem(icon: "–", title: "None", subtitle: "No activity completed", isCompleted: false)
                     ]
+                    self?.specialtyLabel.text = "Last active: --"
                 }
                 self?.updateProfileUI()
                 self?.recentActivitiesTableView.reloadData()
                 self?.updateTableHeight()
             }
         }
+    }
+
+    private func updateLastActiveLabel(from activities: [DayActivityDTO]) {
+        let last = activities
+            .filter { $0.workoutDone || $0.cardioDone || $0.waterDone || $0.dietDone || $0.sleepDone }
+            .sorted { lhs, rhs in
+                let lhsDate = resolvedLastActiveDate(from: lhs) ?? Date.distantPast
+                let rhsDate = resolvedLastActiveDate(from: rhs) ?? Date.distantPast
+                return lhsDate > rhsDate
+            }
+            .first
+
+        guard let activity = last, let date = resolvedLastActiveDate(from: activity) else {
+            specialtyLabel.text = "Last active: --"
+            return
+        }
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMM yyyy, h:mm a"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        specialtyLabel.text = "Last active: \(formatter.string(from: date))"
+    }
+
+    private func resolvedLastActiveDate(from activity: DayActivityDTO) -> Date? {
+        if let updatedAt = activity.updatedAt {
+            if let precise = parseSupabaseTimestamp(updatedAt) {
+                return precise
+            }
+        }
+        return isoFormatter.date(from: activity.activityDate)
+    }
+
+    private func parseSupabaseTimestamp(_ value: String) -> Date? {
+        let iso = ISO8601DateFormatter()
+        iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = iso.date(from: value) {
+            return date
+        }
+
+        let fallback = ISO8601DateFormatter()
+        fallback.formatOptions = [.withInternetDateTime]
+        return fallback.date(from: value)
     }
     
     private func updateTableHeight() {
@@ -270,14 +353,18 @@ class TrainerClientProfileViewController: UIViewController {
         case 0:
             // Overview - show regular activity table view
             removeCurrentChildViewController()
+            segmentContentView?.isHidden = true
+            scrollView?.isHidden = false
             recentActivitiesTableView.isHidden = false
         case 1:
             // Schedule - load schedule view controller
-            recentActivitiesTableView.isHidden = true
+            scrollView?.isHidden = true
+            segmentContentView?.isHidden = false
             loadScheduleViewController()
         case 2:
             // Progress - load progress view controller
-            recentActivitiesTableView.isHidden = true
+            scrollView?.isHidden = true
+            segmentContentView?.isHidden = false
             loadProgressViewController()
         default:
             break
@@ -295,9 +382,9 @@ class TrainerClientProfileViewController: UIViewController {
         
         // Add as child view controller
         addChild(scheduleVC)
-        
-        // Attach to parent view with full-edge constraints to maintain full height layout
-        guard let parentView = recentActivitiesTableView.superview else { return }
+
+        // Attach to the dedicated segment container to avoid scroll-content padding artifacts
+        guard let parentView = segmentContentView else { return }
         scheduleVC.view.translatesAutoresizingMaskIntoConstraints = false
         parentView.addSubview(scheduleVC.view)
         NSLayoutConstraint.activate([
@@ -321,8 +408,8 @@ class TrainerClientProfileViewController: UIViewController {
         
         // Add as child view controller
         addChild(progressVC)
-        
-        guard let parentView = recentActivitiesTableView.superview else { return }
+
+        guard let parentView = segmentContentView else { return }
         progressVC.view.translatesAutoresizingMaskIntoConstraints = false
         parentView.addSubview(progressVC.view)
         NSLayoutConstraint.activate([
