@@ -19,15 +19,12 @@ class SignUpClientViewController: UIViewController {
     
     let genderPicker = UIPickerView()
     var genderOptions: [String] = []
-    let goalPicker = UIPickerView()
-    var goalOptions: [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         loadSignupOptions()
         setupUI()
         setupGenderPicker()
-        setupGoalPicker()
     }
     
     func loadSignupOptions() {
@@ -36,9 +33,7 @@ class SignUpClientViewController: UIViewController {
                 switch result {
                 case .success(let options):
                     self?.genderOptions = options.genderOptions
-                    self?.goalOptions = options.goalOptions
                     self?.genderPicker.reloadAllComponents()
-                    self?.goalPicker.reloadAllComponents()
                 case .failure(let error):
                     print("Failed to load signup options: \(error)")
                 }
@@ -59,8 +54,9 @@ class SignUpClientViewController: UIViewController {
         genderTextField.applyAppStyle(placeholder: "Gender")
         genderTextField.inputView = genderPicker
         
-        goalTextField.applyAppStyle(placeholder: "Goal")
-        goalTextField.inputView = goalPicker
+        // Goal was removed from signup; keep the outlet hidden to avoid breaking xib wiring.
+        goalTextField.isHidden = true
+        goalTextField.isUserInteractionEnabled = false
         
         emailTextField.applyAppStyle(placeholder: "Email")
         emailTextField.autocapitalizationType = .none
@@ -85,28 +81,9 @@ class SignUpClientViewController: UIViewController {
         genderTextField.inputAccessoryView = toolbar
     }
     
-    func setupGoalPicker() {
-        goalPicker.delegate = self
-        goalPicker.dataSource = self
-        goalPicker.tag = 2
-        
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(donePickingGoal))
-        let flex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolbar.setItems([flex, doneButton], animated: false)
-        goalTextField.inputAccessoryView = toolbar
-    }
-    
     @objc func donePickingGender() {
         let selectedRow = genderPicker.selectedRow(inComponent: 0)
         genderTextField.text = genderOptions[selectedRow]
-        view.endEditing(true)
-    }
-    
-    @objc func donePickingGoal() {
-        let selectedRow = goalPicker.selectedRow(inComponent: 0)
-        goalTextField.text = goalOptions[selectedRow]
         view.endEditing(true)
     }
     
@@ -114,7 +91,6 @@ class SignUpClientViewController: UIViewController {
         guard let fullName = fullNameTextField.text, !fullName.isEmpty,
               let age = ageTextField.text, !age.isEmpty,
               let gender = genderTextField.text, !gender.isEmpty,
-              let goal = goalTextField.text, !goal.isEmpty,
               let email = emailTextField.text, !email.isEmpty,
               let password = passwordTextField.text, !password.isEmpty else {
             showAlert(message: "Please fill in all fields")
@@ -122,7 +98,8 @@ class SignUpClientViewController: UIViewController {
         }
         
         if email.isValidEmail {
-            AuthService.shared.signUpClient(email: email, password: password, fullName: fullName, age: age, gender: gender, goal: goal) { [weak self] error in
+            // Keep backend payload compatibility by using an existing field value.
+            AuthService.shared.signUpClient(email: email, password: password, fullName: fullName, age: age, gender: gender, goal: gender) { [weak self] error in
                 DispatchQueue.main.async {
                     if let error = error {
                         self?.showAlert(message: "Error signing up: \(error.localizedDescription)")
@@ -150,26 +127,14 @@ extension SignUpClientViewController: UIPickerViewDelegate, UIPickerViewDataSour
     func numberOfComponents(in pickerView: UIPickerView) -> Int { 1 }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if pickerView.tag == 1 {
-            return genderOptions.count
-        } else {
-            return goalOptions.count
-        }
+        return genderOptions.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if pickerView.tag == 1 {
-            return genderOptions[row]
-        } else {
-            return goalOptions[row]
-        }
+        return genderOptions[row]
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if pickerView.tag == 1 {
-            genderTextField.text = genderOptions[row]
-        } else {
-            goalTextField.text = goalOptions[row]
-        }
+        genderTextField.text = genderOptions[row]
     }
 }

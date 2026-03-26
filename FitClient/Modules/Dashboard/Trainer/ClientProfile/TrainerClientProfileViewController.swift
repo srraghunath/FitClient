@@ -69,8 +69,8 @@ class TrainerClientProfileViewController: UIViewController {
         
         guard let client = client else { return }
         nameLabel.text = client.name
-        specialtyLabel.text = client.goal ?? "Fitness Enthusiast"
-        goalsLabel.text = "Goals: \(client.level)"
+        specialtyLabel.text = client.gender ?? "Client"
+        goalsLabel.text = "Profile: \(client.profileSummary)"
         
         // Center align activity summary labels
         totalActiveDaysLabel.textAlignment = .center

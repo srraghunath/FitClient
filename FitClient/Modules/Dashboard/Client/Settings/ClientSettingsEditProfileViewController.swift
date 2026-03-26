@@ -18,9 +18,7 @@ class ClientSettingsEditProfileViewController: UIViewController,
     // MARK: - Properties
     private var profile: ClientProfileRecord?
     private let genderPicker = UIPickerView()
-    private let goalPicker = UIPickerView()
     private var genderOptions: [String] = []
-    private var goalOptions: [String] = []
     private var selectedImage: UIImage?
     private var loader: ActivityLoader?
 
@@ -95,7 +93,7 @@ class ClientSettingsEditProfileViewController: UIViewController,
             (emailTextField, "Email"),
             (phoneTextField, "Age"),
             (genderTextField, "Gender"),
-            (goalTextField, "Goal")
+            (goalTextField, "Profile Summary")
         ]
 
         fields.forEach { field, placeholder in
@@ -103,18 +101,17 @@ class ClientSettingsEditProfileViewController: UIViewController,
             field.applyAppStyle(placeholder: placeholder)
             field.keyboardAppearance = .dark
         }
+
+        // Goal is no longer editable; this field now displays derived profile summary.
+        goalTextField.isUserInteractionEnabled = false
     }
 
     private func setupPickers() {
         genderPicker.delegate = self
         genderPicker.dataSource = self
         genderPicker.tag = 1
-        goalPicker.delegate = self
-        goalPicker.dataSource = self
-        goalPicker.tag = 2
 
         genderTextField.inputView = genderPicker
-        goalTextField.inputView = goalPicker
 
         let genderToolbar = UIToolbar()
         genderToolbar.sizeToFit()
@@ -124,13 +121,6 @@ class ClientSettingsEditProfileViewController: UIViewController,
         ], animated: false)
         genderTextField.inputAccessoryView = genderToolbar
 
-        let goalToolbar = UIToolbar()
-        goalToolbar.sizeToFit()
-        goalToolbar.setItems([
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-            UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(donePickingGoal))
-        ], animated: false)
-        goalTextField.inputAccessoryView = goalToolbar
     }
 
     // MARK: - Data Loading
@@ -158,11 +148,8 @@ class ClientSettingsEditProfileViewController: UIViewController,
                 switch result {
                 case .success(let options):
                     self?.genderOptions = options.genderOptions
-                    self?.goalOptions = options.goalOptions
                     self?.genderPicker.reloadAllComponents()
-                    self?.goalPicker.reloadAllComponents()
                     self?.alignGenderPickerWithCurrentSelection()
-                    self?.alignGoalPickerWithCurrentSelection()
                 case .failure(let error):
                     print("[ClientSettingsEditProfile] Failed to load signup options: \(error)")
                 }
@@ -175,10 +162,9 @@ class ClientSettingsEditProfileViewController: UIViewController,
         emailTextField.text = AuthService.shared.supabase.auth.currentUser?.email
         if let age = profile.age { phoneTextField.text = String(age) }
         genderTextField.text = profile.gender
-        goalTextField.text = profile.goal
+        goalTextField.text = makeProfileSummary(age: profile.age, gender: profile.gender)
 
         alignGenderPickerWithCurrentSelection()
-        alignGoalPickerWithCurrentSelection()
 
         if let urlString = profile.profileImageURL, let url = URL(string: urlString) {
             URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
@@ -231,8 +217,7 @@ class ClientSettingsEditProfileViewController: UIViewController,
         guard let fullName = nameTextField.text, !fullName.isEmpty,
               let ageString = phoneTextField.text, !ageString.isEmpty,
               let age = Int(ageString), age > 0,
-              let gender = genderTextField.text, !gender.isEmpty,
-              let goal = goalTextField.text, !goal.isEmpty else {
+              let gender = genderTextField.text, !gender.isEmpty else {
             showAlert(title: "Error", message: "Please fill in all fields")
             return
         }
@@ -249,7 +234,8 @@ class ClientSettingsEditProfileViewController: UIViewController,
                 full_name: fullName,
                 age: age,
                 gender: gender,
-                goal: goal,
+                // Keep backend RPC compatibility while removing goal from editable UI.
+                goal: profile?.goal ?? makeProfileSummary(age: age, gender: gender),
                 profile_image_url: imageURL
             )
 
@@ -303,20 +289,20 @@ extension ClientSettingsEditProfileViewController {
     func numberOfComponents(in pickerView: UIPickerView) -> Int { 1 }
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        pickerView.tag == 1 ? genderOptions.count : goalOptions.count
+        genderOptions.count
     }
 
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        pickerView.tag == 1 ? genderOptions[row] : goalOptions[row]
+        genderOptions[row]
     }
 
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if pickerView.tag == 1 {
-            guard genderOptions.indices.contains(row) else { return }
-            genderTextField.text = genderOptions[row]
+        guard genderOptions.indices.contains(row) else { return }
+        genderTextField.text = genderOptions[row]
+        if let age = Int(phoneTextField.text ?? "") {
+            goalTextField.text = makeProfileSummary(age: age, gender: genderOptions[row])
         } else {
-            guard goalOptions.indices.contains(row) else { return }
-            goalTextField.text = goalOptions[row]
+            goalTextField.text = makeProfileSummary(age: nil, gender: genderOptions[row])
         }
     }
 
@@ -327,16 +313,11 @@ extension ClientSettingsEditProfileViewController {
             return
         }
         genderTextField.text = genderOptions[selectedRow]
-        view.endEditing(true)
-    }
-
-    @objc private func donePickingGoal() {
-        let selectedRow = goalPicker.selectedRow(inComponent: 0)
-        guard goalOptions.indices.contains(selectedRow) else {
-            view.endEditing(true)
-            return
+        if let age = Int(phoneTextField.text ?? "") {
+            goalTextField.text = makeProfileSummary(age: age, gender: genderOptions[selectedRow])
+        } else {
+            goalTextField.text = makeProfileSummary(age: nil, gender: genderOptions[selectedRow])
         }
-        goalTextField.text = goalOptions[selectedRow]
         view.endEditing(true)
     }
 
@@ -355,18 +336,14 @@ extension ClientSettingsEditProfileViewController {
         }
     }
 
-    private func alignGoalPickerWithCurrentSelection() {
-        guard !goalOptions.isEmpty else { return }
-        let current = goalTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines)
-        if let current,
-           let index = goalOptions.firstIndex(where: { $0.caseInsensitiveCompare(current) == .orderedSame }) {
-            goalPicker.selectRow(index, inComponent: 0, animated: false)
-            goalTextField.text = goalOptions[index]
-        } else {
-            goalPicker.selectRow(0, inComponent: 0, animated: false)
-            if (current ?? "").isEmpty {
-                goalTextField.text = goalOptions.first
-            }
+    private func makeProfileSummary(age: Int?, gender: String?) -> String {
+        var parts: [String] = []
+        if let gender, !gender.isEmpty {
+            parts.append(gender)
         }
+        if let age {
+            parts.append("Age \(age)")
+        }
+        return parts.isEmpty ? "Client" : parts.joined(separator: " • ")
     }
 }

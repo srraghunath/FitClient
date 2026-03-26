@@ -16,7 +16,17 @@ struct Client: Codable {
     // MARK: - Computed convenience
     var name: String { full_name }
     var profileImage: String { profileImageURL ?? "" }
-    var level: String { goal ?? "N/A" }
+    var level: String { profileSummary }
+    var profileSummary: String {
+        var parts: [String] = []
+        if let gender, !gender.isEmpty {
+            parts.append(gender)
+        }
+        if let age {
+            parts.append("Age \(age)")
+        }
+        return parts.isEmpty ? "Client" : parts.joined(separator: " • ")
+    }
 
     enum CodingKeys: String, CodingKey {
         case id
