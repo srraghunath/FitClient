@@ -19,16 +19,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		BECA34F22EB8F99B0052F628 /* FitClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BECA34F22EB8F99B0052F628 /* FitBond.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitBond.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		BECA35042EB8F99C0052F628 /* Exceptions for "FitClient" folder in "FitClient" target */ = {
+		BECA35042EB8F99C0052F628 /* Exceptions for "FitClient" folder in "FitBond" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = BECA34F12EB8F99B0052F628 /* FitClient */;
+			target = BECA34F12EB8F99B0052F628 /* FitBond */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -36,7 +36,7 @@
 		BECA34F42EB8F99B0052F628 /* FitClient */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				BECA35042EB8F99C0052F628 /* Exceptions for "FitClient" folder in "FitClient" target */,
+				BECA35042EB8F99C0052F628 /* Exceptions for "FitClient" folder in "FitBond" target */,
 			);
 			path = FitClient;
 			sourceTree = "<group>";
@@ -82,7 +82,7 @@
 		BECA34F32EB8F99B0052F628 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BECA34F22EB8F99B0052F628 /* FitClient.app */,
+				BECA34F22EB8F99B0052F628 /* FitBond.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -90,9 +90,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		BECA34F12EB8F99B0052F628 /* FitClient */ = {
+		BECA34F12EB8F99B0052F628 /* FitBond */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BECA35052EB8F99C0052F628 /* Build configuration list for PBXNativeTarget "FitClient" */;
+			buildConfigurationList = BECA35052EB8F99C0052F628 /* Build configuration list for PBXNativeTarget "FitBond" */;
 			buildPhases = (
 				BECA34EE2EB8F99B0052F628 /* Sources */,
 				BECA34EF2EB8F99B0052F628 /* Frameworks */,
@@ -106,7 +106,7 @@
 			fileSystemSynchronizedGroups = (
 				BECA34F42EB8F99B0052F628 /* FitClient */,
 			);
-			name = FitClient;
+			name = FitBond;
 			packageProductDependencies = (
 				BEC4FC492F0784DA005D69B4 /* Auth */,
 				BEC4FC4B2F0784DA005D69B4 /* Functions */,
@@ -119,7 +119,7 @@
 				BE266B432F4B6A16007F513F /* FirebaseCrashlytics */,
 			);
 			productName = FitClient;
-			productReference = BECA34F22EB8F99B0052F628 /* FitClient.app */;
+			productReference = BECA34F22EB8F99B0052F628 /* FitBond.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -137,7 +137,7 @@
 					};
 				};
 			};
-			buildConfigurationList = BECA34ED2EB8F99B0052F628 /* Build configuration list for PBXProject "FitClient" */;
+			buildConfigurationList = BECA34ED2EB8F99B0052F628 /* Build configuration list for PBXProject "FitBond" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -155,7 +155,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				BECA34F12EB8F99B0052F628 /* FitClient */,
+				BECA34F12EB8F99B0052F628 /* FitBond */,
 			);
 		};
 /* End PBXProject section */
@@ -229,7 +229,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fitbond.FitClient;
+				PRODUCT_BUNDLE_IDENTIFIER = com.srmist.fitbond;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -259,7 +259,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fitbond.FitClient;
+				PRODUCT_BUNDLE_IDENTIFIER = com.srmist.fitbond;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -389,7 +389,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BECA34ED2EB8F99B0052F628 /* Build configuration list for PBXProject "FitClient" */ = {
+		BECA34ED2EB8F99B0052F628 /* Build configuration list for PBXProject "FitBond" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BECA35082EB8F99C0052F628 /* Debug */,
@@ -398,7 +398,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BECA35052EB8F99C0052F628 /* Build configuration list for PBXNativeTarget "FitClient" */ = {
+		BECA35052EB8F99C0052F628 /* Build configuration list for PBXNativeTarget "FitBond" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BECA35062EB8F99C0052F628 /* Debug */,
