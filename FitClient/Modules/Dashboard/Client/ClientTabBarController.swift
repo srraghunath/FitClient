@@ -16,18 +16,20 @@ class ClientTabBarController: UITabBarController {
     }
     
     private func setupTabBar() {
-        // Tab bar appearance
-        tabBar.backgroundColor = .tabBarBackground
-        tabBar.barTintColor = .tabBarBackground
-        tabBar.isTranslucent = false
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .tabBarBackground
+        
+        // Standard native appearance (no pill) is default
+        
+        // Configure standard and scrollEdge appearances
+        tabBar.standardAppearance = appearance
+        if #available(iOS 15.0, *) {
+            tabBar.scrollEdgeAppearance = appearance
+        }
+        
         tabBar.tintColor = .primaryGreen
         tabBar.unselectedItemTintColor = .textTertiary
-        
-        // Border line at top
-        let borderLayer = CALayer()
-        borderLayer.backgroundColor = UIColor.tabBarBackground.cgColor
-        borderLayer.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 1)
-        tabBar.layer.addSublayer(borderLayer)
     }
     
     private func setupViewControllers() {
