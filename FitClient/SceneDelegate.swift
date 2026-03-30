@@ -11,18 +11,47 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
         let window = UIWindow(windowScene: windowScene)
         self.window = window
-
-        Task {
-            if let role = try? await AuthService.shared.restoreSession() {
-                await MainActor.run {
-                    window.rootViewController = self.makeRootViewController(for: role)
-                    window.makeKeyAndVisible()
+        
+        // Show Splash Screen first
+        let splashVC = SplashViewController()
+        window.rootViewController = splashVC
+        window.makeKeyAndVisible()
+        
+        // Execute app logic after splash delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+            Task {
+                if let role = try? await AuthService.shared.restoreSession() {
+                    await MainActor.run {
+                        let rootVC = self.makeRootViewController(for: role)
+                        self.transitionFromSplash(to: rootVC)
+                    }
+                } else {
+                    await MainActor.run {
+                        let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
+                        if let initialVC = mainStoryboard.instantiateInitialViewController() {
+                            self.transitionFromSplash(to: initialVC)
+                        }
+                    }
                 }
-            } else {
-                await MainActor.run {
-                    window.rootViewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
-                    window.makeKeyAndVisible()
-                }
+            }
+        }
+    }
+    
+    private func transitionFromSplash(to viewController: UIViewController) {
+        guard let window = self.window,
+              let splashVC = window.rootViewController as? SplashViewController else {
+            self.window?.rootViewController = viewController
+            return
+        }
+        
+        // Call the cinematic outro first
+        splashVC.performOutro {
+            window.rootViewController = viewController
+            
+            // Add a final subtle fade-in for the new root
+            viewController.view.alpha = 0
+            UIView.animate(withDuration: 0.3) {
+                viewController.view.alpha = 1
             }
         }
     }
