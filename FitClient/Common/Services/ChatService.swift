@@ -1,5 +1,6 @@
 import Foundation
 import Supabase
+import UIKit
 
 struct Conversation: Codable {
     let id: UUID
@@ -429,4 +430,260 @@ final class ChatService {
         }
     }
 
+}
+
+enum ContentReportReason: String, CaseIterable {
+    case harassment = "Harassment or abuse"
+    case hateSpeech = "Hate speech"
+    case sexualContent = "Sexual content"
+    case violentContent = "Violent or threatening content"
+    case spam = "Spam"
+    case other = "Other"
+}
+
+private struct TermsAcceptanceUpsert: Encodable {
+    let user_id: UUID
+    let accepted_at: String
+    let terms_version: String
+}
+
+private struct ContentReportInsert: Encodable {
+    let reporter_user_id: UUID
+    let reported_user_id: UUID
+    let message_id: UUID?
+    let conversation_id: UUID
+    let reason: String
+    let details: String?
+    let report_type: String
+}
+
+private struct BlockedUserUpsert: Encodable {
+    let blocker_user_id: UUID
+    let blocked_user_id: UUID
+    let reason: String
+    let reported_message_id: UUID?
+}
+
+private struct BlockedUserRow: Decodable {
+    let blockedUserId: UUID
+
+    enum CodingKeys: String, CodingKey {
+        case blockedUserId = "blocked_user_id"
+    }
+}
+
+enum SafetyModerationError: LocalizedError {
+    case notAuthenticated
+    case objectionableContent
+
+    var errorDescription: String? {
+        switch self {
+        case .notAuthenticated:
+            return "You need to sign in to continue."
+        case .objectionableContent:
+            return "Message blocked because it contains objectionable content."
+        }
+    }
+}
+
+final class SafetyModerationService {
+    static let shared = SafetyModerationService()
+
+    private let supabase = AuthService.shared.supabase
+    private let isoFormatter = ISO8601DateFormatter()
+    private let termsVersion = "2026.04"
+    private let blockedTerms: [String] = [
+        "slur",
+        "kill yourself",
+        "rape",
+        "nude",
+        "porn",
+        "fuck",
+        "shit",
+        "bitch",
+        "asshole",
+        "bastard",
+        "cunt",
+        "dick",
+        "pussy",
+        "f*ck",
+        "sh*t"
+    ]
+
+    private init() {}
+
+    func ensureTermsAcceptedBeforeUGC(
+        presenter: UIViewController,
+        onDecision: @escaping (Bool) -> Void
+    ) {
+        guard let userId = supabase.auth.currentUser?.id else {
+            onDecision(false)
+            return
+        }
+
+        if UserDefaults.standard.bool(forKey: termsAcceptanceKey(for: userId)) {
+            onDecision(true)
+            return
+        }
+
+        let message = "By continuing, you agree to the FitBond Terms of Use. FitBond has zero tolerance for objectionable content or abusive users. Violations can result in content removal and account ejection."
+        let alert = UIAlertController(
+            title: "Terms of Use",
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Decline", style: .destructive) { _ in
+            onDecision(false)
+        })
+        alert.addAction(UIAlertAction(title: "I Agree", style: .default) { [weak self] _ in
+            guard let self else {
+                onDecision(false)
+                return
+            }
+            UserDefaults.standard.set(true, forKey: self.termsAcceptanceKey(for: userId))
+            Task {
+                try? await self.persistTermsAcceptance(for: userId)
+            }
+            onDecision(true)
+        })
+        presenter.present(alert, animated: true)
+    }
+
+    func validateOutgoingMessage(_ text: String) throws -> String {
+        let cleaned = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard cleaned.isEmpty == false else { return cleaned }
+        if containsObjectionableContent(cleaned) {
+            throw SafetyModerationError.objectionableContent
+        }
+        return cleaned
+    }
+
+    func sanitizeForDisplay(_ text: String) -> String {
+        var sanitized = text
+        for term in blockedTerms {
+            // Use word boundaries \b to avoid matching sub-strings (e.g. "classic" contains "ass")
+            let pattern = "\\b\(NSRegularExpression.escapedPattern(for: term))\\b"
+            guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
+            else { continue }
+            
+            let range = NSRange(location: 0, length: sanitized.utf16.count)
+            sanitized = regex.stringByReplacingMatches(
+                in: sanitized,
+                options: [],
+                range: range,
+                withTemplate: String(repeating: "*", count: term.count)
+            )
+        }
+        return sanitized
+    }
+
+    func fetchBlockedUserIds() async throws -> Set<UUID> {
+        guard let currentUserId = supabase.auth.currentUser?.id else {
+            throw SafetyModerationError.notAuthenticated
+        }
+        let rows: [BlockedUserRow] = try await supabase
+            .from("blocked_users")
+            .select("blocked_user_id")
+            .eq("blocker_user_id", value: currentUserId.uuidString)
+            .execute()
+            .value
+        return Set(rows.map { $0.blockedUserId })
+    }
+
+    func submitContentReport(
+        reportedUserId: UUID,
+        messageId: UUID?,
+        conversationId: UUID,
+        reason: ContentReportReason,
+        details: String?
+    ) async throws {
+        guard let reporter = supabase.auth.currentUser?.id else {
+            throw SafetyModerationError.notAuthenticated
+        }
+
+        let payload = ContentReportInsert(
+            reporter_user_id: reporter,
+            reported_user_id: reportedUserId,
+            message_id: messageId,
+            conversation_id: conversationId,
+            reason: reason.rawValue,
+            details: details,
+            report_type: "flag"
+        )
+
+        try await supabase
+            .from("content_reports")
+            .insert(payload)
+            .execute()
+    }
+
+    func blockUserAndReport(
+        blockedUserId: UUID,
+        reason: ContentReportReason,
+        details: String?,
+        messageId: UUID?,
+        conversationId: UUID
+    ) async throws {
+        guard let blocker = supabase.auth.currentUser?.id else {
+            throw SafetyModerationError.notAuthenticated
+        }
+
+        let blockPayload = BlockedUserUpsert(
+            blocker_user_id: blocker,
+            blocked_user_id: blockedUserId,
+            reason: reason.rawValue,
+            reported_message_id: messageId
+        )
+
+        try await supabase
+            .from("blocked_users")
+            .upsert(blockPayload)
+            .execute()
+
+        let reportPayload = ContentReportInsert(
+            reporter_user_id: blocker,
+            reported_user_id: blockedUserId,
+            message_id: messageId,
+            conversation_id: conversationId,
+            reason: reason.rawValue,
+            details: details,
+            report_type: "block"
+        )
+
+        try await supabase
+            .from("content_reports")
+            .insert(reportPayload)
+            .execute()
+    }
+
+    private func persistTermsAcceptance(for userId: UUID) async throws {
+        let payload = TermsAcceptanceUpsert(
+            user_id: userId,
+            accepted_at: isoFormatter.string(from: Date()),
+            terms_version: termsVersion
+        )
+
+        try await supabase
+            .from("ugc_terms_acceptance")
+            .upsert(payload)
+            .execute()
+    }
+
+    private func containsObjectionableContent(_ text: String) -> Bool {
+        for term in blockedTerms {
+            let pattern = "\\b\(NSRegularExpression.escapedPattern(for: term))\\b"
+            if let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) {
+                let range = NSRange(location: 0, length: text.utf16.count)
+                if regex.firstMatch(in: text, options: [], range: range) != nil {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+
+    private func termsAcceptanceKey(for userId: UUID) -> String {
+        "fitbond.ugc.terms.accepted.\(termsVersion).\(userId.uuidString.lowercased())"
+    }
 }

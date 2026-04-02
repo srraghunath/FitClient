@@ -11,7 +11,6 @@
             <connections>
                 <outlet property="consecutiveActiveDaysLabel" destination="vGk-YA-opZ" id="SDa-hv-q3K"/>
                 <outlet property="contentView" destination="content-view" id="uwg-D1-K61"/>
-                <outlet property="goalsLabel" destination="fnT-nZ-l6j" id="Xwu-hA-84G"/>
                 <outlet property="nameLabel" destination="h3r-ZP-7n2" id="gR6-QB-xAs"/>
                 <outlet property="profileImageView" destination="bHa-hu-3Vs" id="Ezm-Xw-1ur"/>
                 <outlet property="recentActivitiesTableView" destination="wzA-6z-0hu" id="Ecc-6M-gjm"/>
@@ -35,26 +34,25 @@
                         <constraint firstAttribute="height" constant="128" id="krN-yL-HZh"/>
                     </constraints>
                 </imageView>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="S R RAGHUNATH" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h3r-ZP-7n2">
-                    <rect key="frame" x="16" y="278" width="361" height="26.333333333333314"/>
-                    <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
-                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fitness Enthusiast" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kPP-zh-Tpe">
-                    <rect key="frame" x="16" y="312.33333333333331" width="361" height="19.333333333333314"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Profile: Male • Age 28" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fnT-nZ-l6j">
-                    <rect key="frame" x="16" y="339.66666666666669" width="361" height="19.333333333333314"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <nil key="highlightedColor"/>
-                </label>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="header-stack-view">
+                    <rect key="frame" x="16" y="278" width="361" height="53.666666666666686"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="S R RAGHUNATH" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h3r-ZP-7n2">
+                            <rect key="frame" x="91" y="0.0" width="179" height="26.333333333333332"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fitness Enthusiast" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kPP-zh-Tpe">
+                            <rect key="frame" x="114.66666666666666" y="34.333333333333314" width="131.66666666666666" height="19.333333333333336"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                </stackView>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="YbR-Z4-udg">
-                    <rect key="frame" x="10" y="375" width="373" height="37"/>
+                    <rect key="frame" x="10" y="347.66666666666669" width="373" height="37"/>
                     <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="36" id="jZH-B2-EFl"/>
@@ -70,7 +68,7 @@
                     </connections>
                 </segmentedControl>
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="scroll-view">
-                    <rect key="frame" x="0.0" y="411" width="393" height="373"/>
+                    <rect key="frame" x="0.0" y="409.33333333333331" width="393" height="373"/>
                     <subviews>
                         <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="content-view">
                             <rect key="frame" x="0.0" y="0.0" width="393" height="608.66666666666663"/>
@@ -188,7 +186,6 @@
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="content-view" firstAttribute="width" secondItem="scroll-view" secondAttribute="width" id="2Px-8o-2vl"/>
-                        <constraint firstItem="content-view" firstAttribute="height" relation="greaterThanOrEqual" secondItem="scroll-view" secondAttribute="height" priority="999" id="ETl-J1-aDI"/>
                         <constraint firstItem="content-view" firstAttribute="leading" secondItem="scroll-view" secondAttribute="leading" id="C8V-1s-h6S"/>
                         <constraint firstAttribute="bottom" secondItem="content-view" secondAttribute="bottom" id="HKQ-jM-f8v"/>
                         <constraint firstItem="content-view" firstAttribute="top" secondItem="scroll-view" secondAttribute="top" id="YY7-xC-7tC"/>
@@ -199,26 +196,19 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="YbR-Z4-udg" firstAttribute="top" secondItem="fnT-nZ-l6j" secondAttribute="bottom" constant="16" id="0qD-bS-tZj"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="fnT-nZ-l6j" secondAttribute="trailing" constant="16" id="2Mw-S8-d2a"/>
-                <constraint firstItem="fnT-nZ-l6j" firstAttribute="top" secondItem="kPP-zh-Tpe" secondAttribute="bottom" constant="8" id="7ba-R6-nRo"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="kPP-zh-Tpe" secondAttribute="trailing" constant="16" id="9Hu-p3-qmJ"/>
-                <constraint firstItem="kPP-zh-Tpe" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="A3l-z0-61Z"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="h3r-ZP-7n2" secondAttribute="trailing" constant="16" id="JO5-jN-vRf"/>
-                <constraint firstItem="h3r-ZP-7n2" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="NtU-ff-wxy"/>
+                <constraint firstItem="header-stack-view" firstAttribute="top" secondItem="bHa-hu-3Vs" secondAttribute="bottom" constant="28" id="header-stack-top"/>
+                <constraint firstItem="header-stack-view" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="header-stack-leading"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="header-stack-view" secondAttribute="trailing" constant="16" id="header-stack-trailing"/>
+                <constraint firstItem="YbR-Z4-udg" firstAttribute="top" secondItem="header-stack-view" secondAttribute="bottom" constant="16" id="segmented-top"/>
                 <constraint firstItem="bHa-hu-3Vs" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="O6J-mP-CfD"/>
-                <constraint firstItem="fnT-nZ-l6j" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="WFi-f1-HKM"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="YbR-Z4-udg" secondAttribute="trailing" constant="10" id="Zlh-wl-VO9"/>
-                <constraint firstItem="kPP-zh-Tpe" firstAttribute="top" secondItem="h3r-ZP-7n2" secondAttribute="bottom" constant="8" id="dug-Ar-Fz7"/>
                 <constraint firstItem="YbR-Z4-udg" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="10" id="eyC-aD-jPb"/>
-                <constraint firstItem="h3r-ZP-7n2" firstAttribute="top" secondItem="bHa-hu-3Vs" secondAttribute="bottom" constant="16" id="h7g-jJ-BMO"/>
                 <constraint firstItem="bHa-hu-3Vs" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="16" id="mOh-F3-pCZ"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="scroll-view" secondAttribute="bottom" id="scroll-bottom"/>
                 <constraint firstItem="scroll-view" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="scroll-leading"/>
                 <constraint firstItem="scroll-view" firstAttribute="top" secondItem="YbR-Z4-udg" secondAttribute="bottom" id="scroll-top"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="scroll-view" secondAttribute="trailing" id="scroll-trailing"/>
             </constraints>
-            <point key="canvasLocation" x="32.824427480916029" y="19.718309859154932"/>
-        </view>
+            </view>
     </objects>
 </document>

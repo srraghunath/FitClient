@@ -19,16 +19,15 @@ class TrainerClientsChatViewController: UIViewController {
     private var conversation: Conversation?
     private var realtimeChannel: RealtimeChannelV2?
     private var pollingTask: Task<Void, Never>?
+    private var blockedUserIds: Set<UUID> = []
+    private var otherParticipantUserId: UUID?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupTableView()
         setupMessageInput()
-        Task { [weak self] in
-            self?.trainerContext = try? await ChatService.shared.fetchTrainerContextForCurrentUser()
-        }
-        loadMessages()
+        requestUGCAccessAndLoad()
         hideKeyboardWhenTappedAround()
     }
     
@@ -124,9 +123,14 @@ class TrainerClientsChatViewController: UIViewController {
         Task { [weak self] in
             guard let self else { return }
             do {
+                if let client = try? await ChatService.shared.fetchClient(by: clientUUID) {
+                    self.otherParticipantUserId = client.userId
+                }
                 let conversation = try await ChatService.shared.ensureConversationForTrainer(clientId: clientUUID)
                 let dbMessages = try await ChatService.shared.fetchMessages(conversationId: conversation.id)
-                let mapped: [ChatMessage] = dbMessages.map { self.mapDBMessage($0) }
+                let mapped: [ChatMessage] = dbMessages
+                    .filter { self.blockedUserIds.contains($0.senderId) == false }
+                    .map { self.mapDBMessage($0) }
                 await MainActor.run {
                     self.conversation = conversation
                     self.messages = mapped
@@ -145,8 +149,25 @@ class TrainerClientsChatViewController: UIViewController {
     }
 
     private func sendMessage() {
-        guard let text = messageInputField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else { return }
+        guard let rawText = messageInputField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !rawText.isEmpty else { return }
         guard let conversation else { return }
+
+        if let otherParticipantUserId, blockedUserIds.contains(otherParticipantUserId) {
+            showAlert(title: "User Blocked", message: "You have blocked this user.")
+            return
+        }
+
+        let text: String
+        do {
+            text = try SafetyModerationService.shared.validateOutgoingMessage(rawText)
+        } catch {
+            showAlert(
+                title: "Message Not Sent",
+                message: "Message contains objectionable content and was blocked."
+            )
+            return
+        }
+
         messageInputField.text = ""
 
         Task { [weak self] in
@@ -209,6 +230,157 @@ class TrainerClientsChatViewController: UIViewController {
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
+
+    private func requestUGCAccessAndLoad() {
+        SafetyModerationService.shared.ensureTermsAcceptedBeforeUGC(presenter: self) { [weak self] accepted in
+            guard let self else { return }
+            guard accepted else {
+                self.navigationController?.popViewController(animated: true)
+                return
+            }
+
+            Task { [weak self] in
+                guard let self else { return }
+                await self.refreshBlockedUsers()
+                await MainActor.run {
+                    self.applyBlockedStateToComposer()
+                }
+                self.loadMessages()
+                self.trainerContext = try? await ChatService.shared.fetchTrainerContextForCurrentUser()
+            }
+        }
+    }
+
+    private func refreshBlockedUsers() async {
+        do {
+            blockedUserIds = try await SafetyModerationService.shared.fetchBlockedUserIds()
+        } catch {
+            print("[TrainerClientsChatViewController] Failed to fetch blocked users: \(error)")
+        }
+    }
+
+    private func applyBlockedStateToComposer() {
+        guard let otherParticipantUserId else { return }
+        let isBlocked = blockedUserIds.contains(otherParticipantUserId)
+        messageInputField.isEnabled = !isBlocked
+        sendButton.isEnabled = !isBlocked
+        messageInputField.placeholder = isBlocked ? "You blocked this user" : "Type a message"
+    }
+
+    private func presentModerationSheet(for message: ChatMessage) {
+        let sheet = UIAlertController(title: "Safety", message: nil, preferredStyle: .actionSheet)
+        sheet.addAction(UIAlertAction(title: "Report", style: .default) { [weak self] _ in
+            self?.presentReportReasonPicker(message: message)
+        })
+        sheet.addAction(UIAlertAction(title: "Block User", style: .destructive) { [weak self] _ in
+            self?.presentBlockReasonPicker(message: message)
+        })
+        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+        if let popover = sheet.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 1, height: 1)
+        }
+
+        present(sheet, animated: true)
+    }
+
+    private func presentReportReasonPicker(message: ChatMessage) {
+        let picker = UIAlertController(title: "Report Message", message: "Select a reason.", preferredStyle: .actionSheet)
+        for reason in ContentReportReason.allCases {
+            picker.addAction(UIAlertAction(title: reason.rawValue, style: .default) { [weak self] _ in
+                self?.report(message: message, reason: reason)
+            })
+        }
+        picker.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+        if let popover = picker.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 1, height: 1)
+        }
+        present(picker, animated: true)
+    }
+
+    private func presentBlockReasonPicker(message: ChatMessage) {
+        let picker = UIAlertController(title: "Block User", message: "Blocking reports this user to FitBond and hides their messages instantly.", preferredStyle: .actionSheet)
+        for reason in ContentReportReason.allCases {
+            picker.addAction(UIAlertAction(title: reason.rawValue, style: .destructive) { [weak self] _ in
+                self?.block(message: message, reason: reason)
+            })
+        }
+        picker.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+        if let popover = picker.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 1, height: 1)
+        }
+        present(picker, animated: true)
+    }
+
+    private func report(message: ChatMessage, reason: ContentReportReason) {
+        guard
+            let conversation,
+            let reportedUserId = UUID(uuidString: message.senderId)
+        else { return }
+
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                try await SafetyModerationService.shared.submitContentReport(
+                    reportedUserId: reportedUserId,
+                    messageId: UUID(uuidString: message.id),
+                    conversationId: conversation.id,
+                    reason: reason,
+                    details: message.message
+                )
+                await MainActor.run {
+                    self.showAlert(
+                        title: "Report Submitted",
+                        message: "Thanks. Our team reviews reports within 24 hours."
+                    )
+                }
+            } catch {
+                await MainActor.run {
+                    self.showAlert(title: "Error", message: "Could not submit report. Please try again.")
+                }
+            }
+        }
+    }
+
+    private func block(message: ChatMessage, reason: ContentReportReason) {
+        guard
+            let conversation,
+            let blockedUserId = UUID(uuidString: message.senderId)
+        else { return }
+
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                try await SafetyModerationService.shared.blockUserAndReport(
+                    blockedUserId: blockedUserId,
+                    reason: reason,
+                    details: message.message,
+                    messageId: UUID(uuidString: message.id),
+                    conversationId: conversation.id
+                )
+
+                await MainActor.run {
+                    self.blockedUserIds.insert(blockedUserId)
+                    self.messages.removeAll { $0.senderId == blockedUserId.uuidString }
+                    self.tableView.reloadData()
+                    self.applyBlockedStateToComposer()
+                    self.showAlert(
+                        title: "User Blocked",
+                        message: "This user has been blocked and reported to FitBond."
+                    )
+                }
+            } catch {
+                await MainActor.run {
+                    self.showAlert(title: "Error", message: "Could not block user. Please try again.")
+                }
+            }
+        }
+    }
 }
 
 // MARK: - Realtime
@@ -220,6 +392,7 @@ private extension TrainerClientsChatViewController {
             switch result {
             case .success(let dbMessage):
                 // Avoid duplicates when the sender is this trainer
+                if self.blockedUserIds.contains(dbMessage.senderId) { return }
                 if self.messages.contains(where: { $0.id == dbMessage.id.uuidString }) { return }
 
                 let message = self.mapDBMessage(dbMessage)
@@ -252,7 +425,8 @@ private extension TrainerClientsChatViewController {
             case .success(let dbMessages):
                 let newMessages: [ChatMessage] = dbMessages
                     .filter { db in
-                        self.messages.contains(where: { $0.id == db.id.uuidString }) == false
+                        self.blockedUserIds.contains(db.senderId) == false
+                            && self.messages.contains(where: { $0.id == db.id.uuidString }) == false
                     }
                     .map { self.mapDBMessage($0) }
 
@@ -295,7 +469,7 @@ private extension TrainerClientsChatViewController {
             senderId: db.senderId.uuidString,
             senderName: resolvedName,
             senderImage: resolvedImage,
-            message: db.text,
+            message: SafetyModerationService.shared.sanitizeForDisplay(db.text),
             timestamp: ChatService.shared.isoString(from: db.timestamp),
             isClient: db.isFromTrainer == false
         )
@@ -336,6 +510,33 @@ extension TrainerClientsChatViewController: UITableViewDelegate, UITableViewData
             cell.configure(with: message)
             return cell
         }
+    }
+
+    func tableView(
+        _ tableView: UITableView,
+        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
+    ) -> UISwipeActionsConfiguration? {
+        let message = messages[indexPath.row]
+        guard message.isClient else { return nil }
+
+        let report = UIContextualAction(style: .normal, title: "Report") { [weak self] _, _, done in
+            self?.presentReportReasonPicker(message: message)
+            done(true)
+        }
+        report.backgroundColor = .systemOrange
+
+        let block = UIContextualAction(style: .destructive, title: "Block") { [weak self] _, _, done in
+            self?.presentBlockReasonPicker(message: message)
+            done(true)
+        }
+
+        return UISwipeActionsConfiguration(actions: [block, report])
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let message = messages[indexPath.row]
+        guard message.isClient else { return }
+        presentModerationSheet(for: message)
     }
 }
 

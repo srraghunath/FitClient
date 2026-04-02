@@ -13,7 +13,6 @@ class TrainerClientProfileViewController: UIViewController {
     @IBOutlet private weak var profileImageView: UIImageView!
     @IBOutlet private weak var nameLabel: UILabel!
     @IBOutlet private weak var specialtyLabel: UILabel!
-    @IBOutlet private weak var goalsLabel: UILabel!
     @IBOutlet private weak var segmentedControl: UISegmentedControl!
     @IBOutlet private weak var scrollView: UIScrollView!
     @IBOutlet private weak var contentView: UIView!
@@ -27,7 +26,6 @@ class TrainerClientProfileViewController: UIViewController {
     private var clientProfile: ClientProfile?
     private var currentChildViewController: UIViewController?
     private var segmentContentView: UIView?
-    private var segmentedTopToSpecialtyConstraint: NSLayoutConstraint?
     private var recentCompletedItems: [DayTrackerItem] = []
     private let isoFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -90,9 +88,6 @@ class TrainerClientProfileViewController: UIViewController {
         guard let client = client else { return }
         nameLabel.text = client.name
         specialtyLabel.text = "Last active: --"
-        goalsLabel.isHidden = true
-        goalsLabel.text = nil
-        updateSegmentedControlTopConstraint()
         
         // Center align activity summary labels
         totalActiveDaysLabel.textAlignment = .center
@@ -110,22 +105,8 @@ class TrainerClientProfileViewController: UIViewController {
         }
     }
 
-    private func updateSegmentedControlTopConstraint() {
-        guard segmentedTopToSpecialtyConstraint == nil else { return }
+    // Removed updateSegmentedControlTopConstraint as spacing is now handled by UIStackView in XIB
 
-        if let oldConstraint = view.constraints.first(where: {
-            ($0.firstItem as? UISegmentedControl) === segmentedControl &&
-            ($0.secondItem as? UILabel) === goalsLabel &&
-            $0.firstAttribute == .top &&
-            $0.secondAttribute == .bottom
-        }) {
-            oldConstraint.isActive = false
-        }
-
-        let newConstraint = segmentedControl.topAnchor.constraint(equalTo: specialtyLabel.bottomAnchor, constant: 16)
-        newConstraint.isActive = true
-        segmentedTopToSpecialtyConstraint = newConstraint
-    }
     
     private func setupSegmentedControl() {
         // Set background color to match progress card color
@@ -251,7 +232,7 @@ class TrainerClientProfileViewController: UIViewController {
             guard let self = self else { return }
             if let constraint = self.tableHeightConstraint {
                 let rows = CGFloat(max(self.recentCompletedItems.count, 1))
-                let targetHeight = rows * 80
+                let targetHeight = rows * 72
                 constraint.constant = targetHeight
             }
             self.recentActivitiesTableView.layoutIfNeeded()
@@ -348,6 +329,7 @@ class TrainerClientProfileViewController: UIViewController {
     }
     
     @IBAction private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
+        view.layoutIfNeeded()
         // Handle segment changes here (Overview, Schedule, Progress)
         switch sender.selectedSegmentIndex {
         case 0:
