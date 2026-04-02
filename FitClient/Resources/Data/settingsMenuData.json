@@ -9,13 +9,6 @@
       "isProfileItem": true
     },
     {
-      "id": "notifications",
-      "title": "Notifications",
-      "subtitle": "Manage your notification preferences",
-      "icon": "bell.fill",
-      "iconBackgroundColor": "#AEFD14"
-    },
-    {
       "id": "help",
       "title": "Help & Support",
       "subtitle": "Get help and support",
@@ -27,6 +20,13 @@
       "title": "Disconnect Trainer",
       "subtitle": "Remove trainer access and shared data",
       "icon": "person.crop.circle.badge.xmark",
+      "iconBackgroundColor": "#AEFD14"
+    },
+    {
+      "id": "deleteAccount",
+      "title": "Delete Account",
+      "subtitle": "Permanently remove your account and data",
+      "icon": "person.crop.circle.badge.minus",
       "iconBackgroundColor": "#AEFD14"
     },
     {
@@ -45,21 +45,15 @@
       "iconBackgroundColor": "#AEFD14"
     },
     {
-      "id": "subscription",
-      "title": "Subscription",
-      "icon": "creditcard.fill",
-      "iconBackgroundColor": "#AEFD14"
-    },
-    {
-      "id": "notifications",
-      "title": "Notifications",
-      "icon": "bell.fill",
-      "iconBackgroundColor": "#AEFD14"
-    },
-    {
       "id": "help",
       "title": "Help & Support",
       "icon": "questionmark.circle.fill",
+      "iconBackgroundColor": "#AEFD14"
+    },
+    {
+      "id": "deleteAccount",
+      "title": "Delete Account",
+      "icon": "person.crop.circle.badge.minus",
       "iconBackgroundColor": "#AEFD14"
     },
     {

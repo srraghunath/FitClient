@@ -581,13 +581,16 @@ final class SafetyModerationService {
         guard let currentUserId = supabase.auth.currentUser?.id else {
             throw SafetyModerationError.notAuthenticated
         }
+        print("🔍 [SafetyService] Fetching blocked users for blocker=\(currentUserId.uuidString)")
         let rows: [BlockedUserRow] = try await supabase
             .from("blocked_users")
             .select("blocked_user_id")
-            .eq("blocker_user_id", value: currentUserId.uuidString)
+            .eq("blocker_user_id", value: currentUserId)
             .execute()
             .value
-        return Set(rows.map { $0.blockedUserId })
+        let ids = Set(rows.map { $0.blockedUserId })
+        print("✅ [SafetyService] Found \(ids.count) blocked users: \(ids.map { $0.uuidString })")
+        return ids
     }
 
     func submitContentReport(
@@ -654,6 +657,54 @@ final class SafetyModerationService {
             .from("content_reports")
             .insert(reportPayload)
             .execute()
+    }
+
+    func unblockUser(blockedUserId: UUID) async throws {
+        guard let currentUserId = supabase.auth.currentUser?.id else {
+            throw SafetyModerationError.notAuthenticated
+        }
+
+        print("🔍 [SafetyService] Attempting to unblock user=\(blockedUserId.uuidString) for blocker=\(currentUserId.uuidString)")
+        
+        // 1. Trace row existence before delete
+        let preCheck: [BlockedUserRow] = try await supabase
+            .from("blocked_users")
+            .select("blocked_user_id")
+            .eq("blocker_user_id", value: currentUserId)
+            .eq("blocked_user_id", value: blockedUserId)
+            .execute()
+            .value
+            
+        if preCheck.isEmpty {
+            print("⚠️ [SafetyService] Row NOT FOUND in database before unblocking attempt.")
+        } else {
+            print("🟢 [SafetyService] Row EXISTS in database for deletion.")
+        }
+
+        // 2. Perform delete
+        try await supabase
+            .from("blocked_users")
+            .delete()
+            .eq("blocker_user_id", value: currentUserId)
+            .eq("blocked_user_id", value: blockedUserId)
+            .execute()
+            
+        print("📤 [SafetyService] Supabase delete command EXECUTED.")
+
+        // 3. Verify row existence after delete
+        let postCheck: [BlockedUserRow] = try await supabase
+            .from("blocked_users")
+            .select("blocked_user_id")
+            .eq("blocker_user_id", value: currentUserId)
+            .eq("blocked_user_id", value: blockedUserId)
+            .execute()
+            .value
+            
+        if postCheck.isEmpty {
+            print("✨ [SafetyService] SUCCESS: Row successfully removed from database.")
+        } else {
+            print("❌ [SafetyService] FAILURE: Row STILL EXISTS in database after delete command. This likely means an RLS policy is preventing your user from deleting this row.")
+        }
     }
 
     private func persistTermsAcceptance(for userId: UUID) async throws {

@@ -193,4 +193,23 @@ final class TrainerService {
             }
         }
     }
+
+    // MARK: - Disconnect Client
+
+    func disconnectClientAndPurgeData(clientId: UUID, completion: @escaping (Error?) -> Void) {
+        Task {
+            do {
+                print("[TrainerService] Disconnecting client id=\(clientId)")
+                try await supabase
+                    .rpc("disconnect_client_cascade", params: ["p_client_id": clientId.uuidString])
+                    .execute()
+
+                print("[TrainerService] Disconnect succeeded")
+                completion(nil)
+            } catch {
+                print("[TrainerService] disconnectClientAndPurgeData failed: \(error)")
+                completion(error)
+            }
+        }
+    }
 }

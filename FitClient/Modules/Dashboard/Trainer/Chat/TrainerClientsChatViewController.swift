@@ -21,6 +21,41 @@ class TrainerClientsChatViewController: UIViewController {
     private var pollingTask: Task<Void, Never>?
     private var blockedUserIds: Set<UUID> = []
     private var otherParticipantUserId: UUID?
+    private lazy var blockedOverlayView: UIView = {
+        let overlay = UIView()
+        overlay.backgroundColor = .black
+        overlay.translatesAutoresizingMaskIntoConstraints = false
+        
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 20
+        stack.alignment = .center
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        overlay.addSubview(stack)
+        
+        let label = UILabel()
+        label.text = "You have blocked this user"
+        label.textColor = .white
+        label.font = .systemFont(ofSize: 18, weight: .medium)
+        stack.addArrangedSubview(label)
+        
+        let button = UIButton(type: .system)
+        button.setTitle("Unblock", for: .normal)
+        button.backgroundColor = .primaryGreen
+        button.setTitleColor(.black, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
+        button.layer.cornerRadius = 12
+        button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 24, bottom: 12, right: 24)
+        button.addTarget(self, action: #selector(unblockTapped), for: .touchUpInside)
+        stack.addArrangedSubview(button)
+        
+        NSLayoutConstraint.activate([
+            stack.centerXAnchor.constraint(equalTo: overlay.centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: overlay.centerYAnchor)
+        ])
+        
+        return overlay
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,6 +72,14 @@ class TrainerClientsChatViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         navigationController?.setNavigationBarHidden(true, animated: false)
+        
+        Task { [weak self] in
+            guard let self else { return }
+            await self.refreshBlockedUsers()
+            await MainActor.run {
+                self.applyBlockedStateToComposer()
+            }
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -133,6 +176,7 @@ class TrainerClientsChatViewController: UIViewController {
                     .map { self.mapDBMessage($0) }
                 await MainActor.run {
                     self.conversation = conversation
+                    self.applyBlockedStateToComposer()
                     self.messages = mapped
                     self.tableView.reloadData()
                     self.scrollToBottom()
@@ -153,7 +197,16 @@ class TrainerClientsChatViewController: UIViewController {
         guard let conversation else { return }
 
         if let otherParticipantUserId, blockedUserIds.contains(otherParticipantUserId) {
-            showAlert(title: "User Blocked", message: "You have blocked this user.")
+            let alert = UIAlertController(
+                title: "User Blocked",
+                message: "You have blocked this user. Unblock if you want to chat again.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            alert.addAction(UIAlertAction(title: "Unblock", style: .default) { [weak self] _ in
+                self?.performUnblock(userId: otherParticipantUserId)
+            })
+            present(alert, animated: true)
             return
         }
 
@@ -262,10 +315,90 @@ class TrainerClientsChatViewController: UIViewController {
     private func applyBlockedStateToComposer() {
         guard let otherParticipantUserId else { return }
         let isBlocked = blockedUserIds.contains(otherParticipantUserId)
+        
+        if isBlocked {
+            if blockedOverlayView.superview == nil {
+                view.addSubview(blockedOverlayView)
+                NSLayoutConstraint.activate([
+                    blockedOverlayView.topAnchor.constraint(equalTo: tableView.topAnchor),
+                    blockedOverlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                    blockedOverlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                    blockedOverlayView.bottomAnchor.constraint(equalTo: inputContainerView.bottomAnchor)
+                ])
+            }
+            blockedOverlayView.isHidden = false
+            view.bringSubviewToFront(blockedOverlayView)
+        } else {
+            blockedOverlayView.isHidden = true
+        }
+
         messageInputField.isEnabled = !isBlocked
         sendButton.isEnabled = !isBlocked
         messageInputField.placeholder = isBlocked ? "You blocked this user" : "Type a message"
     }
+
+    @objc private func unblockTapped() {
+        guard let otherParticipantUserId else { return }
+        
+        let alert = UIAlertController(
+            title: "Unblock User?",
+            message: "You will be able to see their messages and chat again.",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Unblock", style: .default) { [weak self] _ in
+            self?.performUnblock(userId: otherParticipantUserId)
+        })
+        
+        present(alert, animated: true)
+    }
+
+    private func performUnblock(userId: UUID) {
+    print("👨‍🏫 [TrainerChat] Trainer clicked UNBLOCK for ID: \(userId.uuidString)")
+
+    // 1. Optimistic local update
+    self.blockedUserIds.remove(userId)
+    self.applyBlockedStateToComposer()
+
+    Task { [weak self] in
+        guard let self else { return }
+
+        do {
+            // 2. Call backend
+            try await SafetyModerationService.shared.unblockUser(blockedUserId: userId)
+            print("✅ Unblock API success")
+
+            // 3. Fetch fresh list
+            let freshBlocked = try await SafetyModerationService.shared.fetchBlockedUserIds()
+            print("🧪 Fresh blocked list:", freshBlocked)
+
+            await MainActor.run {
+                // 4. ONLY update if backend agrees it's unblocked
+                if freshBlocked.contains(userId) == false {
+                    self.blockedUserIds = freshBlocked
+                } else {
+                    print("⚠️ Backend still says user is blocked")
+                }
+
+                self.applyBlockedStateToComposer()
+                self.messages.removeAll()
+                self.loadMessages()
+            }
+
+        } catch {
+            // 5. Rollback on failure
+            await MainActor.run {
+                self.blockedUserIds.insert(userId)
+                self.applyBlockedStateToComposer()
+                self.showAlert(
+                    title: "Error",
+                    message: "Could not unblock user: \(error.localizedDescription)"
+                )
+            }
+        }
+    }
+}
 
     private func presentModerationSheet(for message: ChatMessage) {
         let sheet = UIAlertController(title: "Safety", message: nil, preferredStyle: .actionSheet)

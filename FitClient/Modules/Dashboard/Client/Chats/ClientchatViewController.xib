@@ -62,7 +62,7 @@
                             <rect key="frame" x="16" y="12" width="361" height="48"/>
                             <subviews>
                                 <!-- TextField -->
-                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Write a message" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="messageInputTextField">
+                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Type a message" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="messageInputTextField">
                                     <rect key="frame" x="0.0" y="0.0" width="313" height="48"/>
                                     <color key="backgroundColor" red="0.18823529411764706" green="0.19215686274509802" blue="0.19215686274509802" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <color key="textColor" red="0.96078431372549" green="0.96078431372549" blue="0.96078431372549" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -128,7 +128,7 @@
                 <constraint firstItem="inputContainerView" firstAttribute="top" secondItem="messagesTableView" secondAttribute="bottom" id="container-top"/>
                 <constraint firstItem="inputContainerView" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="container-leading"/>
                 <constraint firstItem="inputContainerView" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="input-trailing"/>
-                <constraint firstItem="i5M-Pr-FkT" firstAttribute="bottom" secondItem="inputContainerView" secondAttribute="bottom" id="inputContainer-bottom"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="inputContainerView" secondAttribute="bottom" id="inputContainer-bottom"/>
             </constraints>
             <point key="canvasLocation" x="0.0" y="0.0"/>
         </view>

@@ -129,6 +129,31 @@ class AuthService {
         }
     }
 
+    func deleteUserAccount(completion: @escaping (Error?) -> Void) {
+        Task {
+            do {
+                // Determine user role and delete corresponding profile row
+                if let role = try await resolveCurrentRole() {
+                    switch role {
+                    case .trainer(let userId):
+                        try await supabase.from("trainers").delete().eq("id", value: userId.uuidString).execute()
+                    case .client(_, let clientId, _):
+                        // Client deletion should purge activity data and sessions (ideally via cascade)
+                        try await supabase.from("clients").delete().eq("id", value: clientId.uuidString).execute()
+                    }
+                }
+
+                // Final sign out and local cleanup
+                try await supabase.auth.signOut()
+                clearStoredTokens()
+                cachedRole = nil
+                completion(nil)
+            } catch {
+                completion(error)
+            }
+        }
+    }
+
     // MARK: - Role Resolution
 
     func resolveCurrentRole() async throws -> UserRole? {

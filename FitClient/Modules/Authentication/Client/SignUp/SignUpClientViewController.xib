@@ -139,6 +139,20 @@
                                         <action selector="createAccountButtonTapped:" destination="-1" eventType="touchUpInside" id="create-action"/>
                                     </connections>
                                 </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="privacy-btn">
+                                    <rect key="frame" x="0.0" y="496" width="382" height="40"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="40" id="privacy-height"/>
+                                    </constraints>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="By creating an account, you agree to our Privacy Policy">
+                                        <fontDescription key="titleFontDescription" type="system" pointSize="13"/>
+                                        <color key="baseForegroundColor" red="0.68235294117647061" green="0.99607843137254903" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </buttonConfiguration>
+                                    <connections>
+                                        <action selector="privacyPolicyTapped:" destination="-1" eventType="touchUpInside" id="privacy-action"/>
+                                    </connections>
+                                </button>
                             </subviews>
                         </stackView>
                     </subviews>

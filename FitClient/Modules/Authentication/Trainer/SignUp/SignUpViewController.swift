@@ -86,33 +86,38 @@ class SignUpViewController: UIViewController {
         guard let fullName = fullNameTextField.text, !fullName.isEmpty,
               let age = ageTextField.text, !age.isEmpty,
               let gender = genderTextField.text, !gender.isEmpty,
-              let specialization = specializationTextField.text, !specialization.isEmpty,
               let email = emailTextField.text, !email.isEmpty,
               let password = passwordTextField.text, !password.isEmpty,
               let confirmPassword = confirmPasswordTextField.text, !confirmPassword.isEmpty else {
-            showAlert(message: "Please fill all fields")
+            showAlert(message: "Please fill in all fields")
             return
         }
-
+        
         guard password == confirmPassword else {
             showAlert(message: "Passwords do not match")
             return
         }
-
-        loader = ActivityLoader.show(over: view)
-
-        AuthService.shared.signUp(email: email, password: password, fullName: fullName, age: age, gender: gender, specialization: specialization) { [weak self] error in
-            DispatchQueue.main.async {
-                self?.loader?.hide()
-                if let error = error {
-                    self?.showAlert(message: "Error signing up: \(error.localizedDescription)")
-                } else {
-                    self?.showAlert(message: "Sign up successful! Please check your email to verify your account.") {
-                        self?.navigationController?.popToRootViewController(animated: true)
+        
+        if email.isValidEmail {
+            AuthService.shared.signUp(email: email, password: password, fullName: fullName, age: age, gender: gender, specialization: specializationTextField.text ?? "") { [weak self] error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self?.showAlert(message: "Error signing up: \(error.localizedDescription)")
+                    } else {
+                        self?.showAlert(message: "Sign up successful! Please check your email to verify your account.") {
+                            self?.navigationController?.popToRootViewController(animated: true)
+                        }
                     }
                 }
             }
+        } else {
+            showAlert(message: "Please enter a valid email address")
         }
+    }
+    
+    @IBAction func privacyPolicyTapped(_ sender: UIButton) {
+        guard let url = URL(string: "https://fitbond.netlify.app/privacy.html") else { return }
+        UIApplication.shared.open(url)
     }
 }
 

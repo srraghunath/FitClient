@@ -111,15 +111,15 @@ class TrainerSettingsViewController: UIViewController {
         profileImageView.layer.cornerRadius = size / 2.0
     }
     
-    @IBAction func subscriptionTapped(_ sender: Any) {
-        let subscriptionVC = SubscriptionViewController(nibName: "SubscriptionViewController", bundle: nil)
-        navigationController?.pushViewController(subscriptionVC, animated: true)
-    }
+    // @IBAction func subscriptionTapped(_ sender: Any) {
+    //     let subscriptionVC = SubscriptionViewController(nibName: "SubscriptionViewController", bundle: nil)
+    //     navigationController?.pushViewController(subscriptionVC, animated: true)
+    // }
     
-    @IBAction func notificationTapped(_ sender: Any) {
-        let notificationVC = NotificationViewController(nibName: "NotificationViewController", bundle: nil)
-        navigationController?.pushViewController(notificationVC, animated: true)
-    }
+    // @IBAction func notificationTapped(_ sender: Any) {
+    //     let notificationVC = NotificationViewController(nibName: "NotificationViewController", bundle: nil)
+    //     navigationController?.pushViewController(notificationVC, animated: true)
+    // }
     
     @IBAction func helpTapped(_ sender: Any) {
         let helpVC = HelpViewController(nibName: "HelpViewController", bundle: nil)
@@ -132,18 +132,53 @@ class TrainerSettingsViewController: UIViewController {
     }
 
     @IBAction func logoutTapped(_ sender: Any) {
-        AuthService.shared.signOut { error in
+        handleLogout()
+    }
+
+    @IBAction func deleteAccountTapped(_ sender: Any) {
+        let alert = UIAlertController(
+            title: "Delete Account",
+            message: "Are you sure you want to delete your account? This action is permanent and all your trainer data will be lost forever.",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete Permanently", style: .destructive) { [weak self] _ in
+            self?.performDeleteAccount()
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    private func performDeleteAccount() {
+        AuthService.shared.deleteUserAccount { [weak self] error in
             DispatchQueue.main.async {
                 if let error {
-                    self.showAlert(message: "Error logging out: \(error.localizedDescription)")
+                    self?.showAlert(message: "Error deleting account: \(error.localizedDescription)")
                     return
                 }
-                if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let window = scene.windows.first {
-                    window.rootViewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
-                    window.makeKeyAndVisible()
-                }
+                self?.navigateToWelcome()
             }
+        }
+    }
+    
+    private func handleLogout() {
+        AuthService.shared.signOut { [weak self] error in
+            DispatchQueue.main.async {
+                if let error {
+                    self?.showAlert(message: "Error logging out: \(error.localizedDescription)")
+                    return
+                }
+                self?.navigateToWelcome()
+            }
+        }
+    }
+    
+    private func navigateToWelcome() {
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = scene.windows.first {
+            window.rootViewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+            window.makeKeyAndVisible()
         }
     }
 }

@@ -47,6 +47,12 @@ class TrainerClientProfileViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.tabBarController?.tabBar.isHidden = true
+        view.layoutIfNeeded()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        view.layoutIfNeeded()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -326,6 +332,37 @@ class TrainerClientProfileViewController: UIViewController {
     
     @objc private func backButtonTapped() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    @IBAction private func disconnectTapped(_ sender: UIButton) {
+        guard let client = client else { return }
+        
+        let alert = UIAlertController(
+            title: "Disconnect Client?",
+            message: "This will permanently remove the client from your dashboard and purge all shared data including sessions and chat history. This action cannot be undone.",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Disconnect", style: .destructive) { [weak self] _ in
+            self?.performDisconnect(clientId: client.id)
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    private func performDisconnect(clientId: UUID) {
+        // Show loading indicator if possible, but for now just call service
+        TrainerService.shared.disconnectClientAndPurgeData(clientId: clientId) { [weak self] error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self?.showAlert(title: "Error", message: "Failed to disconnect: \(error.localizedDescription)")
+                } else {
+                    NotificationCenter.default.post(name: .clientDataChanged, object: nil)
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            }
+        }
     }
     
     @IBAction private func segmentedControlValueChanged(_ sender: UISegmentedControl) {

@@ -115,6 +115,11 @@ class SignUpClientViewController: UIViewController {
         }
     }
     
+    @IBAction func privacyPolicyTapped(_ sender: UIButton) {
+        guard let url = URL(string: "https://fitbond.netlify.app/privacy.html") else { return }
+        UIApplication.shared.open(url)
+    }
+    
     private func navigateToDashboard() {
         let tabBarController = MainTabBarController()
         tabBarController.modalPresentationStyle = .fullScreen

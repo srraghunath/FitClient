@@ -17,6 +17,25 @@ class TrainerClientsViewController: UIViewController {
         setupTableView()
         setupSearchBar()
         loadClientsData()
+        setupNotificationObservers()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loadClientsData()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    private func setupNotificationObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(loadClientsData),
+            name: .clientDataChanged,
+            object: nil
+        )
     }
     
     private func setupNavigationBar() {
@@ -68,7 +87,7 @@ class TrainerClientsViewController: UIViewController {
         searchBar.applyAppStyle()
     }
     
-    private func loadClientsData() {
+    @objc private func loadClientsData() {
         guard let trainerId = AuthService.shared.supabase.auth.currentUser?.id else {
             print("Trainer not logged in")
             return

@@ -160,22 +160,57 @@ extension ClientSettingsViewController: UITableViewDataSource, UITableViewDelega
         case "logout":
             print("Logout tapped")
             handleLogout()
+        case "deleteAccount":
+            promptDeleteAccount()
         default:
             break
         }
     }
 
     private func handleLogout() {
-        AuthService.shared.signOut { error in
+        AuthService.shared.signOut { [weak self] error in
             DispatchQueue.main.async {
                 if let error {
-                    self.showAlert(message: "Error logging out: \(error.localizedDescription)")
+                    self?.showAlert(message: "Error logging out: \(error.localizedDescription)")
                     return
                 }
-                let window = UIApplication.shared.connectedScenes.first as? UIWindowScene
-                window?.windows.first?.rootViewController = UIStoryboard(name: "Main", bundle: nil)
-                    .instantiateInitialViewController()
+                self?.navigateToWelcome()
             }
+        }
+    }
+
+    private func promptDeleteAccount() {
+        let alert = UIAlertController(
+            title: "Delete Account",
+            message: "Are you sure you want to delete your account? This action is permanent and all your profile, progress, and trainer connections will be lost forever.",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete Permanently", style: .destructive) { [weak self] _ in
+            self?.performDeleteAccount()
+        })
+
+        present(alert, animated: true)
+    }
+
+    private func performDeleteAccount() {
+        AuthService.shared.deleteUserAccount { [weak self] error in
+            DispatchQueue.main.async {
+                if let error {
+                    self?.showAlert(message: "Error deleting account: \(error.localizedDescription)")
+                    return
+                }
+                self?.navigateToWelcome()
+            }
+        }
+    }
+
+    private func navigateToWelcome() {
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = scene.windows.first {
+            window.rootViewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+            window.makeKeyAndVisible()
         }
     }
 

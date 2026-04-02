@@ -50,6 +50,7 @@ class AddClientModalViewController: UIViewController {
             DispatchQueue.main.async {
                 switch result {
                 case .success:
+                    NotificationCenter.default.post(name: .clientDataChanged, object: nil)
                     self?.onClientAdded?(email)
                     self?.dismiss(animated: true)
                 case .failure(let error):
