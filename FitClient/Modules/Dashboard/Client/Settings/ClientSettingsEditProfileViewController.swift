@@ -1,4 +1,6 @@
 import UIKit
+import AVFoundation
+import Photos
 
 class ClientSettingsEditProfileViewController: UIViewController,
                                                UIImagePickerControllerDelegate,
@@ -191,14 +193,22 @@ class ClientSettingsEditProfileViewController: UIViewController,
 
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
             alert.addAction(UIAlertAction(title: "Camera", style: .default) { _ in
-                picker.sourceType = .camera
-                self.present(picker, animated: true)
+                self.checkCameraPermission { allowed in
+                    if allowed {
+                        picker.sourceType = .camera
+                        self.present(picker, animated: true)
+                    }
+                }
             })
         }
 
         alert.addAction(UIAlertAction(title: "Photo Library", style: .default) { _ in
-            picker.sourceType = .photoLibrary
-            self.present(picker, animated: true)
+            self.checkPhotoLibraryPermission { allowed in
+                if allowed {
+                    picker.sourceType = .photoLibrary
+                    self.present(picker, animated: true)
+                }
+            }
         })
 
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
@@ -345,5 +355,57 @@ extension ClientSettingsEditProfileViewController {
             parts.append("Age \(age)")
         }
         return parts.isEmpty ? "Client" : parts.joined(separator: " • ")
+    }
+
+    // MARK: - Permissions
+    private func checkCameraPermission(completion: @escaping (Bool) -> Void) {
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        switch status {
+        case .authorized:
+            completion(true)
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                DispatchQueue.main.async { completion(granted) }
+            }
+        case .denied, .restricted:
+            showPermissionAlert(for: "Camera")
+            completion(false)
+        @unknown default:
+            completion(false)
+        }
+    }
+
+    private func checkPhotoLibraryPermission(completion: @escaping (Bool) -> Void) {
+        let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+        switch status {
+        case .authorized, .limited:
+            completion(true)
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
+                DispatchQueue.main.async {
+                    completion(status == .authorized || status == .limited)
+                }
+            }
+        case .denied, .restricted:
+            showPermissionAlert(for: "Photo Library")
+            completion(false)
+        @unknown default:
+            completion(false)
+        }
+    }
+
+    private func showPermissionAlert(for feature: String) {
+        let alert = UIAlertController(
+            title: "\(feature) Permission Needed",
+            message: "Please enable \(feature) access in Settings to change your profile picture.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Settings", style: .default) { _ in
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(url)
+            }
+        })
+        present(alert, animated: true)
     }
 }
