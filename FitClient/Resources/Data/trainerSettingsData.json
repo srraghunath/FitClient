@@ -8,12 +8,16 @@
     "push": true
   },
   "help": {
-    "contactEmail": "coach-support@fitclient.app",
-    "contactPhone": "+91 9123456789",
+    "developers": [
+      { "name": "M Vishok", "email": "vishokmanikantan@gmail.com" },
+      { "name": "Vickash Narayn R", "email": "veekanarry@gmail.com" },
+      { "name": "S R Raghunath", "email": "srraghu2005@gmail.com" }
+    ],
     "faqs": [
-      { "q": "How do I add a new client?", "a": "Open Clients tab and tap the + button to add a new client." },
-      { "q": "How do I schedule sessions?", "a": "Open a client's profile and use the Schedule section to add sessions." },
-      { "q": "How can I upgrade my plan?", "a": "Go to Settings > Subscription to view and upgrade your plan." }
+      { "q": "How do I assign a workout to a client?", "a": "Visit the Client's profile, select \"Assign Workout\", and choose from the exercise library." },
+      { "q": "How can I see client progress?", "a": "The Client dashboard provides a real-time view of their completed workouts and diet logs." },
+      { "q": "How do I manage session requests?", "a": "Check the \"Sessions\" tab to view, approve, or reschedule upcoming appointments with your clients." },
+      { "q": "Can I add custom exercises?", "a": "Yes, you can create custom routines by combining existing exercises or adding notes for specific movements." }
     ],
     "resources": ["Coach Handbook", "Video Tutorials"]
   }

@@ -8,12 +8,16 @@
     "push": true
   },
   "help": {
-    "contactEmail": "support@fitclient.app",
-    "contactPhone": "+91 9876543210",
+    "developers": [
+      { "name": "M Vishok", "email": "vishokmanikantan@gmail.com" },
+      { "name": "Vickash Narayn R", "email": "veekanarry@gmail.com" },
+      { "name": "S R Raghunath", "email": "srraghu2005@gmail.com" }
+    ],
     "faqs": [
-      { "q": "How do I track my workouts?", "a": "Go to Dashboard > Today and tap Start on the workout card." },
-      { "q": "How do I edit my profile summary?", "a": "Open Settings > Profile and update your age or gender." },
-      { "q": "How can I contact my trainer?", "a": "Use the Chats tab to message your trainer directly." }
+      { "q": "How do I track my daily workouts?", "a": "Go to Dashboard > Today and tap Start on the workout card to begin and log your exercises." },
+      { "q": "How do I edit my profile summary?", "a": "Open Settings > Profile and you can update your physical details and fitness goals." },
+      { "q": "How can I contact my trainer?", "a": "Use the Chats tab in the main navigation to send messages and share progress with your coach." },
+      { "q": "What happens if I miss a meal?", "a": "You can log it later, or adjust your next meal. Consistency is key, not perfection!" }
     ],
     "resources": ["User Guide", "Video Tutorials"]
   }

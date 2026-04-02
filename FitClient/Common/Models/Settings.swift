@@ -75,13 +75,17 @@ struct ClientSettingsConfig: Codable {
         let push: Bool
     }
 
+    struct Developer: Codable {
+        let name: String
+        let email: String
+    }
+
     struct Help: Codable {
         struct FAQ: Codable {
             let q: String
             let a: String
         }
-        let contactEmail: String
-        let contactPhone: String
+        let developers: [Developer]
         let faqs: [FAQ]
         let resources: [String]
     }
@@ -107,8 +111,7 @@ struct TrainerSettingsConfig: Codable {
             let q: String
             let a: String
         }
-        let contactEmail: String
-        let contactPhone: String
+        let developers: [ClientSettingsConfig.Developer]
         let faqs: [FAQ]
         let resources: [String]
     }
